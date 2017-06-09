@@ -1,0 +1,28 @@
+{
+	"manifest_version": 2,
+	"name": "markdown-viewer",
+	"version": "1.0",
+	"description": "Displays markdown documents beautified.",
+	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
+
+	"permissions": [
+		"activeTab", "tabs", "<all_urls>"
+	],
+
+	"icons": {
+		"32": "ext/32x20.png",
+		"48": "ext/48x30.png",
+		"66": "ext/66x40.png",
+		"208": "ext/208x128.png"
+	},
+
+	"background": {
+		"scripts": ["ext/background.js"]
+	},
+
+	"web_accessible_resources": [
+		"lib/sss/sss.css",
+		"lib/sss/sss.print.css",
+		"lib/highlightjs/styles/default.css"
+	]
+}

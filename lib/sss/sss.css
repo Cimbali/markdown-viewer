@@ -1,0 +1,89 @@
+body {
+	color: #333;
+	font-family: 'Segoe UI', 'Lucida Grande', Helvetica, sans-serif;
+	line-height: 1.5;
+	margin: 2em;
+	//max-width: 800px; // Ick
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	line-height: 1em;
+	margin: 20px 0;
+}
+h1 {
+	font-size: 2.25em;
+}
+h2 {
+	font-size: 1.75em;
+}
+h3 {
+	font-size: 1.5em;
+}
+h4, h5, h6 {
+	font-size: 1.25em;
+}
+
+a {
+	color: #08C;
+	text-decoration: none;
+}
+a:hover, a:focus {
+	text-decoration: underline;
+}
+a:visited {
+	color: #058;
+}
+
+img {
+	max-width: 100%;
+}
+
+li + li {
+	margin-top: 3px;
+}
+dt {
+	font-weight: bold;
+}
+
+code {
+	background: #EEE;
+	font-family: "Consolas", "Lucida Console", monospace;
+	padding: 1px 5px;
+}
+pre {
+	background: #EEE;
+	padding: 5px 10px;
+	white-space: pre-wrap;
+}
+pre code {
+	padding: 0;
+}
+
+blockquote {
+	border-left: 5px solid #EEE;
+	margin: 0;
+	padding: 0 10px;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+table + table {
+	margin-top: 1em;
+}
+thead {
+	background: #EEE;
+	text-align: left;
+}
+th, td {
+	border: 1px solid #EEE;
+	padding: 5px 10px;
+}
+
+hr {
+	background: #EEE;
+	border: 0;
+	height: 1px;
+}
