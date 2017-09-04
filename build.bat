@@ -10,6 +10,8 @@
 	lib\highlightjs\styles\default.css
 	lib\markdown-it\LICENSE
 	lib\markdown-it\dist\markdown-it.min.js
+	lib\markdown-it-checkbox\LICENSE
+	lib\markdown-it-checkbox\dist\markdown-it-checkbox.min.js
 	lib\sss\LICENSE.md
 	lib\sss\sss.css
 	lib\sss\sss.print.css
