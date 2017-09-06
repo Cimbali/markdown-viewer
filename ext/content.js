@@ -9,24 +9,29 @@
 
 function processMarkdown(textContent) {
 	// Parse the content Markdown => HTML
-	var md = markdownit({
-		html: true,
-		linkify: true,
-		// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
-		highlight: function (str, lang) {
-			if (lang && hljs.getLanguage(lang)) {
-				try {
-					return hljs.highlight(lang, str).value;
-				} catch (__) {}
-			}
 
-			try {
-				return hljs.highlightAuto(str).value;
-			} catch (__) {}
+	var hljs = require('highlight.js');
+	
+	var md = require('markdown-it')({
+				html: true,
+				linkify: true,
+				// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
+				highlight: function (str, lang) {
+					if (lang && hljs.getLanguage(lang)) {
+						try {
+							return hljs.highlight(lang, str).value;
+						} catch (__) {}
+					}
 
-			return ''; // use external default escaping
-		}
-	});
+					try {
+						return hljs.highlightAuto(str).value;
+					} catch (__) {}
+
+					return ''; // use external default escaping
+				}
+			})
+			//markdown-it plugins:
+			.use(require('markdown-it-checkbox')); //to format [ ] and [x]
 
 	var html = md.render(textContent);
 
@@ -83,12 +88,6 @@ function processMarkdown(textContent) {
 	document.body.appendChild(markdownRoot);
 }
 
-function loadScriptThen(path, nextStep) {
-	browser.runtime.sendMessage({ scriptToInject: path }, (response) => {
-		if (response.success) { nextStep(); }
-	});
-}
-
 // Execute only if .md is unprocessed text.
 var body = document.body;
 if (body.childNodes.length == 1 &&
@@ -98,9 +97,5 @@ if (body.childNodes.length == 1 &&
 	var textContent = body.textContent;
 	body.textContent = '';
 
-	loadScriptThen('lib/highlightjs/highlight.pack.min.js', () => {
-		loadScriptThen('lib/markdown-it/dist/markdown-it.min.js', () => {
-			processMarkdown(textContent);
-		})
-	});
+	processMarkdown(textContent);
 }
