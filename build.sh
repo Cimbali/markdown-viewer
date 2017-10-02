@@ -13,9 +13,9 @@ do
 done
 
 browserify ./ext/content.js\
+ -r ./lib/highlightjs/highlight.pack.min.js:highlight.js\
  -r ./lib/markdown-it/dist/markdown-it.min.js:markdown-it\
  -r ./lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js:markdown-it-checkbox\
- -r ./lib/highlightjs/highlight.pack.min.js:highlight.js\
  -o ./staging/ext/content.js
 
 web-ext build -s staging

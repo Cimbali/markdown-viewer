@@ -2,7 +2,7 @@
 
 	const markdownFileExtension = /\.m(arkdown|kdn?|d(o?wn)?)(\?.*)?(#.*)?$/i;
 
-	if (changeInfo.status == 'complete' && markdownFileExtension.test(tab.url)) {
+	if (changeInfo.status === 'complete' && markdownFileExtension.test(tab.url)) {
 
 		// Support loading additional scripts on demand by content script.
 		browser.runtime.onMessage.addListener((message, sender, sendResponse) => {

@@ -1,9 +1,9 @@
-﻿function addStylesheet(path, media) {
+﻿function addStylesheet(href, media) {
 	var style = document.createElement('link');
 	style.rel = 'stylesheet';
-	if (media) { style.setAttribute('media', media); }
 	style.type = 'text/css';
-	style.href = browser.extension.getURL(path);
+	style.href = href;
+	if (media) { style.setAttribute('media', media); }
 	document.head.appendChild(style);
 }
 
@@ -11,7 +11,7 @@ function processMarkdown(textContent) {
 	// Parse the content Markdown => HTML
 
 	var hljs = require('highlight.js');
-	
+
 	var md = require('markdown-it')({
 				html: true,
 				linkify: true,
@@ -26,7 +26,6 @@ function processMarkdown(textContent) {
 					try {
 						return hljs.highlightAuto(str).value;
 					} catch (__) {}
-
 					return ''; // use external default escaping
 				}
 			})
@@ -36,9 +35,11 @@ function processMarkdown(textContent) {
 	var html = md.render(textContent);
 
 	// Style the page and code highlights.
-	addStylesheet('lib/sss/sss.css');
-	addStylesheet('lib/sss/sss.print.css', 'print');
-	addStylesheet('lib/highlightjs/styles/default.css');
+	addStylesheet(browser.extension.getURL('lib/sss/sss.css'));
+	addStylesheet(browser.extension.getURL('lib/sss/sss.print.css'), 'print');
+	addStylesheet(browser.extension.getURL('lib/highlightjs/styles/default.css'));
+	// User-defined stylesheet.
+	addStylesheet('_markdown.css');
 
 	// This is considered a good practice for mobiles.
 	var viewport = document.createElement('meta');
@@ -90,9 +91,9 @@ function processMarkdown(textContent) {
 
 // Execute only if .md is unprocessed text.
 var body = document.body;
-if (body.childNodes.length == 1 &&
-	body.children.length == 1 &&
-	body.children[0].nodeName.toUpperCase() == 'PRE')
+if (body.childNodes.length === 1 &&
+	body.children.length === 1 &&
+	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
 	var textContent = body.textContent;
 	body.textContent = '';

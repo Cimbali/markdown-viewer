@@ -1,9 +1,9 @@
-[submodule "lib/markdown-it-checkbox"]
-	path = lib/markdown-it-checkbox
-	url = https://github.com/mcecot/markdown-it-checkbox.git
 [submodule "lib/highlightjs"]
 	path = lib/highlightjs
 	url = https://github.com/components/highlightjs.git
 [submodule "lib/markdown-it"]
 	path = lib/markdown-it
 	url = https://github.com/markdown-it/markdown-it.git
+[submodule "lib/markdown-it-checkbox"]
+	path = lib/markdown-it-checkbox
+	url = https://github.com/mcecot/markdown-it-checkbox.git

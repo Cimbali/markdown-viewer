@@ -10,13 +10,13 @@
 	lib\sss\sss.print.css
 ) do @call :copyfile %%f staging\%%f
 
-@browserify .\ext\content.js^
+@call browserify .\ext\content.js^
+ -r .\lib\highlightjs\highlight.pack.min.js:highlight.js^
  -r .\lib\markdown-it\dist\markdown-it.min.js:markdown-it^
  -r .\lib\markdown-it-checkbox\dist\markdown-it-checkbox.min.js:markdown-it-checkbox^
- -r .\lib\highlightjs\highlight.pack.min.js:highlight.js^
  -o .\staging\ext\content.js
 
-@web-ext build -s staging
+@call web-ext build -s staging
 @goto :EOF
 
 :copyfile

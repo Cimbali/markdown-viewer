@@ -1,9 +1,12 @@
-﻿# Title 1
-## Title 2
-### Title 3
-#### Title 4
-##### Title 5
-###### Title 6
+﻿# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
+
+Markdown Viewer Webext now supports local styles in a file _markdown.css alongside the .md files.
+This is used here to format the top-level heading in bold blue text.
 
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -12,39 +15,37 @@ consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
 cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-Unicode: éè
+Unicode: âêîôûŵŷ äëïöüẅÿ àèìòùẁỳ áéíóúẃý   Вот какой-то текст.
 
 **bold**
 
 *italic*
 
-~~strike~~
+~~strikethrough~~
 
-multipe_underscores_in_text_without_parsing
+multiple_underscores_in_text_without_parsing
 
-* item 1
-* item 2
-* item 3
+Unordered lists with:
+- asterisk
+- dash
+- or plus
+- [ ] Can contain checkboxes, unchecked
+- [X] or checked
 
-1. item 1
-2. item 2
-3. item 3
-
-| Header | Header | Header |
-|--------|--------|--------|
-| Cell   | Cell   | Cell   |
-| Cell   | Cell   | Cell   |
-| Cell   | Cell   | Cell   |
+Ordered lists:
+1. start with numbers.
+2. any number will do
+3. if you like
 
 | Left-Aligned  | Center Aligned  | Right Aligned |
 | :------------ |:---------------:| -----:|
-| col 3 is      | some wordy text | $1600 |
+| col 1 is      | some wordy text | $1600 |
 | col 2 is      | centered        |   $12 |
 | zebra stripes | are neat        |    $1 |
 
-https://addons.mozilla.org/fr/firefox/addon/markdown-viewer/
+[Link to Markdown Viewer (on AMO)](https://addons.mozilla.org/firefox/addon/markdown-viewer-webext/)
 
-[link (markdown-viewer on AMO)](https://addons.mozilla.org/fr/firefox/addon/markdown-viewer/)
+https://addons.mozilla.org/firefox/addon/markdown-viewer-webext/
 
 [relative link](hello-world.md)
 
@@ -61,10 +62,10 @@ function myFunction() {
 
 ![Large image (should be resized)](http://lorempixel.com/1200/200/)
 
-<strong onload="console.log('loaded')">HTML is allowed</strong>
+<strong onload="console.log('loaded')">HTML is supported</strong>
 
-<strong onclick="alert('XSS')">But scripts (into script tags ot inline) aren't</strong>
+<strong onclick="alert('XSS')">But scripts (in script elements or from events) are not accepted</strong>
 
-<button onclick="alert('XSS KLR')">meep</button>
+<button onclick="alert('XSS KLR')">Therefore clicking me does nothing</button>
 
 <script type="text/javascript">console.log('XSS KLR');</script>
