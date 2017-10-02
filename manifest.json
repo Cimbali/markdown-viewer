@@ -1,10 +1,10 @@
 {
 	"manifest_version": 2,
 	"name": "markdown-viewer-webext",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
 	"description": "Displays markdown documents beautified.\n\nMarkdown is a lightweight markup language which uses plain text to describe formatting information, such as # Heading, 1. numbered list, *bold*, etc. This add-on identifies markdown documents by the extension in the URL (.md, .markdown, etc.). When you navigate to a markdown document, if the content is plain text, this add-on formats it into HTML (with headings, bold text, etc.) as described in the document and displays it directly in your browser.\n\nA markdown document can contain Unicode characters, but it must begin with a Byte Order Marker for those characters to display correctly.",
-
+	
 	"permissions": [
 		"activeTab", "tabs", "<all_urls>"
 	],
