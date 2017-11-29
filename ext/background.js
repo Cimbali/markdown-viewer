@@ -15,6 +15,6 @@
 			return false;
 		});
 
-		browser.tabs.executeScript(id, { file: "ext/content.js" });
+		browser.tabs.executeScript(id, { file: "/ext/content.js" });
 	}
 });

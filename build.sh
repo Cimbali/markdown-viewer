@@ -4,18 +4,15 @@ rm -r web-ext-artifacts 2>/dev/null
 for f in LICENSE \
 	manifest.json \
 	ext/* \
-	ib/highlightjs/styles/default.css \
+	lib/highlightjs/highlight.pack.min.js \
+	lib/highlightjs/styles/default.css \
+	lib/markdown-it/dist/markdown-it.min.js \
+	lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
 	lib/sss/sss.css \
 	lib/sss/sss.print.css
 do
 	mkdir -p `dirname staging/$f`
 	cp $f staging/$f
 done
-
-browserify ./ext/content.js\
- -r ./lib/highlightjs/highlight.pack.min.js:highlight.js\
- -r ./lib/markdown-it/dist/markdown-it.min.js:markdown-it\
- -r ./lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js:markdown-it-checkbox\
- -o ./staging/ext/content.js
 
 web-ext build -s staging

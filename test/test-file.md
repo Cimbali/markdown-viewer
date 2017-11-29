@@ -62,10 +62,12 @@ function myFunction() {
 
 ![Large image (should be resized)](http://lorempixel.com/1200/200/)
 
-<strong onload="console.log('loaded')">HTML is supported</strong>
+<strong>HTML is supported</strong>
 
 <strong onclick="alert('XSS')">But scripts (in script elements or from events) are not accepted</strong>
 
-<button onclick="alert('XSS KLR')">Therefore clicking me does nothing</button>
+<button onclick="alert('XSS')" onload="console.log('loaded')">Therefore clicking me does nothing</button>
 
-<script type="text/javascript">console.log('XSS KLR');</script>
+<script type="text/javascript">console.log('XSS');</script>
+
+<a href=" JavaScript:alert('XSS')">JavaScript links are trampled out, too</a>

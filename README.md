@@ -5,7 +5,6 @@ Markdown (.md) file viewer [WebExtension](https://developer.mozilla.org/en-US/Ad
 * Required:
 	* [nodejs](https://nodejs.org/) with npm
 	* [web-ext](https://github.com/mozilla/web-ext/) (npm install -g web-ext)
-	* [browserify](https://github.com/browserify/browserify/) (npm install -g browserify)
 * Run `build.bat` (Windows) or `build.sh` (Linux)
 
 ## Test

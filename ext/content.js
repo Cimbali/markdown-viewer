@@ -6,38 +6,38 @@
 	if (media) { style.setAttribute('media', media); }
 	document.head.appendChild(style);
 }
+function addExtensionStylesheet(href, media) {
+	addStylesheet(browser.extension.getURL(href), media);
+}
 
 function processMarkdown(textContent) {
 	// Parse the content Markdown => HTML
+	var md = markdownit({
+		html: true,
+		linkify: true,
+		// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
+		highlight: function (str, lang) {
+			if (lang && hljs.getLanguage(lang)) {
+				try {
+					return hljs.highlight(lang, str).value;
+				} catch (__) {}
+			}
 
-	var hljs = require('highlight.js');
-
-	var md = require('markdown-it')({
-				html: true,
-				linkify: true,
-				// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
-				highlight: function (str, lang) {
-					if (lang && hljs.getLanguage(lang)) {
-						try {
-							return hljs.highlight(lang, str).value;
-						} catch (__) {}
-					}
-
-					try {
-						return hljs.highlightAuto(str).value;
-					} catch (__) {}
-					return ''; // use external default escaping
-				}
-			})
-			//markdown-it plugins:
-			.use(require('markdown-it-checkbox')); //to format [ ] and [x]
+			try {
+				return hljs.highlightAuto(str).value;
+			} catch (__) {}
+			return ''; // use external default escaping
+		}
+	})
+	//markdown-it plugins:
+	.use(markdownitCheckbox); //to format [ ] and [x]
 
 	var html = md.render(textContent);
 
 	// Style the page and code highlights.
-	addStylesheet(browser.extension.getURL('lib/sss/sss.css'));
-	addStylesheet(browser.extension.getURL('lib/sss/sss.print.css'), 'print');
-	addStylesheet(browser.extension.getURL('lib/highlightjs/styles/default.css'));
+	addExtensionStylesheet('/lib/sss/sss.css');
+	addExtensionStylesheet('/lib/sss/sss.print.css', 'print');
+	addExtensionStylesheet('/lib/highlightjs/styles/default.css');
 	// User-defined stylesheet.
 	addStylesheet('_markdown.css');
 
@@ -52,41 +52,56 @@ function processMarkdown(textContent) {
 	markdownRoot.className = "markdownRoot";
 	markdownRoot.innerHTML = html;
 
-	// Trample out script elements.
-	markdownRoot.querySelectorAll('script').forEach(each => {
-		each.innerText = '';
-		each.src = '';
-	});
-	// Remove hrefs that don't look like URLs.
-	const likeUrl = /^[-a-z]*:\/\//i;
-	markdownRoot.querySelectorAll('[href]').forEach(each => {
-		if (!likeUrl.test(each.href)) {
-			each.href = '';
+	var title = null;
+	var headers = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
+	const jsLink = /^\s*javascript:/i;
+	var eachElement,
+		allElements = document.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
+	while (eachElement = allElements.nextNode()) {
+		var tagName = eachElement.tagName.toUpperCase();
+
+		// Find a header to use as the page title.
+		if (!title && headers.includes(tagName)) {
+			title = eachElement.textContent.trim();
 		}
-	});
-	// Remove event handlers. (Others?)
-	var events = ['onclick', 'onload', 'onmouseover', 'onmouseout'];
-	var eventsJoined = '[' + events.join('],[') + ']';
-	markdownRoot.querySelectorAll(eventsJoined).forEach(each => {
-		events.forEach(attr => {
-			if (each.getAttribute(attr)) { each.setAttribute(attr, null); }
-		});
-	});
+		// Crush scripts.
+		if (tagName === 'SCRIPT') {
+			eachElement.innerText = '';
+			eachElement.src = '';
+		}
+		// Trample JavaScript hrefs.
+		if (eachElement.getAttribute("href") && jsLink.test(eachElement.href)) {
+			eachElement.setAttribute("href", "javascript:;");
+		}
+		// Remove event handlers.
+		var eachAttributes = Array.from(eachElement.attributes);
+		for (var j = 0; j < eachAttributes.length; j++) {
+			var attr = eachAttributes[j];
+			if (attr.name.toLowerCase().startsWith('on')) {
+				eachElement.removeAttribute(attr.name);
+			}
+		}
+	}
 
 	// Set the page title.
-	var title = markdownRoot.querySelector('h1, h2, h3, h4, h5, h6');		// First header
-	if (title) {
-		title = title.textContent.trim();
-	} else {
-		title = markdownRoot.textContent.trim().split("\n", 1)[0].trim();	// First line
+	if (!title) {
+		// Get first line if no header.
+		title = markdownRoot.textContent.trim().split("\n", 1)[0].trim();
 	}
-	if (title.length > 50) {
-		title = title.substr(0, 50) + "...";
+	if (title.length > 128) {
+		// Limit its length.
+		title = title.substr(0, 125) + "...";
 	}
 	document.title = title;
 
 	// Finally insert the markdown.
 	document.body.appendChild(markdownRoot);
+}
+
+function loadScriptThen(path, nextStep) {
+	browser.runtime.sendMessage({ scriptToInject: path }, (response) => {
+		if (response.success) { nextStep(); }
+	});
 }
 
 // Execute only if .md is unprocessed text.
@@ -98,5 +113,11 @@ if (body.childNodes.length === 1 &&
 	var textContent = body.textContent;
 	body.textContent = '';
 
-	processMarkdown(textContent);
+	loadScriptThen('/lib/markdown-it/dist/markdown-it.min.js', () => {
+		loadScriptThen('/lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js', () => {
+			loadScriptThen('/lib/highlightjs/highlight.pack.min.js', () => {
+				processMarkdown(textContent);
+			})
+		})
+	});
 }

@@ -5,16 +5,13 @@
 	LICENSE
 	manifest.json
 	ext\*.*
+	lib\highlightjs\highlight.pack.min.js
 	lib\highlightjs\styles\default.css
+	lib\markdown-it\dist\markdown-it.min.js
+	lib\markdown-it-checkbox\dist\markdown-it-checkbox.min.js
 	lib\sss\sss.css
 	lib\sss\sss.print.css
 ) do @call :copyfile %%f staging\%%f
-
-@call browserify .\ext\content.js^
- -r .\lib\highlightjs\highlight.pack.min.js:highlight.js^
- -r .\lib\markdown-it\dist\markdown-it.min.js:markdown-it^
- -r .\lib\markdown-it-checkbox\dist\markdown-it-checkbox.min.js:markdown-it-checkbox^
- -o .\staging\ext\content.js
 
 @call web-ext build -s staging
 @goto :EOF
