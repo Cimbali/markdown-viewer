@@ -112,12 +112,18 @@ if (body.childNodes.length === 1 &&
 {
 	var textContent = body.textContent;
 	body.textContent = '';
+	var scrollPosKey = encodeURIComponent(window.location) + ".scrollPosition";
 
 	loadScriptThen('/lib/markdown-it/dist/markdown-it.min.js', () => {
 		loadScriptThen('/lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js', () => {
 			loadScriptThen('/lib/highlightjs/highlight.pack.min.js', () => {
 				processMarkdown(textContent);
+				window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
 			})
 		})
+	});
+
+	window.addEventListener("unload", () => {
+		sessionStorage[scrollPosKey] = JSON.stringify([window.scrollX, window.scrollY]);
 	});
 }
