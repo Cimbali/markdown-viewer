@@ -10,6 +10,24 @@ function addExtensionStylesheet(href, media) {
 	addStylesheet(browser.extension.getURL(href), media);
 }
 
+function makeAnchor(node) {
+	// From @tomfun https://gist.github.com/asabaylus/3071099#gistcomment-1622315
+	var anchor = node.textContent.trim().toLowerCase().replace(/[^\w\- ]+/g, ' ').replace(/\s+/g, '-').replace(/\-+$/, '');
+
+	if (typeof this.usedHeaders == 'undefined')
+		this.usedHeaders = [];
+
+	if (this.usedHeaders.indexOf(anchor) !== -1) {
+		var i = 1;
+		while (this.usedHeaders.indexOf(anchor + '-' + i) !== -1 && i <= 10)
+			i++;
+		anchor = anchor + '-' + i;
+	}
+	this.usedHeaders.push(anchor);
+	console.log(node.textContent, '=>', anchor);
+	node.id = anchor;
+}
+
 function processMarkdown(textContent) {
 	// Parse the content Markdown => HTML
 	var md = markdownit({
@@ -63,6 +81,9 @@ function processMarkdown(textContent) {
 		// Find a header to use as the page title.
 		if (!title && headers.includes(tagName)) {
 			title = eachElement.textContent.trim();
+		}
+		if (headers.includes(tagName)) {
+			makeAnchor(eachElement);
 		}
 		// Crush scripts.
 		if (tagName === 'SCRIPT') {
