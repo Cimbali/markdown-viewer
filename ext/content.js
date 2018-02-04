@@ -78,12 +78,10 @@ function processMarkdown(textContent) {
 	while (eachElement = allElements.nextNode()) {
 		var tagName = eachElement.tagName.toUpperCase();
 
-		// Find a header to use as the page title.
-		if (!title && headers.includes(tagName)) {
-			title = eachElement.textContent.trim();
-		}
+		// Make anchor for headers; use first header text as page title.
 		if (headers.includes(tagName)) {
 			makeAnchor(eachElement);
+			if (!title) { title = eachElement.textContent.trim(); }
 		}
 		// Crush scripts.
 		if (tagName === 'SCRIPT') {
