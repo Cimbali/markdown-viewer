@@ -131,7 +131,11 @@ if (body.childNodes.length === 1 &&
 {
 	var textContent = body.textContent;
 	body.textContent = '';
-	var scrollPosKey = encodeURIComponent(window.location) + ".scrollPosition";
+
+	var url = window.location.href;
+	var hash = url.lastIndexOf('#');
+	if (hash > 0) url = url.substr(0, hash);	// Exclude fragment id from key.
+	var scrollPosKey = encodeURIComponent(url) + ".scrollPosition";
 
 	loadScriptThen('/lib/markdown-it/dist/markdown-it.min.js', () => {
 		loadScriptThen('/lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js', () => {
