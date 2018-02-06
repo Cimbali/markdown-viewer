@@ -1,13 +1,20 @@
 ﻿function addStylesheet(href, media) {
 	var style = document.createElement('link');
+	var done = new Promise((resolve, reject) => {
+		style.addEventListener('load', resolve);
+		style.addEventListener('error', reject);
+	});
+
 	style.rel = 'stylesheet';
 	style.type = 'text/css';
 	style.href = href;
 	if (media) { style.setAttribute('media', media); }
 	document.head.appendChild(style);
+
+	return done;
 }
 function addExtensionStylesheet(href, media) {
-	addStylesheet(browser.extension.getURL(href), media);
+	return addStylesheet(browser.extension.getURL(href), media);
 }
 
 function makeAnchor(node) {
