@@ -31,7 +31,6 @@ function makeAnchor(node) {
 		anchor = anchor + '-' + i;
 	}
 	this.usedHeaders.push(anchor);
-	console.log(node.textContent, '=>', anchor);
 	node.id = anchor;
 }
 
@@ -124,36 +123,28 @@ function processMarkdown(textContent) {
 	document.body.appendChild(markdownRoot);
 }
 
-function loadScriptThen(path, nextStep) {
-	browser.runtime.sendMessage({ scriptToInject: path }, (response) => {
-		if (response.success) { nextStep(); }
-	});
-}
 
-// Execute only if .md is unprocessed text.
-var body = document.body;
-if (body.childNodes.length === 1 &&
-	body.children.length === 1 &&
-	body.children[0].nodeName.toUpperCase() === 'PRE')
-{
-	var textContent = body.textContent;
-	body.textContent = '';
+var url = new URL(window.location.href);
 
-	var url = window.location.href;
-	var hash = url.lastIndexOf('#');
-	if (hash > 0) url = url.substr(0, hash);	// Exclude fragment id from key.
-	var scrollPosKey = encodeURIComponent(url) + ".scrollPosition";
+if (/\.m(arkdown|kdn?|d(o?wn)?)$/i.test(url.pathname)) {
 
-	loadScriptThen('/lib/markdown-it/dist/markdown-it.min.js', () => {
-		loadScriptThen('/lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js', () => {
-			loadScriptThen('/lib/highlightjs/highlight.pack.min.js', () => {
-				processMarkdown(textContent);
-				window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
-			})
-		})
-	});
+	// Execute only if .md is unprocessed text.
+	var body = document.body;
+	if (body.childNodes.length === 1 &&
+		body.children.length === 1 &&
+		body.children[0].nodeName.toUpperCase() === 'PRE')
+	{
+		var textContent = body.textContent;
+		body.textContent = '';
 
-	window.addEventListener("unload", () => {
-		sessionStorage[scrollPosKey] = JSON.stringify([window.scrollX, window.scrollY]);
-	});
+		processMarkdown(textContent);
+
+		url.hash = '';
+		var scrollPosKey = url.toJSON() + ".scrollPosition";
+
+		window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
+		window.addEventListener("unload", () => {
+			sessionStorage[scrollPosKey] = JSON.stringify([window.scrollX, window.scrollY]);
+		});
+	}
 }
