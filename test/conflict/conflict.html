@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Testing conflicts</title>
+</head>
+
+<body>
+	What happens if we inject our scripts on page that has a library with the same name?
+	<script src="markdown-it.min.js"></script>
+	<script>
+		function test_conflict()
+		{
+			var p = document.createElement('p');
+			p.textContent = markdownit({});
+			document.body.appendChild(p);
+		}
+
+		window.onload = () =>
+		{
+			// make sure the web-extension had time to do its magic.
+			setTimeout(test_conflict, 500);
+		};
+
+	</script>
+
+</body>
+
+</html>
