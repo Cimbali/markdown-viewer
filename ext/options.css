@@ -1,0 +1,10 @@
+#origins {
+	list-style-type: none;
+}
+#origins li {
+	display: inline-block;
+	margin:1ex;
+}
+#all_origins {
+	font-weight:bold;
+}
