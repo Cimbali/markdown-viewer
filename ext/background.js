@@ -32,8 +32,19 @@ browser.tabs.query({}).then(tabs => tabs.forEach(tab => {
 // Make button request permission for current domain
 browser.browserAction.onClicked.addListener(activeTab => {
 	var url = new URL(activeTab.url);
-	var perm = {origins: [url.protocol == 'file:' ? "file:///*" : '*://' + url.host + '/*']};
+	var perm = {origins: []};
+	if (url.protocol == 'file:') {
+		perm.origins.push('file:///*');
+	} else if (url.href == 'about:addons') {
+		// From configuration page means enable everywhere, as permissions.request() can't be called from there
+		perm.origins.push('*://*/*');
+		perm.origins.push('file:///*');
+	} else {
+		perm.origins.push('*://' + url.host + '/*');
+	}
+
 	browser.permissions.request(perm).then(allowed => {
+		browser.runtime.sendMessage({requested: perm.origins, granted: allowed});
 		if (allowed && md_extension_pattern.test(url.pathname)) {
 			browser.tabs.executeScript(activeTab.id, { file: '/ext/content.js' });
 		}
