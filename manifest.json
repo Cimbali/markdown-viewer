@@ -6,8 +6,18 @@
 	"description": "Displays markdown documents beautified in your browser.",
 
 	"permissions": [
-		"activeTab", "tabs", "<all_urls>"
+		"tabs",
+		"storage"
 	],
+
+	"optional_permissions": [
+		"*://*/*",
+		"file:///*"
+	],
+
+	"browser_action": {
+		"default_icon": "ext/markdown-mark.svg"
+	},
 
 	"icons": {
 		"48": "ext/markdown-mark.svg",
