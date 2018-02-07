@@ -1,0 +1,16 @@
+body {
+	font-size:1.25em;
+}
+#origins {
+	list-style-type:none;
+}
+#origins li {
+	display:inline-block;
+	margin:1ex;
+}
+button {
+	padding:1ex;
+}
+#all_origins {
+	font-weight:bold;
+}
