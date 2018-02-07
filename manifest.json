@@ -5,6 +5,12 @@
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
 	"description": "Displays markdown documents beautified in your browser.",
 
+	"applications": {
+		"gecko": {
+			"id": "{943b8007-a895-44af-a672-4f4ea548c95f}"
+		}
+	},
+
 	"permissions": [
 		"tabs",
 		"storage"

@@ -10,6 +10,16 @@ function addExtensionStylesheet(href, media) {
 	addStylesheet(browser.extension.getURL(href), media);
 }
 
+function addCustomStylesheet() {
+	browser.storage.sync.get('custom_css').then(storage => {
+		if ('custom_css' in storage) {
+			var style = document.createElement('style');
+			style.textContent = storage.custom_css;
+			document.head.appendChild(style);
+		}
+	});
+}
+
 function makeAnchor(node) {
 	// From @tomfun https://gist.github.com/asabaylus/3071099#gistcomment-1622315
 	var anchor = node.textContent.trim().toLowerCase().replace(/[^\w\- ]+/g, ' ').replace(/\s+/g, '-').replace(/\-+$/, '');
@@ -57,7 +67,7 @@ function processMarkdown(textContent) {
 	addExtensionStylesheet('/lib/sss/sss.print.css', 'print');
 	addExtensionStylesheet('/lib/highlightjs/styles/default.css');
 	// User-defined stylesheet.
-	addStylesheet('_markdown.css');
+	addCustomStylesheet();
 
 	// This is considered a good practice for mobiles.
 	var viewport = document.createElement('meta');

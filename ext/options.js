@@ -34,7 +34,7 @@ function list_permitted_origins(perm) {
 	});
 }
 
-// list when opening, and refresh page whenever permissions are added
+// List permissions when opening options and refresh whenever permissions are added
 browser.permissions.getAll().then(list_permitted_origins);
 browser.runtime.onMessage.addListener(message => {
 	if ('requested' in message && 'granted' in message) {
@@ -44,4 +44,25 @@ browser.runtime.onMessage.addListener(message => {
 		return true;
 	}
 	return false;
+});
+
+var timer = null;
+var textarea = document.getElementById('custom_css');
+function clear_saved_message() {
+	if (timer != null) { window.clearTimeout(timer); timer = null; }
+	textarea.onkeydown = null;
+	document.getElementById('saved').style.display = 'none';
+}
+
+// Load custom CSS and save it when changed by user
+browser.storage.sync.get('custom_css').then(storage => {
+	if ('custom_css' in storage) { textarea.value = storage.custom_css; }
+
+	textarea.onchange = () => {
+		browser.storage.sync.set({custom_css: textarea.value}).then(() => {
+			document.getElementById('saved').style.display = 'inline';
+			timer = window.setTimeout(clear_saved_message, 8000);
+			textarea.onkeydown = clear_saved_message;
+		});
+	};
 });
