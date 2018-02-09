@@ -6,7 +6,7 @@
 	"description": "Displays markdown documents beautified in your browser.",
 
 	"permissions": [
-		"activeTab", "tabs", "<all_urls>"
+		"activeTab", "tabs", "<all_urls>", "storage"
 	],
 
 	"icons": {
@@ -22,5 +22,11 @@
 		"lib/sss/sss.css",
 		"lib/sss/sss.print.css",
 		"lib/highlightjs/styles/default.css"
-	]
+	],
+
+	"options_ui":
+	{
+		"page": "ext/options.html",
+		"browser_style": true
+	}
 }
