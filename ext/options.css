@@ -1,16 +1,34 @@
 body {
 	font-size:1.25em;
 }
+h3 {
+	font-size:1.5em;
+	margin:1em 0 0.4em 0;
+}
+p {
+	margin:0;
+}
 #origins {
 	list-style-type:none;
+	margin:0;
 }
 #origins li {
 	display:inline-block;
 	margin:1ex;
 }
-button {
+#origins li button {
 	padding:1ex;
 }
 #all_origins {
 	font-weight:bold;
+}
+#saved {
+	color:green;
+	font-weight:bold;
+	display:none;
+}
+textarea {
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: scroll;
 }

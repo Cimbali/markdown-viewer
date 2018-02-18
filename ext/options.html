@@ -6,10 +6,17 @@
 </head>
 <body>
 	<h3>Granted permissions</h3>
-	<p><span id="all_origins">To enable markdown rendering for all websites, click the toolbar button from this page.</span><br/>
-		Rendering Markdown is enabled on pages of the following domains (click to remove):</p>
+	<p><span id="all_origins">To enable markdown rendering for all websites, click the toolbar button from this page.</span></p>
+	<p>Rendering Markdown is enabled on pages of the following domains (click to remove):</p>
 	<ul id="origins"></ul>
-	<p>Unfortunately, Firefox permissions do not allow Markdown rending for sites (like raw.githubusercontent.com) which use CORS headers.</p>
+	<p>Unfortunately, Firefox permissions do not allow Markdown rending for sites (like raw.githubusercontent.com) which return CORS headers.</p>
+
+	<h3>Custom CSS</h3>
+	<p>If you enable syncing Add-ons with your Firefox account, the CSS will synchronize across your devices.</p>
+	<p>Enter custom CSS to be applied to Markdown pages here.</p>
+	<p>Click or tab out of the text area to save changes. Refresh this page to revert changes.<span id="saved" class="hidden"> &nbsp; &nbsp; SAVED</span></p>
+	<textarea id="custom_css" style="margin: 10px; width:90%; min-height:30em;">Unable to load CSS from storage.</textarea>
+
 	<script src="options.js"></script>
 </body>
 </html>
