@@ -1,13 +1,27 @@
 {
 	"manifest_version": 2,
 	"name": "Markdown Viewer Webext",
-	"version": "1.2.1",
+	"version": "1.3.0",
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
 	"description": "Displays markdown documents beautified in your browser.",
 
 	"permissions": [
-		"activeTab", "tabs", "<all_urls>"
+		"tabs",
+		"storage"
 	],
+
+	"optional_permissions": [
+		"file:///*",
+		"*://*/*"
+	],
+
+	"browser_action": {
+		"default_icon": "ext/markdown-mark-solid.svg",
+		"theme_icons": [
+			// Mozilla currently has these reversed! I will correct this when they fix it.
+			{"dark": "ext/markdown-mark-solid.svg", "light": "ext/markdown-mark-white.svg", "size": 32}
+		]
+	},
 
 	"icons": {
 		"48": "ext/markdown-mark.svg",
@@ -22,5 +36,11 @@
 		"lib/sss/sss.css",
 		"lib/sss/sss.print.css",
 		"lib/highlightjs/styles/default.css"
-	]
+	],
+
+	"options_ui":
+	{
+		"page": "ext/options.html",
+		"browser_style": true
+	}
 }
