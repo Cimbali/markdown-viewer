@@ -24,7 +24,6 @@
 	"browser_action": {
 		"default_icon": "ext/markdown-mark-solid.svg",
 		"theme_icons": [
-			// Mozilla currently has these reversed! I will correct this when they fix it.
 			{"dark": "ext/markdown-mark-solid.svg", "light": "ext/markdown-mark-white.svg", "size": 32}
 		]
 	},
