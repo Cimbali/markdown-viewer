@@ -19,7 +19,7 @@ function origin(url, setting) {
 		origins.push('*://*/*');
 		if (setting) origins.push('file:///*');
 	} else if (url.protocol == 'about:') {
-		return;
+		return [];
 	} else if (url.protocol == 'file:') {
 		origins.push('file:///*');
 	} else if (setting) {
