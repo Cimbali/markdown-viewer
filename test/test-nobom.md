@@ -1,4 +1,4 @@
-﻿# Heading 1
+# Heading 1
 ## Heading 2
 ### Heading 3
 #### Heading 4
@@ -16,6 +16,8 @@ cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 Unicode: âêîôûŵŷ äëïöüẅÿ àèìòùẁỳ áéíóúẃý   Вот какой-то текст.
+
+á  is  á
 
 **bold**
 
@@ -47,7 +49,7 @@ Ordered lists:
 
 https://addons.mozilla.org/firefox/addon/markdown-viewer-webext/
 
-[relative link](test-nobom.md)
+[relative link](test-file.md)
 
 [relative link to subdir](sub/hello-sub.md)
 

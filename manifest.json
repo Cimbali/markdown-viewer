@@ -1,7 +1,8 @@
 {
 	"manifest_version": 2,
 	"name": "Markdown Viewer Webext",
-	"version": "1.3.0",
+	"version": "1.4.0",
+	"author": "Keith L Robertson",
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
 	"description": "Displays markdown documents beautified in your browser.",
 
@@ -11,31 +12,47 @@
 		}
 	},
 
-	"permissions": [
-		"tabs",
-		"storage"
-	],
-
-	"optional_permissions": [
-		"file:///*",
-		"*://*/*"
-	],
-
-	"browser_action": {
-		"default_icon": "ext/markdown-mark-solid.svg",
-		"theme_icons": [
-			{"dark": "ext/markdown-mark-solid.svg", "light": "ext/markdown-mark-white.svg", "size": 32}
-		]
-	},
-
 	"icons": {
 		"48": "ext/markdown-mark.svg",
 		"96": "ext/markdown-mark.svg"
 	},
 
-	"background": {
-		"scripts": ["ext/background.js"]
-	},
+	"permissions": [
+		"storage",
+		"tabs",
+		"activeTab",
+		"*://*/*.markdown",
+		"*://*/*.md",
+		"*://*/*.mdown",
+		"*://*/*.mdwn",
+		"*://*/*.mkd",
+		"*://*/*.mkdn"
+	],
+
+	"content_scripts": [
+		{
+			"matches": [
+				"*://*/*.markdown",
+				"*://*/*.md",
+				"*://*/*.mdown",
+				"*://*/*.mdwn",
+				"*://*/*.mkd",
+				"*://*/*.mkdn",
+				"file://*/*.markdown",
+				"file://*/*.md",
+				"file://*/*.mdown",
+				"file://*/*.mdwn",
+				"file://*/*.mkd",
+				"file://*/*.mkdn"
+			],
+			"js": [
+				"lib/markdown-it/dist/markdown-it.min.js",
+				"lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js",
+				"lib/highlightjs/highlight.pack.min.js",
+				"ext/content.js"
+			]
+		}
+	],
 
 	"web_accessible_resources": [
 		"lib/sss/sss.css",
@@ -43,8 +60,7 @@
 		"lib/highlightjs/styles/default.css"
 	],
 
-	"options_ui":
-	{
+	"options_ui": {
 		"page": "ext/options.html",
 		"browser_style": true
 	}

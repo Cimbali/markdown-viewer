@@ -1,4 +1,6 @@
-﻿function addStylesheet(href, media) {
+﻿const webext = typeof browser === 'undefined' ? chrome : browser;
+
+function addStylesheet(href, media) {
 	var style = document.createElement('link');
 	style.rel = 'stylesheet';
 	style.type = 'text/css';
@@ -7,11 +9,11 @@
 	document.head.appendChild(style);
 }
 function addExtensionStylesheet(href, media) {
-	addStylesheet(browser.extension.getURL(href), media);
+	addStylesheet(webext.extension.getURL(href), media);
 }
 
 function addCustomStylesheet() {
-	browser.storage.sync.get('custom_css').then(storage => {
+	webext.storage.sync.get('custom_css', (storage) => {
 		if ('custom_css' in storage) {
 			var style = document.createElement('style');
 			style.textContent = storage.custom_css;
@@ -34,31 +36,30 @@ function makeAnchor(node) {
 		anchor = anchor + '-' + i;
 	}
 	this.usedHeaders.push(anchor);
-	console.log(node.textContent, '=>', anchor);
 	node.id = anchor;
 }
 
 function processMarkdown(textContent) {
 	// Parse the content Markdown => HTML
-	var md = markdownit({
+	var md = window.markdownit({
 		html: true,
 		linkify: true,
 		// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
-		highlight: function (str, lang) {
-			if (lang && hljs.getLanguage(lang)) {
+		highlight: (str, lang) => {
+			if (lang && window.hljs.getLanguage(lang)) {
 				try {
-					return hljs.highlight(lang, str).value;
+					return window.hljs.highlight(lang, str).value;
 				} catch (__) {}
 			}
 
 			try {
-				return hljs.highlightAuto(str).value;
+				return window.hljs.highlightAuto(str).value;
 			} catch (__) {}
 			return ''; // use external default escaping
 		}
 	})
 	//markdown-it plugins:
-	.use(markdownitCheckbox); //to format [ ] and [x]
+	.use(window.markdownitCheckbox); //to format [ ] and [x]
 
 	var html = md.render(textContent);
 
@@ -127,13 +128,7 @@ function processMarkdown(textContent) {
 	document.body.appendChild(markdownRoot);
 }
 
-function loadScriptThen(path, nextStep) {
-	browser.runtime.sendMessage({ scriptToInject: path }, (response) => {
-		if (response.success) { nextStep(); }
-	});
-}
-
-// Execute only if .md is unprocessed text.
+// Process only if document is unprocessed text.
 var body = document.body;
 if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
@@ -147,14 +142,10 @@ if (body.childNodes.length === 1 &&
 	if (hash > 0) url = url.substr(0, hash);	// Exclude fragment id from key.
 	var scrollPosKey = encodeURIComponent(url) + ".scrollPosition";
 
-	loadScriptThen('/lib/markdown-it/dist/markdown-it.min.js', () => {
-		loadScriptThen('/lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js', () => {
-			loadScriptThen('/lib/highlightjs/highlight.pack.min.js', () => {
-				processMarkdown(textContent);
-				window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
-			})
-		})
-	});
+	processMarkdown(textContent);
+	try {
+		window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
+	} catch(err) {}
 
 	window.addEventListener("unload", () => {
 		sessionStorage[scrollPosKey] = JSON.stringify([window.scrollX, window.scrollY]);
