@@ -59,7 +59,8 @@ function processMarkdown(textContent) {
 		}
 	})
 	//markdown-it plugins:
-	.use(window.markdownitCheckbox); //to format [ ] and [x]
+	.use(window.markdownitCheckbox)
+    .use(window.markdownitEmoji);
 
 	var html = md.render(textContent);
 
