@@ -9,6 +9,7 @@
 	lib\highlightjs\styles\default.css
 	lib\markdown-it\dist\markdown-it.min.js
 	lib\markdown-it-checkbox\dist\markdown-it-checkbox.min.js
+	lib\markdown-it-emoji\dist\markdown-it-emoji.min.js
 	lib\sss\sss.css
 	lib\sss\sss.print.css
 ) do @call :copyfile %%f staging\%%f

@@ -25,6 +25,8 @@ Unicode: âêîôûŵŷ äëïöüẅÿ àèìòùẁỳ áéíóúẃý   Во�
 
 multiple_underscores_in_text_without_parsing
 
+Let's try some :slightly_smiling_face: emoji :-) for your viewing :joy: pleasure.
+
 Unordered lists with:
 - asterisk
 - dash
