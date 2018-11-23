@@ -83,6 +83,7 @@ function processMarkdown(textContent) {
 
 	var title = null;
 	var headers = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
+	var toc = [];
 	const jsLink = /^\s*javascript:/i;
 	var eachElement,
 		allElements = document.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
@@ -92,6 +93,7 @@ function processMarkdown(textContent) {
 		// Make anchor for headers; use first header text as page title.
 		if (headers.includes(tagName)) {
 			makeAnchor(eachElement);
+			toc.push({level: tagName[1] - 1, name: eachElement.textContent, id: eachElement.id})
 			if (!title) { title = eachElement.textContent.trim(); }
 		}
 		// Crush scripts.
@@ -123,6 +125,28 @@ function processMarkdown(textContent) {
 		title = title.substr(0, 125) + "...";
 	}
 	document.title = title;
+
+	// build a table of contents if there are any headers
+	if (toc.length) {
+		var level = 0, tocdiv = document.createElement('div'), list = tocdiv.appendChild(document.createElement('ul'));
+		for (var header of toc) {
+			for (; level < header.level; level++) {
+				if (list.lastChild == null || list.lastChild.tagName != 'LI')
+					list = list.appendChild(document.createElement('li'))
+				list = list.appendChild(document.createElement('ul'));
+			}
+			for (; level > header.level; level--) {
+				list = list.parentNode.parentNode;
+			}
+			var link = document.createElement('a');
+			link.textContent = header.name;
+			link.href = '#' + header.id;
+			list.appendChild(document.createElement('li')).appendChild(link);
+		}
+
+		tocdiv.id = '__markdown-viewer-toc__';
+		document.body.appendChild(tocdiv);
+	}
 
 	// Finally insert the markdown.
 	document.body.appendChild(markdownRoot);
