@@ -48,6 +48,7 @@
 			"js": [
 				"lib/markdown-it/dist/markdown-it.min.js",
 				"lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js",
+				"lib/markdown-it-emoji/dist/markdown-it-emoji.min.js",
 				"lib/highlightjs/highlight.pack.min.js",
 				"ext/content.js"
 			]
