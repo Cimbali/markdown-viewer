@@ -146,8 +146,8 @@ function addMarkdownViewerMenu() {
 			var header_level = header.tagName[1] - 1;
 			for (; level < header_level; level++) {
 				if (list.lastChild == null || list.lastChild.tagName != 'LI')
-					list = list.appendChild(document.createElement('li'))
-				list = list.appendChild(document.createElement('ul'));
+					list.appendChild(document.createElement('li'))
+				list = list.lastChild.appendChild(document.createElement('ul'));
 			}
 			for (; level > header_level; level--) {
 				list = list.parentNode.parentNode;
