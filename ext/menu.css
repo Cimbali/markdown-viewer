@@ -1,4 +1,4 @@
-/* Style for the menu */
+/* Style for the menu, possible positions/visibility */
 #__markdown-viewer__tools {
   margin:0;
   padding:0;
@@ -6,8 +6,21 @@
   color:#eee;
   box-shadow:0 -1px rgba(0,0,0,.5) inset;
   border-radius: .5em;
+}
+
+#__markdown-viewer__tools.floating {
   float:right;
   margin: 0 0 .5em .5em;
+}
+
+#__markdown-viewer__tools.fixed {
+  position:fixed;
+  top:.5em;
+  right:1em;
+}
+
+#__markdown-viewer__tools.hidden {
+  display:none;
 }
 
 #__markdown-viewer__tools a[href]:after {

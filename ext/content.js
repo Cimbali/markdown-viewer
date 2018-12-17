@@ -137,6 +137,10 @@ function processMarkdown(textContent) {
 function addMarkdownViewerMenu() {
 	var toolsdiv = document.createElement('div');
 	toolsdiv.id = '__markdown-viewer__tools';
+	toolsdiv.className = 'hidden';
+	var getMenuDisplayDone = webext.storage.sync.get('display_menu').then(storage => {
+		toolsdiv.className = 'display_menu' in storage ? storage.display_menu : 'floating';
+	});
 
 	var input = toolsdiv.appendChild(document.createElement('input'));
 	var label = toolsdiv.appendChild(document.createElement('label'));

@@ -23,3 +23,13 @@ webext.storage.sync.get('custom_css', (storage) => {
 		});
 	};
 });
+
+
+var menu_visibility = document.getElementById('menu_visibility');
+webext.storage.sync.get('display_menu', (storage) => {
+	if ('display_menu' in storage) { menu_visibility.value = storage.display_menu; }
+
+	menu_visibility.onchange = () => {
+		webext.storage.sync.set({display_menu: menu_visibility.value})
+	};
+});
