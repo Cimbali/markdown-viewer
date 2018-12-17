@@ -1,4 +1,5 @@
 ﻿const webext = typeof browser === 'undefined' ? chrome : browser;
+const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
 
 function addStylesheet(href, media) {
 	var style = document.createElement('link');
@@ -13,13 +14,15 @@ function addExtensionStylesheet(href, media) {
 }
 
 function addCustomStylesheet() {
-	webext.storage.sync.get('custom_css', (storage) => {
+	var p = webext.storage.sync.get('custom_css')
+	p.then((storage) => {
 		if ('custom_css' in storage) {
 			var style = document.createElement('style');
 			style.textContent = storage.custom_css;
 			document.head.appendChild(style);
 		}
 	});
+	return p;
 }
 
 function makeAnchor(node) {
@@ -69,7 +72,7 @@ function processMarkdown(textContent) {
 	addExtensionStylesheet('/lib/sss/sss.print.css', 'print');
 	addExtensionStylesheet('/lib/highlightjs/styles/default.css');
 	// User-defined stylesheet.
-	addCustomStylesheet();
+	var styleSheetDone = addCustomStylesheet();
 
 	// This is considered a good practice for mobiles.
 	var viewport = document.createElement('meta');
@@ -83,8 +86,6 @@ function processMarkdown(textContent) {
 	markdownRoot.innerHTML = html;
 
 	var title = null;
-	var headers = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
-	var toc = [];
 	const jsLink = /^\s*javascript:/i;
 	var eachElement,
 		allElements = document.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
@@ -92,9 +93,8 @@ function processMarkdown(textContent) {
 		var tagName = eachElement.tagName.toUpperCase();
 
 		// Make anchor for headers; use first header text as page title.
-		if (headers.includes(tagName)) {
+		if (headerTags.includes(tagName)) {
 			makeAnchor(eachElement);
-			toc.push({level: tagName[1] - 1, name: eachElement.textContent, id: eachElement.id})
 			if (!title) { title = eachElement.textContent.trim(); }
 		}
 		// Crush scripts.
@@ -127,30 +127,44 @@ function processMarkdown(textContent) {
 	}
 	document.title = title;
 
+	// Finally insert the markdown.
+	document.body.appendChild(markdownRoot);
+
+	return styleSheetDone;
+}
+
+function addMarkdownViewerMenu() {
+	var toolsdiv = document.createElement('div');
+	toolsdiv.id = '__markdown-viewer__tools';
+
 	// build a table of contents if there are any headers
-	if (toc.length) {
+	var allHeaders = Array.from(document.querySelectorAll(headerTags.join(',')));
+	if (allHeaders.length) {
 		var level = 0, tocdiv = document.createElement('div'), list = tocdiv.appendChild(document.createElement('ul'));
-		for (var header of toc) {
-			for (; level < header.level; level++) {
+		Array.from(allHeaders).forEach(header => {
+			/* Open/close the right amount of nested lists to fit tag level */
+			var header_level = header.tagName[1] - 1;
+			for (; level < header_level; level++) {
 				if (list.lastChild == null || list.lastChild.tagName != 'LI')
 					list = list.appendChild(document.createElement('li'))
 				list = list.appendChild(document.createElement('ul'));
 			}
-			for (; level > header.level; level--) {
+			for (; level > header_level; level--) {
 				list = list.parentNode.parentNode;
 			}
+
+			/* Make a list item with a link to the heading */
 			var link = document.createElement('a');
-			link.textContent = header.name;
+			link.textContent = header.textContent;
 			link.href = '#' + header.id;
 			list.appendChild(document.createElement('li')).appendChild(link);
-		}
+		});
 
-		tocdiv.id = '__markdown-viewer-toc__';
-		document.body.appendChild(tocdiv);
+		tocdiv.id = '__markdown-viewer__toc';
+		toolsdiv.appendChild(tocdiv);
 	}
 
-	// Finally insert the markdown.
-	document.body.appendChild(markdownRoot);
+	document.body.prepend(toolsdiv);
 }
 
 // Process only if document is unprocessed text.
@@ -167,7 +181,9 @@ if (body.childNodes.length === 1 &&
 	if (hash > 0) url = url.substr(0, hash);	// Exclude fragment id from key.
 	var scrollPosKey = encodeURIComponent(url) + ".scrollPosition";
 
-	processMarkdown(textContent);
+	processMarkdown(textContent).then(() =>
+		addMarkdownViewerMenu()
+	)
 	try {
 		window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
 	} catch(err) {}
