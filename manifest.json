@@ -58,7 +58,8 @@
 	"web_accessible_resources": [
 		"lib/sss/sss.css",
 		"lib/sss/sss.print.css",
-		"lib/highlightjs/styles/default.css"
+		"lib/highlightjs/styles/default.css",
+		"ext/menu.css"
 	],
 
 	"options_ui": {

@@ -71,6 +71,7 @@ function processMarkdown(textContent) {
 	addExtensionStylesheet('/lib/sss/sss.css');
 	addExtensionStylesheet('/lib/sss/sss.print.css', 'print');
 	addExtensionStylesheet('/lib/highlightjs/styles/default.css');
+	addExtensionStylesheet('/ext/menu.css');
 	// User-defined stylesheet.
 	var styleSheetDone = addCustomStylesheet();
 
