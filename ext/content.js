@@ -138,6 +138,12 @@ function addMarkdownViewerMenu() {
 	var toolsdiv = document.createElement('div');
 	toolsdiv.id = '__markdown-viewer__tools';
 
+	var input = toolsdiv.appendChild(document.createElement('input'));
+	var label = toolsdiv.appendChild(document.createElement('label'));
+	input.type = 'checkbox';
+	input.id = '__markdown-viewer__show-tools';
+	label.setAttribute('for', input.id);
+
 	// build a table of contents if there are any headers
 	var allHeaders = Array.from(document.querySelectorAll(headerTags.join(',')));
 	if (allHeaders.length) {
@@ -167,6 +173,7 @@ function addMarkdownViewerMenu() {
 		});
 
 		tocdiv.id = '__markdown-viewer__toc';
+		tocdiv.className = 'toggleable'
 		toolsdiv.appendChild(tocdiv);
 	}
 

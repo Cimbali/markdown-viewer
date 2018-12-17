@@ -14,6 +14,67 @@
   content: "";
 }
 
+/* Style for the menu top */
+label[for=__markdown-viewer__show-tools] {
+  display:block;
+  padding:0 18px 0 12px;
+  line-height:3em;
+  background:#333;
+  cursor:pointer;
+  border-radius: .5em;
+}
+
+label[for=__markdown-viewer__show-tools]:before{
+  content:"Markdown-viewer menu";
+}
+
+label[for=__markdown-viewer__show-tools]:after {
+  content:"";
+  display:inline-block;
+  float:right;
+  margin-top:1.5em;
+  right:5px;
+  width:0;
+  height:0;
+  border-style: solid;
+  border-color: rgba(255,255,255,.5) transparent;
+  border-width: 4px 4px 0 4px;
+  transition:border-bottom .1s, border-top .1s .1s;
+}
+
+input#__markdown-viewer__show-tools:checked ~ label:after {
+  border-top-width:0;
+  border-bottom-width:4px;
+  transition:border-top .1s, border-bottom .1s .1s;
+}
+
+/* hide the input that tracks the menu's visibility */
+input#__markdown-viewer__show-tools {
+  display:none;
+}
+
+/* style, and hide/show menu items based on the input being checked */
+#__markdown-viewer__tools > .toggleable {
+  min-width:20%;
+  overflow:hidden;
+  transition-property:max-height, padding-top, padding-bottom, margin-top, margin-bottom;
+  transition-duration:0.5s;
+}
+
+input#__markdown-viewer__show-tools:checked ~ .toggleable {
+  max-height:300px;
+  transition-timing-function:ease-in;
+}
+
+input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
+  max-height:0;
+  transition-timing-function:ease-out;
+  padding-top:0;
+  padding-bottom:0;
+  margin-top:0;
+  margin-bottom:0;
+}
+
 /* style the table of contents and its items */
 #__markdown-viewer__toc {
   display:block;
