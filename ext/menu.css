@@ -124,3 +124,19 @@ input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
 #__markdown-viewer__toc ul ul {
   padding-left: 1.5em;
 }
+
+
+/* Style the "Download Source" button at the end of the menu */
+#__markdown-viewer__tools > p:last-child {
+  text-align:center;
+}
+
+#__markdown-viewer__download {
+  /* appearance: button; */
+  -moz-appearance: button !important;
+  display:inline-block;
+  text-align: center;
+  text-decoration:none;
+  color:#eee;
+  margin: .5em auto;
+}

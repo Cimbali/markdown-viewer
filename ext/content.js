@@ -42,6 +42,40 @@ function makeAnchor(node) {
 	node.id = anchor;
 }
 
+async function createHTMLSourceBlob() {
+	var a = document.getElementById('__markdown-viewer__download');
+
+	/* create a string containing the html headers, but inline all the <link rel="stylesheet" /> tags */
+	var header_content = '';
+	for (var i = 0, t = document.head.children[i]; i < document.head.children.length; t = document.head.children[++i]) {
+		if (t.tagName == 'LINK' && t.hasAttribute('rel') && t.getAttribute('rel').includes('stylesheet')) {
+			if (!t.hasAttribute('href') || new URL(t.href).protocol == 'resource:') {
+				continue;
+			}
+
+			/* async + await so stylesheets get processed in order, and to know when we finished parsing them all */
+			var res = await window.fetch(t.href);
+			var css = await res.text();
+			var style = document.createElement('style');
+			if (t.hasAttribute('media')) {
+				style.setAttribute('media', t.getAttribute('media'));
+			}
+			style.textContent = css;
+			header_content += style.outerHTML;
+		}
+		else {
+			header_content += t.outerHTML;
+		}
+	}
+
+	/* the body is copied as-is */
+	var html = '<html><head>' + header_content + '</head><body>' + document.body.innerHTML + '</body></html>';
+	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
+
+	/* once we're done display the download button, so it does not appear in the downlaoded html */
+	a.style.display = 'inline-block';
+}
+
 function processMarkdown(textContent) {
 	// Parse the content Markdown => HTML
 	var md = window.markdownit({
@@ -181,7 +215,16 @@ function addMarkdownViewerMenu() {
 		toolsdiv.appendChild(tocdiv);
 	}
 
+	var a = toolsdiv.appendChild(document.createElement('p')).appendChild(document.createElement('a'));
+	a.parentNode.className = 'toggleable'
+	a.id = '__markdown-viewer__download';
+	a.download = 'markdown.html';
+	a.innerText = 'Download as HTML';
+	a.style.display = 'none';
+
 	document.body.prepend(toolsdiv);
+
+	return getMenuDisplayDone;
 }
 
 // Process only if document is unprocessed text.
@@ -199,7 +242,9 @@ if (body.childNodes.length === 1 &&
 	var scrollPosKey = encodeURIComponent(url) + ".scrollPosition";
 
 	processMarkdown(textContent).then(() =>
-		addMarkdownViewerMenu()
+		addMarkdownViewerMenu().then(() =>
+			createHTMLSourceBlob()
+		)
 	)
 	try {
 		window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
