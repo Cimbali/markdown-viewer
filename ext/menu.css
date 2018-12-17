@@ -23,6 +23,12 @@
   display:none;
 }
 
+@media print {
+  #__markdown-viewer__tools {
+    display: none;
+  }
+}
+
 #__markdown-viewer__tools a[href]:after {
   content: "";
 }
