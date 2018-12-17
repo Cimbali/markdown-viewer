@@ -133,8 +133,8 @@ function processMarkdown(textContent) {
 		for (var header of toc) {
 			for (; level < header.level; level++) {
 				if (list.lastChild == null || list.lastChild.tagName != 'LI')
-					list = list.appendChild(document.createElement('li'))
-				list = list.appendChild(document.createElement('ul'));
+					list.appendChild(document.createElement('li'))
+				list = list.lastChild.appendChild(document.createElement('ul'));
 			}
 			for (; level > header.level; level--) {
 				list = list.parentNode.parentNode;
