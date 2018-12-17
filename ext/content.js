@@ -140,10 +140,15 @@ function addMarkdownViewerMenu() {
 	// build a table of contents if there are any headers
 	var allHeaders = Array.from(document.querySelectorAll(headerTags.join(',')));
 	if (allHeaders.length) {
+		// list uniquely the used header titles, so we only consider those for nesting
+		var usedHeaderTags = allHeaders.map(header => header.tagName).filter((level, index, self) =>
+			self.indexOf(level) == index
+		).sort();
+
 		var level = 0, tocdiv = document.createElement('div'), list = tocdiv.appendChild(document.createElement('ul'));
 		Array.from(allHeaders).forEach(header => {
 			/* Open/close the right amount of nested lists to fit tag level */
-			var header_level = header.tagName[1] - 1;
+			var header_level = usedHeaderTags.indexOf(header.tagName);
 			for (; level < header_level; level++) {
 				if (list.lastChild == null || list.lastChild.tagName != 'LI')
 					list.appendChild(document.createElement('li'))
