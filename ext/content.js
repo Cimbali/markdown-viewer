@@ -54,8 +54,12 @@ async function createHTMLSourceBlob() {
 			}
 
 			/* async + await so stylesheets get processed in order, and to know when we finished parsing them all */
-			var res = await window.fetch(t.href);
-			var css = await res.text();
+			try {
+				var res = await window.fetch(t.href);
+				var css = await res.text();
+			} catch {
+				continue;
+			}
 			var style = document.createElement('style');
 			if (t.hasAttribute('media')) {
 				style.setAttribute('media', t.getAttribute('media'));
