@@ -23,8 +23,13 @@ function addCustomStylesheet() {
 }
 
 function makeAnchor(node) {
-	// From @tomfun https://gist.github.com/asabaylus/3071099#gistcomment-1622315
-	var anchor = node.textContent.trim().toLowerCase().replace(/[^\w\- ]+/g, ' ').replace(/\s+/g, '-').replace(/\-+$/, '');
+	// From @ChenYingChou https://gist.github.com/asabaylus/3071099#gistcomment-1479328
+	var anchor = node.textContent.trim().toLowerCase()
+		// single chars that are removed
+		.replace(/[`~!@#$%^&*()+=<>?,./:;"'|{}\[\]\\–—]/g, '')
+		// CJK punctuations that are removed
+		.replace(/[　。？！，、；：“”【】（）〔〕［］﹃﹄“”‘’﹁﹂—…－～《》〈〉「」]/g, '')
+		.replace(/\s+/g, '-').replace(/\-+$/, '');
 
 	if (typeof this.usedHeaders == 'undefined')
 		this.usedHeaders = [];
