@@ -23,8 +23,13 @@ function addCustomStylesheet() {
 }
 
 function makeAnchor(node) {
-	// From @tomfun https://gist.github.com/asabaylus/3071099#gistcomment-1622315
-	var anchor = node.textContent.trim().toLowerCase().replace(/[^\w\- ]+/g, ' ').replace(/\s+/g, '-').replace(/\-+$/, '');
+	// From @ChenYingChou https://gist.github.com/asabaylus/3071099#gistcomment-1479328
+	var anchor = node.textContent.trim().toLowerCase()
+		// single chars that are removed
+		.replace(/[`~!@#$%^&*()+=<>?,./:;"'|{}\[\]\\–—]/g, '')
+		// CJK punctuations that are removed
+		.replace(/[　。？！，、；：“”【】（）〔〕［］﹃﹄“”‘’﹁﹂—…－～《》〈〉「」]/g, '')
+		.replace(/\s+/g, '-').replace(/\-+$/, '');
 
 	if (typeof this.usedHeaders == 'undefined')
 		this.usedHeaders = [];
@@ -133,8 +138,8 @@ function processMarkdown(textContent) {
 		for (var header of toc) {
 			for (; level < header.level; level++) {
 				if (list.lastChild == null || list.lastChild.tagName != 'LI')
-					list = list.appendChild(document.createElement('li'))
-				list = list.appendChild(document.createElement('ul'));
+					list.appendChild(document.createElement('li'))
+				list = list.lastChild.appendChild(document.createElement('ul'));
 			}
 			for (; level > header.level; level--) {
 				list = list.parentNode.parentNode;

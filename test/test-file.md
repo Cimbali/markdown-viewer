@@ -73,3 +73,18 @@ function myFunction() {
 <script type="text/javascript">console.log('XSS');</script>
 
 <a href=" JavaScript:alert('XSS')">JavaScript links are trampled out, too</a>
+
+# Anchor links tests for #49
+
+1. [متطلبات التشغيل الأولي](#متطلبات-التشغيل-الأولي)
+2. [اكتشاف الكاميرات](#اكتشاف-الكاميرات)
+3. [A test with à é ñ](#a-test-with-à-é-ñ)
+
+## متطلبات التشغيل الأولي
+* تجربة
+
+## اكتشاف الكاميرات
+* تجربة
+
+## A test with à é ñ
+* a test with à é ñ
