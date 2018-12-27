@@ -1,6 +1,9 @@
 ﻿const webext = typeof browser === 'undefined' ? chrome : browser;
 const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
 
+var mdcss = {'default': 'sss', 'github': 'github'}
+var hlcss = 'agate,androidstudio,arduino-light,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-cave-dark,atelier-cave-light,atelier-dune.dark,atelier-dune.light,atelier-dune-dark,atelier-dune-light,atelier-estuary.dark,atelier-estuary.light,atelier-estuary-dark,atelier-estuary-light,atelier-forest.dark,atelier-forest.light,atelier-forest-dark,atelier-forest-light,atelier-heath.dark,atelier-heath.light,atelier-heath-dark,atelier-heath-light,atelier-lakeside.dark,atelier-lakeside.light,atelier-lakeside-dark,atelier-lakeside-light,atelier-plateau.dark,atelier-plateau.light,atelier-plateau-dark,atelier-plateau-light,atelier-savanna.dark,atelier-savanna.light,atelier-savanna-dark,atelier-savanna-light,atelier-seaside.dark,atelier-seaside.light,atelier-seaside-dark,atelier-seaside-light,atelier-sulphurpool.dark,atelier-sulphurpool.light,atelier-sulphurpool-dark,atelier-sulphurpool-light,atom-one-dark,atom-one-light,brown-paper,brown_paper,codepen-embed,color-brewer,darcula,dark,darkula,default,docco,dracula,far,foundation,github,github-gist,googlecode,grayscale,gruvbox-dark,gruvbox-light,hopscotch,hybrid,idea,ir-black,ir_black,kimbie.dark,kimbie.light,magula,monokai,monokai-sublime,monokai_sublime,mono-blue,obsidian,ocean,paraiso.dark,paraiso.light,paraiso-dark,paraiso-light,pojoaque,purebasic,qtcreator_dark,qtcreator_light,railscasts,rainbow,routeros,school-book,school_book,solarized-dark,solarized-light,solarized_dark,solarized_light,sunburst,tomorrow,tomorrow-night,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,vs,vs2015,xcode,xt256,zenburn'.split(',');
+
 function addStylesheet(href, media) {
 	var style = document.createElement('link');
 	style.rel = 'stylesheet';
@@ -172,6 +175,61 @@ function processMarkdown(textContent) {
 	return styleSheetDone;
 }
 
+function buildStyleOptions() {
+	var p = document.createElement('p');
+	p.appendChild(document.createTextNode('Pick a markdown and code style:'));
+	p.appendChild(document.createElement('br'));
+	p.className = 'toggleable';
+
+	var mdselect = p.appendChild(document.createElement('select'));
+	mdselect.id = '__markdown-viewer__mdselect';
+	Object.keys(mdcss).forEach(val => {
+		var opt = mdselect.appendChild(document.createElement('option'));
+		opt.textContent = val;
+		opt.value = mdcss[val];
+		opt.selected = opt.value == 'sss';
+	});
+
+	mdselect.onchange = () => {
+		Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="/lib/sss/"]')).forEach(style => {
+			var mdchosen = mdselect.value;
+			if (style.hasAttribute('media')) {
+				mdchosen += '.' + style.getAttribute('media');
+			}
+			style.href = webext.extension.getURL('/lib/sss/'+mdchosen+'.css');
+		});
+		webext.storage.sync.set({chosen_md_style: mdselect.value});
+	}
+
+	var hlselect = p.appendChild(document.createElement('select'));
+	hlselect.id = '__markdown-viewer__hlselect';
+	hlcss.forEach(val => {
+		var opt = hlselect.appendChild(document.createElement('option'));
+		opt.textContent = val;
+		opt.value = webext.extension.getURL('/lib/highlightjs/styles/'+val+'.css');
+		opt.selected = val == 'default';
+	});
+
+	hlselect.onchange = () => {
+		document.querySelector('link[rel="stylesheet"][href*="/lib/highlightjs/"]').href = hlselect.value;
+		webext.storage.sync.set({chosen_hl_style: hlselect.value});
+	}
+
+	return webext.storage.sync.get(['chosen_md_style', 'chosen_hl_style']).then((storage) => {
+		if ('chosen_md_style' in storage && mdselect.value != storage.chosen_md_style) {
+			mdselect.value = storage.chosen_md_style;
+			mdselect.dispatchEvent(new Event('change'));
+		}
+
+		if ('chosen_hl_style' in storage && mdselect.value != storage.chosen_hl_style) {
+			hlselect.value = storage.chosen_hl_style;
+			hlselect.dispatchEvent(new Event('change'));
+		}
+
+       return p;
+	});
+}
+
 function buildDownloadButton() {
 	var a = document.createElement('p').appendChild(document.createElement('a'));
 	a.parentNode.className = 'toggleable'
@@ -234,7 +292,7 @@ function addMarkdownViewerMenu() {
 	input.id = '__markdown-viewer__show-tools';
 	label.setAttribute('for', input.id);
 
-	var p = Promise.all([getMenuDisplayDone, buildTableOfContents(), buildDownloadButton()]);
+	var p = Promise.all([getMenuDisplayDone, buildTableOfContents(), buildStyleOptions(), buildDownloadButton()]);
 	p.then(([_, ...nodes]) => {
 		nodes.filter(node => node).forEach(node => toolsdiv.appendChild(node));
 		document.body.prepend(toolsdiv);

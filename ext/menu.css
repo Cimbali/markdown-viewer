@@ -110,6 +110,12 @@ input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
   margin: 1em auto;
 }
 
+#__markdown-viewer__tools select {
+  max-width: 40%;
+  margin: 0 .5em;
+}
+
+#__markdown-viewer__tools select,
 #__markdown-viewer__toc * {
   white-space: nowrap;
   overflow: hidden;
@@ -133,8 +139,9 @@ input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
 
 
 /* Style the "Download Source" button at the end of the menu */
-#__markdown-viewer__tools > p:last-child {
+#__markdown-viewer__tools > p {
   text-align:center;
+  padding: 0 .5em;
 }
 
 #__markdown-viewer__download {
