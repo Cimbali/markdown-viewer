@@ -172,20 +172,18 @@ function processMarkdown(textContent) {
 	return styleSheetDone;
 }
 
-function addMarkdownViewerMenu() {
-	var toolsdiv = document.createElement('div');
-	toolsdiv.id = '__markdown-viewer__tools';
-	toolsdiv.className = 'hidden';
-	var getMenuDisplayDone = webext.storage.sync.get('display_menu').then(storage => {
-		toolsdiv.className = 'display_menu' in storage ? storage.display_menu : 'floating';
-	});
+function buildDownloadButton() {
+	var a = document.createElement('p').appendChild(document.createElement('a'));
+	a.parentNode.className = 'toggleable'
+	a.id = '__markdown-viewer__download';
+	a.download = 'markdown.html';
+	a.innerText = 'Download as HTML';
+	a.style.display = 'none';
 
-	var input = toolsdiv.appendChild(document.createElement('input'));
-	var label = toolsdiv.appendChild(document.createElement('label'));
-	input.type = 'checkbox';
-	input.id = '__markdown-viewer__show-tools';
-	label.setAttribute('for', input.id);
+	return Promise.resolve(a.parentNode);
+}
 
+function buildTableOfContents() {
 	// build a table of contents if there are any headers
 	var allHeaders = Array.from(document.querySelectorAll(headerTags.join(',')));
 	if (allHeaders.length) {
@@ -216,19 +214,32 @@ function addMarkdownViewerMenu() {
 
 		tocdiv.id = '__markdown-viewer__toc';
 		tocdiv.className = 'toggleable'
-		toolsdiv.appendChild(tocdiv);
+		return Promise.resolve(tocdiv);
 	}
+	else
+		return Promise.resolve(null);
+}
 
-	var a = toolsdiv.appendChild(document.createElement('p')).appendChild(document.createElement('a'));
-	a.parentNode.className = 'toggleable'
-	a.id = '__markdown-viewer__download';
-	a.download = 'markdown.html';
-	a.innerText = 'Download as HTML';
-	a.style.display = 'none';
+function addMarkdownViewerMenu() {
+	var toolsdiv = document.createElement('div');
+	toolsdiv.id = '__markdown-viewer__tools';
+	toolsdiv.className = 'hidden';
+	var getMenuDisplayDone = webext.storage.sync.get('display_menu').then(storage => {
+		toolsdiv.className = 'display_menu' in storage ? storage.display_menu : 'floating';
+	});
 
-	document.body.prepend(toolsdiv);
+	var input = toolsdiv.appendChild(document.createElement('input'));
+	var label = toolsdiv.appendChild(document.createElement('label'));
+	input.type = 'checkbox';
+	input.id = '__markdown-viewer__show-tools';
+	label.setAttribute('for', input.id);
 
-	return getMenuDisplayDone;
+	var p = Promise.all([getMenuDisplayDone, buildTableOfContents(), buildDownloadButton()]);
+	p.then(([_, ...nodes]) => {
+		nodes.filter(node => node).forEach(node => toolsdiv.appendChild(node));
+		document.body.prepend(toolsdiv);
+	});
+	return p;
 }
 
 // Process only if document is unprocessed text.
