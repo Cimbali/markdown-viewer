@@ -6,6 +6,8 @@
   color:#eee;
   box-shadow:0 -1px rgba(0,0,0,.5) inset;
   border-radius: .5em;
+  max-width: 25%;
+  z-index: 2147483647;
 }
 
 #__markdown-viewer__tools.floating {
@@ -41,10 +43,19 @@ label[for=__markdown-viewer__show-tools] {
   background:#333;
   cursor:pointer;
   border-radius: .5em;
+  min-height: 3em;
+  width: .9em;
+  float: right;
+}
+
+input#__markdown-viewer__show-tools:not(:checked) ~ label {
+  margin-left: -.9em;
+}
+
+input#__markdown-viewer__show-tools:checked ~ label {
 }
 
 label[for=__markdown-viewer__show-tools]:before{
-  content:"Markdown-viewer menu";
 }
 
 label[for=__markdown-viewer__show-tools]:after {
@@ -74,19 +85,20 @@ input#__markdown-viewer__show-tools {
 
 /* style, and hide/show menu items based on the input being checked */
 #__markdown-viewer__tools > .toggleable {
-  min-width:20%;
   overflow:hidden;
-  transition-property:max-height, padding-top, padding-bottom, margin-top, margin-bottom;
+  transition-property:max-height, max-width, padding-top, padding-bottom, margin-top, margin-bottom;
   transition-duration:0.5s;
 }
 
 input#__markdown-viewer__show-tools:checked ~ .toggleable {
+  max-width: 2000px;
   max-height:300px;
   transition-timing-function:ease-in;
 }
 
 input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
   max-height:0;
+  max-width:0;
   transition-timing-function:ease-out;
   padding-top:0;
   padding-bottom:0;
