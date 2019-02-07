@@ -103,3 +103,25 @@ You can test any changes using the cloned project files.
   * Navigate to "about:debugging"
   * Click "Load Temporary Add-on"
   * Navigate to the project root folder and open the `manifest.json` file.
+
+## Installing on Linux
+
+Firefox on Linux may not know how to handle markdown files by default (see #2). A workaround for this is to add a new MIME type for markdown file extensions. Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
+```XML
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="text/plain">
+    <glob pattern="*.md"/>
+    <glob pattern="*.mkd"/>
+    <glob pattern="*.mkdn"/>
+    <glob pattern="*.mdwn"/>
+    <glob pattern="*.mdown"/>
+    <glob pattern="*.markdown"/>
+  </mime-type>
+</mime-info>
+```
+
+Then run
+```bash
+$ update-mime-database ~/.local/share/mime
+```
