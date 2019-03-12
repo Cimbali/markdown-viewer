@@ -1,0 +1,167 @@
+/* Style for the menu, possible positions/visibility */
+#__markdown-viewer__tools {
+  margin:0;
+  padding:0;
+  background:#555;
+  color:#eee;
+  box-shadow:0 -1px rgba(0,0,0,.5) inset;
+  border-radius: .5em;
+  max-width: 25%;
+  z-index: 2147483647;
+}
+
+#__markdown-viewer__tools.floating {
+  float:right;
+  margin: 0 0 .5em .5em;
+}
+
+#__markdown-viewer__tools.fixed {
+  position:fixed;
+  top:.5em;
+  right:1em;
+}
+
+#__markdown-viewer__tools.hidden {
+  display:none;
+}
+
+@media print {
+  #__markdown-viewer__tools {
+    display: none;
+  }
+}
+
+#__markdown-viewer__tools a[href]:after {
+  content: "";
+}
+
+/* Style for the menu top */
+label[for=__markdown-viewer__show-tools] {
+  display:block;
+  padding:0 18px 0 12px;
+  line-height:3em;
+  background:#333;
+  cursor:pointer;
+  border-radius: .5em;
+  min-height: 3em;
+  width: .9em;
+  float: right;
+}
+
+input#__markdown-viewer__show-tools:not(:checked) ~ label {
+  margin-left: -.9em;
+}
+
+input#__markdown-viewer__show-tools:checked ~ label {
+}
+
+label[for=__markdown-viewer__show-tools]:before{
+}
+
+label[for=__markdown-viewer__show-tools]:after {
+  content:"";
+  display:inline-block;
+  float:right;
+  margin-top:1.5em;
+  right:5px;
+  width:0;
+  height:0;
+  border-style: solid;
+  border-color: rgba(255,255,255,.5) transparent;
+  border-width: 4px 4px 0 4px;
+  transition:border-bottom .1s, border-top .1s .1s;
+}
+
+input#__markdown-viewer__show-tools:checked ~ label:after {
+  border-top-width:0;
+  border-bottom-width:4px;
+  transition:border-top .1s, border-bottom .1s .1s;
+}
+
+/* hide the input that tracks the menu's visibility */
+input#__markdown-viewer__show-tools {
+  display:none;
+}
+
+/* style, and hide/show menu items based on the input being checked */
+#__markdown-viewer__tools > .toggleable {
+  overflow:hidden;
+  transition-property:max-height, max-width, padding-top, padding-bottom, margin-top, margin-bottom;
+  transition-duration:0.5s;
+}
+
+input#__markdown-viewer__show-tools:checked ~ .toggleable {
+  max-width: 2000px;
+  max-height:300px;
+  transition-timing-function:ease-in;
+}
+
+input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
+  max-height:0;
+  max-width:0;
+  transition-timing-function:ease-out;
+  padding-top:0;
+  padding-bottom:0;
+  margin-top:0;
+  margin-bottom:0;
+}
+
+/* style the table of contents and its items */
+#__markdown-viewer__toc {
+  display:block;
+  padding: .5em;
+  border:0;
+}
+
+#__markdown-viewer__toc::before {
+  content: "Table of Contents";
+  text-align: center;
+  display: block;
+  font-weight: bold;
+  text-decoration: underline;
+  margin: 1em auto;
+}
+
+#__markdown-viewer__tools select {
+  max-width: 40%;
+  margin: 0 .5em;
+}
+
+#__markdown-viewer__tools select,
+#__markdown-viewer__toc * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#__markdown-viewer__toc a {
+  color: white;
+  text-decoration: none;
+}
+
+#__markdown-viewer__toc ul {
+  list-style: inside "• ";
+  padding: 0;
+  margin: 0;
+}
+
+#__markdown-viewer__toc ul ul {
+  padding-left: 1.5em;
+}
+
+
+/* Style the "Download Source" button at the end of the menu */
+#__markdown-viewer__tools > p {
+  text-align:center;
+  padding: 0 .5em;
+}
+
+#__markdown-viewer__download {
+  /* appearance: button; */
+  -moz-appearance: button !important;
+  display:inline-block;
+  text-align: center;
+  text-decoration:none;
+  color:#eee;
+  margin: .5em auto;
+}
