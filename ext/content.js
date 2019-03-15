@@ -18,14 +18,13 @@ function addExtensionStylesheet(href, media) {
 
 function addCustomStylesheet() {
 	var p = webext.storage.sync.get('custom_css')
-	p.then((storage) => {
+	return p.then((storage) => {
 		if ('custom_css' in storage) {
 			var style = document.createElement('style');
 			style.textContent = storage.custom_css;
 			document.head.appendChild(style);
 		}
 	});
-	return p;
 }
 
 function makeAnchor(node) {
@@ -319,11 +318,10 @@ if (body.childNodes.length === 1 &&
 	if (hash > 0) url = url.substr(0, hash);	// Exclude fragment id from key.
 	var scrollPosKey = encodeURIComponent(url) + ".scrollPosition";
 
-	processMarkdown(textContent).then(() =>
-		addMarkdownViewerMenu().then(() =>
-			createHTMLSourceBlob()
-		)
-	)
+	processMarkdown(textContent)
+		.then(() => addMarkdownViewerMenu())
+		.then(() => createHTMLSourceBlob());
+
 	try {
 		window.scrollTo.apply(window, JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
 	} catch(err) {}
