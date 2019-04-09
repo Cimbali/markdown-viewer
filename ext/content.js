@@ -108,7 +108,8 @@ function processMarkdown(textContent) {
 	})
 	//markdown-it plugins:
 	.use(window.markdownitCheckbox)
-	.use(window.markdownitEmoji);
+	.use(window.markdownitEmoji)
+	.use(window.markdownitFootnote);
 
 	var html = md.render(textContent);
 
