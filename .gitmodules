@@ -14,3 +14,6 @@
 [submodule "lib/markdown-it-footnote"]
 	path = lib/markdown-it-footnote
 	url = https://github.com/markdown-it/markdown-it-footnote
+[submodule "lib/markdown-it-fancy-lists"]
+	path = lib/markdown-it-fancy-lists
+	url = https://github.com/mminer237/markdown-it-fancy-lists

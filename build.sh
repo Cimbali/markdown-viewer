@@ -10,6 +10,7 @@ for f in LICENSE \
 	lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
 	lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \
 	lib/markdown-it-footnote/dist/markdown-it-footnote.min.js \
+	lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js \
 	lib/sss/sss.css \
 	lib/sss/sss.print.css
 do

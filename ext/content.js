@@ -110,6 +110,7 @@ function processMarkdown(textContent) {
 	.use(window.markdownitCheckbox)
 	.use(window.markdownitEmoji)
 	.use(window.markdownitFootnote);
+	md.block.ruler.at('list', fancyList, { alt: [ 'paragraph', 'reference', 'blockquote' ] });
 
 	var html = md.render(textContent);
 

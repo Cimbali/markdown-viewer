@@ -50,6 +50,7 @@
 				"lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js",
 				"lib/markdown-it-emoji/dist/markdown-it-emoji.min.js",
 				"lib/markdown-it-footnote/dist/markdown-it-footnote.min.js",
+				"lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js",
 				"lib/highlightjs/highlight.pack.min.js",
 				"ext/content.js"
 			]
