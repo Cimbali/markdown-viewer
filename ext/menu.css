@@ -7,7 +7,10 @@
   box-shadow:0 -1px rgba(0,0,0,.5) inset;
   border-radius: .5em;
   max-width: 25%;
+  min-width: 2.8em;
+  min-height: 3em;
   z-index: 2147483647;
+  position: relative;
 }
 
 #__markdown-viewer__tools.floating {
@@ -16,6 +19,8 @@
 }
 
 #__markdown-viewer__tools.fixed {
+  max-height: calc(100vh - 1em);
+  overflow-y: auto;
   position:fixed;
   top:.5em;
   right:1em;
@@ -45,7 +50,8 @@ label[for=__markdown-viewer__show-tools] {
   border-radius: .5em;
   min-height: 3em;
   width: .9em;
-  float: right;
+  position: absolute;
+  right: 0;
 }
 
 input#__markdown-viewer__show-tools:not(:checked) ~ label {
@@ -91,8 +97,10 @@ input#__markdown-viewer__show-tools {
 }
 
 input#__markdown-viewer__show-tools:checked ~ .toggleable {
+  /* maxes should be 'none' or infinite values, however those are not aniimatable, so just put something big enough. */
   max-width: 2000px;
-  max-height:300px;
+  max-height: 2000px;
+  overflow-y: auto;
   transition-timing-function:ease-in;
 }
 
@@ -119,7 +127,21 @@ input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
   display: block;
   font-weight: bold;
   text-decoration: underline;
-  margin: 1em auto;
+}
+
+#__markdown-viewer__toc {
+  margin-top: 2em;
+}
+
+#__markdown-viewer__tools.fixed input#__markdown-viewer__show-tools:checked ~ #__markdown-viewer__toc {
+  max-height: calc(100vh - 16em);
+}
+
+input#__markdown-viewer__show-tools:checked ~ #__markdown-viewer__toc::before {
+  position: absolute;
+  top: .5em;
+  left: 0;
+  right: 3em;
 }
 
 #__markdown-viewer__tools select {
@@ -130,7 +152,7 @@ input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {
 #__markdown-viewer__tools select,
 #__markdown-viewer__toc * {
   white-space: nowrap;
-  overflow: hidden;
+  overflow-x: hidden;
   text-overflow: ellipsis;
 }
 
