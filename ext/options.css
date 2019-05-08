@@ -32,3 +32,10 @@ textarea {
   overflow-wrap: normal;
   overflow-x: scroll;
 }
+label.plugins {
+	display: block;
+}
+label.plugins input {
+	display: inline-block;
+	margin: 0 1em;
+}
