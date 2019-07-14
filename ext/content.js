@@ -255,6 +255,11 @@ function buildTableOfContents() {
 		).sort();
 
 		var level = 0, tocdiv = document.createElement('div'), list = tocdiv.appendChild(document.createElement('ul'));
+
+		// add scrolling to Table of Contents
+		list.style.maxHeight = '250px'
+		list.style.overflowY = 'auto';
+
 		Array.from(allHeaders).forEach(header => {
 			/* Open/close the right amount of nested lists to fit tag level */
 			var header_level = usedHeaderTags.indexOf(header.tagName);
