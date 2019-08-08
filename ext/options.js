@@ -33,3 +33,19 @@ webext.storage.sync.get('display_menu', (storage) => {
 		webext.storage.sync.set({display_menu: menu_visibility.value})
 	};
 });
+
+
+webext.storage.sync.get('plugins', (storage) => {
+	var plugin_prefs = storage.plugins || {};
+
+	Object.keys(plugin_prefs).forEach(plugin => {
+		document.querySelector('input[name="' + plugin + '"]').checked = plugin_prefs[plugin];
+	});
+
+	document.querySelectorAll('.plugins input').forEach(checkbox =>
+		checkbox.onchange = () => {
+			plugin_prefs[checkbox.getAttribute('name')] = checkbox.checked;
+			webext.storage.sync.set({plugins: plugin_prefs});
+		}
+	);
+});
