@@ -23,7 +23,6 @@
 		"activeTab",
 		"*://*/*.markdown",
 		"*://*/*.md",
-		"*://*/*.MD",
 		"*://*/*.mdown",
 		"*://*/*.mdwn",
 		"*://*/*.mkd",
@@ -35,18 +34,22 @@
 			"matches": [
 				"*://*/*.markdown",
 				"*://*/*.md",
-				"*://*/*.MD",
 				"*://*/*.mdown",
 				"*://*/*.mdwn",
 				"*://*/*.mkd",
 				"*://*/*.mkdn",
 				"file://*/*.markdown",
+				"file://*/*.MARKDOWN",
 				"file://*/*.md",
 				"file://*/*.MD",
 				"file://*/*.mdown",
+				"file://*/*.MDOWN",
 				"file://*/*.mdwn",
+				"file://*/*.MDWN",
 				"file://*/*.mkd",
-				"file://*/*.mkdn"
+				"file://*/*.MKD",
+				"file://*/*.mkdn",
+				"file://*/*.MKDN"
 			],
 			"js": [
 				"lib/markdown-it/dist/markdown-it.min.js",
