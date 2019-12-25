@@ -5,14 +5,15 @@ for f in LICENSE \
 	manifest.json \
 	ext/* \
 	lib/highlightjs/highlight.pack.min.js \
-	lib/highlightjs/styles/default.css \
+	lib/highlightjs/styles/*.css \
 	lib/markdown-it/dist/markdown-it.min.js \
 	lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
 	lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \
 	lib/markdown-it-footnote/dist/markdown-it-footnote.min.js \
 	lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js \
 	lib/sss/sss.css \
-	lib/sss/sss.print.css
+	lib/sss/sss.print.css \
+	lib/sss/github.css
 do
 	mkdir -p `dirname staging/$f`
 	cp $f staging/$f
