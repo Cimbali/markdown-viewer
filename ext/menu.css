@@ -187,3 +187,22 @@ input#__markdown-viewer__show-tools:checked ~ #__markdown-viewer__toc::before {
   color:#eee;
   margin: .5em auto;
 }
+#__markdown-viewer__toc {
+  position:absolute;
+  right: 2em;
+  border-radius:.5em;
+  width: max(300px, calc(100vw - 600px));
+  background-color: rgba(0, 0, 0, 0.7);
+  text-shadow: 0 0 4px #000;
+}
+#__markdown-viewer__toc li {
+  list-style-type:none
+}
+#__markdown-viewer__tools label {
+  position:absolute;
+  z-index: 1;
+  right: 2em;
+}
+p.toggleable {
+  display: none;
+}
