@@ -184,6 +184,6 @@ input#__markdown-viewer__show-tools:checked ~ #__markdown-viewer__toc::before {
   display:inline-block;
   text-align: center;
   text-decoration:none;
-  color:#eee;
+  color:#000;
   margin: .5em auto;
 }
