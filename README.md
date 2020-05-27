@@ -90,6 +90,7 @@ Many thanks to them and to our future contributors. Pull requests are welcomed.
 * Required:
 	* [nodejs](https://nodejs.org/) with npm
 	* [web-ext](https://github.com/mozilla/web-ext/) (npm install -g web-ext)
+* Update the dependencies: `git submodule update`
 * Run `build.bat` (Windows) or `build.sh` (Linux)
 
 ## To Test The Extension
