@@ -311,7 +311,10 @@ function addMarkdownViewerMenu() {
 var body = document.body;
 if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
-	body.children[0].nodeName.toUpperCase() === 'PRE')
+	body.children[0].nodeName.toUpperCase() === 'PRE'&&
+	body.children[0].children.length === 0 &&
+	document.head.children.length === 1 &&
+	document.head.children[0].rel === "stylesheet")
 {
 	var textContent = body.textContent;
 	body.textContent = '';
