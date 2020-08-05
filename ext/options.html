@@ -42,10 +42,26 @@
 	</p>
 
 	<h3>Custom CSS</h3>
-	<p>Enter custom CSS to be applied to Markdown pages here.</p>
-	<p>Click or tab out of the text area to save changes. Refresh this page to revert changes.<span id="saved" class="hidden"> &nbsp; &nbsp; SAVED</span></p>
-	<p>If you enable syncing Add-ons with your <span id="browser_name">Firefox</span> account, the CSS will synchronize across your devices.</p>
+	<p>Enter custom CSS to be applied to Markdown pages here.<span id="saved" class="hidden"> &nbsp; &nbsp; SAVED</span></p>
 	<textarea id="custom_css" style="margin: 10px; width:90%; min-height:30em;">Unable to load CSS from storage.</textarea>
+
+	<p>Click or tab out of the text area to save changes. Refresh this page to revert changes.
+	If you enable syncing Add-ons with your <span id="browser_name">Firefox</span> account, the CSS will synchronize across your devices.</p>
+	<p>Try for example:
+	<pre style="font-size:.6em; margin: 15px;">
+body {
+  background-color: #f5f5f5;
+}
+.markdownRoot {
+  background-color: #fff;
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+  border: 1px solid #ccc;
+}
+	</pre></p>
 
 	<script src="options.js"></script>
 </body>
