@@ -104,9 +104,11 @@ You can test any changes using the cloned project files.
   * Click "Load Temporary Add-on"
   * Navigate to the project root folder and open the `manifest.json` file.
 
-## Installing on Linux
+## Support for local files on Linux
 
-Firefox on Linux may not know how to handle markdown files by default (see #2). A workaround for this is to add a new MIME type for markdown file extensions. Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
+Firefox on Linux may not know how to handle markdown files by default (see #2). There are a number of possible workarounds for this (see [this SuperUser question](https://superuser.com/questions/696361/how-to-get-the-markdown-viewer-addon-of-firefox-to-work-on-linux/1175837) for example). Here are the 2 options that work the best:
+
+1) One workaround is to add a new MIME type for markdown file extensions. Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
 ```XML
 <?xml version="1.0"?>
 <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
@@ -125,3 +127,12 @@ Then run
 ```bash
 $ update-mime-database ~/.local/share/mime
 ```
+
+2) Another workaround (which might cover other OSs as well), is to edit Firefox’s private mime types.
+
+These mime types are stored in a file indicated by `helpers.private_mime_types_file`, by default it is `~/.mime.types`.
+Create this file if it does not exist, otherwise edit it, and add the following line:
+
+    type=text/plain exts=md,mkd,mkdn,mdwn,mdown,markdown desc="Markdown document"
+
+Then restart firefox.
