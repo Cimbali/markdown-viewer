@@ -11,10 +11,10 @@ function addStylesheet(href, media) {
 	style.type = 'text/css';
 	style.href = href;
 	if (media) { style.setAttribute('media', media); }
-	document.head.appendChild(style);
+	return document.head.appendChild(style);
 }
 function addExtensionStylesheet(href, media) {
-	addStylesheet(webext.extension.getURL(href), media);
+	return addStylesheet(webext.extension.getURL(href), media);
 }
 
 function addCustomStylesheet() {
@@ -116,9 +116,9 @@ async function processMarkdown(textContent, plugins) {
 	var html = md.render(textContent);
 
 	// Style the page and code highlights.
-	addExtensionStylesheet('/lib/sss/sss.css');
-	addExtensionStylesheet('/lib/sss/sss.print.css', 'print');
-	addExtensionStylesheet('/lib/highlightjs/styles/default.css');
+	addExtensionStylesheet('/lib/sss/sss.css').classList.add('__markdown-viewer__md_css');
+	addExtensionStylesheet('/lib/sss/sss.print.css', 'print').classList.add('__markdown-viewer__md_css');
+	addExtensionStylesheet('/lib/highlightjs/styles/default.css').id = '__markdown-viewer__hljs_css';
 	addExtensionStylesheet('/ext/menu.css');
 	// User-defined stylesheet.
 	var styleSheetDone = addCustomStylesheet();
@@ -198,7 +198,7 @@ function buildStyleOptions() {
 	});
 
 	mdselect.onchange = () => {
-		Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="/lib/sss/"]')).forEach(style => {
+		Array.from(document.getElementsByClassName('__markdown-viewer__md_css')).forEach(style => {
 			var mdchosen = mdselect.value;
 			if (style.hasAttribute('media')) {
 				mdchosen += '.' + style.getAttribute('media');
@@ -218,7 +218,7 @@ function buildStyleOptions() {
 	});
 
 	hlselect.onchange = () => {
-		document.querySelector('link[rel="stylesheet"][href*="/lib/highlightjs/"]').href = hlselect.value;
+		document.getElementById('__markdown-viewer__hljs_css').href = hlselect.value;
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
 	}
 
