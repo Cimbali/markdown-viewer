@@ -4,8 +4,8 @@ rm -r web-ext-artifacts 2>/dev/null
 for f in LICENSE \
 	manifest.json \
 	ext/* \
-	lib/highlightjs/highlight.pack.min.js \
-	lib/highlightjs/styles/*.css \
+	lib/highlightjs/build/highlight.min.js \
+	lib/highlightjs/build/styles/*.min.css \
 	lib/markdown-it/dist/markdown-it.min.js \
 	lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
 	lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \

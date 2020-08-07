@@ -61,7 +61,7 @@
 				"lib/markdown-it-emoji/dist/markdown-it-emoji.min.js",
 				"lib/markdown-it-footnote/dist/markdown-it-footnote.min.js",
 				"lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js",
-				"lib/highlightjs/highlight.pack.min.js",
+				"lib/highlightjs/build/highlight.min.js",
 				"ext/content.js"
 			]
 		}
@@ -69,7 +69,7 @@
 
 	"web_accessible_resources": [
 		"lib/sss/*.css",
-		"lib/highlightjs/styles/*.css",
+		"lib/highlightjs/build/styles/*.min.css",
 		"ext/menu.css"
 	],
 
