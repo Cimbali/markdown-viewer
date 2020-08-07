@@ -1,6 +1,6 @@
 ﻿const webext = typeof browser === 'undefined' ? chrome : browser;
 const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
-var pluginDefaults = {'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false};
+var pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false};
 
 var mdcss = {'default': 'sss', 'github': 'github'}
 var hlcss = 'agate,androidstudio,arduino-light,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-cave-dark,atelier-cave-light,atelier-dune.dark,atelier-dune.light,atelier-dune-dark,atelier-dune-light,atelier-estuary.dark,atelier-estuary.light,atelier-estuary-dark,atelier-estuary-light,atelier-forest.dark,atelier-forest.light,atelier-forest-dark,atelier-forest-light,atelier-heath.dark,atelier-heath.light,atelier-heath-dark,atelier-heath-light,atelier-lakeside.dark,atelier-lakeside.light,atelier-lakeside-dark,atelier-lakeside-light,atelier-plateau.dark,atelier-plateau.light,atelier-plateau-dark,atelier-plateau-light,atelier-savanna.dark,atelier-savanna.light,atelier-savanna-dark,atelier-savanna-light,atelier-seaside.dark,atelier-seaside.light,atelier-seaside-dark,atelier-seaside-light,atelier-sulphurpool.dark,atelier-sulphurpool.light,atelier-sulphurpool-dark,atelier-sulphurpool-light,atom-one-dark,atom-one-light,brown-paper,brown_paper,codepen-embed,color-brewer,darcula,dark,darkula,default,docco,dracula,far,foundation,github,github-gist,googlecode,grayscale,gruvbox-dark,gruvbox-light,hopscotch,hybrid,idea,ir-black,ir_black,kimbie.dark,kimbie.light,magula,monokai,monokai-sublime,monokai_sublime,mono-blue,obsidian,ocean,paraiso.dark,paraiso.light,paraiso-dark,paraiso-light,pojoaque,purebasic,qtcreator_dark,qtcreator_light,railscasts,rainbow,routeros,school-book,school_book,solarized-dark,solarized-light,solarized_dark,solarized_light,sunburst,tomorrow,tomorrow-night,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,vs,vs2015,xcode,xt256,zenburn'.split(',');
@@ -93,24 +93,27 @@ async function createHTMLSourceBlob() {
 	a.style.display = 'inline-block';
 }
 
+function highlightCodeBlock(str, lang)
+{
+	// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
+	if (lang && window.hljs.getLanguage(lang)) {
+		try {
+			return window.hljs.highlight(lang, str).value;
+		} catch (__) {}
+	}
+
+	try {
+		return window.hljs.highlightAuto(str).value;
+	} catch (__) {}
+	return ''; // use external default escaping
+}
+
 async function processMarkdown(textContent, plugins) {
 	// Parse the content Markdown => HTML
 	var md = window.markdownit({
 		html: true,
 		linkify: true,
-		// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
-		highlight: (str, lang) => {
-			if (lang && window.hljs.getLanguage(lang)) {
-				try {
-					return window.hljs.highlight(lang, str).value;
-				} catch (__) {}
-			}
-
-			try {
-				return window.hljs.highlightAuto(str).value;
-			} catch (__) {}
-			return ''; // use external default escaping
-		}
+		highlight: plugins['hljs'] ? highlightCodeBlock : undefined,
 	})
 	//markdown-it plugins:
 	if (plugins['checkbox']) md.use(window.markdownitCheckbox);
