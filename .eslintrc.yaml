@@ -1,0 +1,154 @@
+parserOptions:
+    ecmaVersion: 2018
+    sourceType: script
+
+env:
+  es6: true
+  browser: true
+  webextensions: true
+
+plugins:
+  - no-unsanitized
+
+rules:
+  constructor-super: error
+  for-direction: error
+  getter-return: error
+  no-async-promise-executor: error
+  no-case-declarations: error
+  no-class-assign: error
+  no-compare-neg-zero: error
+  no-cond-assign: [error, except-parens]
+  no-const-assign: error
+  no-constant-condition: error
+  no-control-regex: error
+  no-debugger: error
+  no-delete-var: error
+  no-dupe-args: error
+  no-dupe-class-members: error
+  no-dupe-else-if: error
+  no-dupe-keys: error
+  no-duplicate-case: error
+  no-empty:
+    - error
+    - allowEmptyCatch: true
+  no-empty-character-class: error
+  no-empty-pattern: error
+  no-ex-assign: error
+  no-extra-boolean-cast: error
+  no-extra-semi: error
+  no-fallthrough: error
+  no-func-assign: error
+  no-global-assign: error
+  no-import-assign: error
+  no-inner-declarations: error
+  no-invalid-regexp: error
+  no-irregular-whitespace:
+    - error
+    - skipRegExps: true
+  no-misleading-character-class: error
+  no-mixed-spaces-and-tabs: error
+  no-new-symbol: error
+  no-obj-calls: error
+  no-octal: error
+  no-prototype-builtins: error
+  no-redeclare: error
+  no-regex-spaces: error
+  no-self-assign: error
+  no-setter-return: error
+  no-shadow-restricted-names: error
+  no-sparse-arrays: error
+  no-this-before-super: error
+  no-undef: error
+  no-unexpected-multiline: error
+  no-unreachable: error
+  no-unsafe-finally: error
+  no-unsafe-negation: error
+  no-unused-labels: error
+  no-unused-vars: [error, {ignoreRestSiblings: true}]
+  no-useless-catch: error
+  no-useless-escape: error
+  no-with: error
+  require-yield: error
+  use-isnan: error
+  valid-typeof: error
+  radix: error
+  no-console: error
+  no-promise-executor-return: error
+  no-extra-parens:
+    - error
+    - all
+    - conditionalAssign: false
+  no-template-curly-in-string: error
+  no-var: error
+  prefer-const: warn
+  prefer-template: warn
+  prefer-destructuring: warn
+  prefer-arrow-callback: warn
+  prefer-numeric-literals: warn
+  prefer-spread: warn
+  strict:
+    - error
+    - global
+  consistent-return: warn
+  curly: error
+  eqeqeq: error
+  dot-notation: error
+  dot-location: error
+  no-caller: error
+  no-constructor-return: error
+  no-empty-function: error
+  no-eq-null: error
+  no-eval: error
+  guard-for-in: error
+  no-extra-bind: error
+  no-extra-label: error
+  no-implied-eval: error
+  no-invalid-this: error
+  no-iterator: error
+  no-labels: error
+  no-lone-blocks: error
+  no-multi-str: error
+  no-new: error
+  no-new-func: error
+  no-new-wrappers: error
+  no-proto: error
+  no-restricted-properties: error
+  no-return-assign: error
+  no-self-compare: error
+  no-throw-literal: error
+  no-unused-expressions:
+    - error
+    - {allowShortCircuit: true, allowTernary: true}
+  no-useless-call: error
+  no-useless-concat: error
+  no-void: error
+  no-warning-comments: warn
+  prefer-named-capture-group: warn
+  prefer-promise-reject-errors: error
+  prefer-regex-literals: error
+  require-unicode-regexp: error
+  no-undefined: error
+  no-use-before-define:
+    - error
+    - functions: false
+  camelcase:
+    - error
+    - properties: never
+  consistent-this: error
+  new-cap: error
+  no-array-constructor: error
+  func-style:
+    - error
+    - declaration
+    - allowArrowFunctions: true
+  func-names:
+    - error
+    - as-needed
+  func-name-matching: error
+  max-len:
+    - error
+    - 120
+  max-depth: warn
+  max-nested-callbacks: warn
+  max-params: warn
