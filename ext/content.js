@@ -5,25 +5,30 @@ var pluginDefaults = {'checkbox': true, 'emojis': true, 'footnotes': false, 'fan
 var mdcss = {'default': 'sss', 'github': 'github'}
 var hlcss = 'agate,androidstudio,arduino-light,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-cave-dark,atelier-cave-light,atelier-dune.dark,atelier-dune.light,atelier-dune-dark,atelier-dune-light,atelier-estuary.dark,atelier-estuary.light,atelier-estuary-dark,atelier-estuary-light,atelier-forest.dark,atelier-forest.light,atelier-forest-dark,atelier-forest-light,atelier-heath.dark,atelier-heath.light,atelier-heath-dark,atelier-heath-light,atelier-lakeside.dark,atelier-lakeside.light,atelier-lakeside-dark,atelier-lakeside-light,atelier-plateau.dark,atelier-plateau.light,atelier-plateau-dark,atelier-plateau-light,atelier-savanna.dark,atelier-savanna.light,atelier-savanna-dark,atelier-savanna-light,atelier-seaside.dark,atelier-seaside.light,atelier-seaside-dark,atelier-seaside-light,atelier-sulphurpool.dark,atelier-sulphurpool.light,atelier-sulphurpool-dark,atelier-sulphurpool-light,atom-one-dark,atom-one-light,brown-paper,brown_paper,codepen-embed,color-brewer,darcula,dark,darkula,default,docco,dracula,far,foundation,github,github-gist,googlecode,grayscale,gruvbox-dark,gruvbox-light,hopscotch,hybrid,idea,ir-black,ir_black,kimbie.dark,kimbie.light,magula,monokai,monokai-sublime,monokai_sublime,mono-blue,obsidian,ocean,paraiso.dark,paraiso.light,paraiso-dark,paraiso-light,pojoaque,purebasic,qtcreator_dark,qtcreator_light,railscasts,rainbow,routeros,school-book,school_book,solarized-dark,solarized-light,solarized_dark,solarized_light,sunburst,tomorrow,tomorrow-night,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,vs,vs2015,xcode,xt256,zenburn'.split(',');
 
-function addStylesheet(href, media) {
-	var style = document.createElement('link');
-	style.rel = 'stylesheet';
-	style.type = 'text/css';
-	style.href = href;
-	if (media) { style.setAttribute('media', media); }
+function addStylesheet(data) {
+	var style = document.createElement('style');
+	style.textContent = data;
 	return document.head.appendChild(style);
 }
-function addExtensionStylesheet(href, media) {
-	return addStylesheet(webext.extension.getURL(href), media);
+
+function addExtensionStylesheet(href, attributes, existingStyleElement) {
+	return fetch(webext.extension.getURL(href)).then(response => response.text()).then(data => {
+		const sheet = existingStyleElement || addStylesheet(data);
+		if (existingStyleElement) {
+			sheet.textContent = data;
+		}
+		for (const [attr, val] of Object.entries(attributes || {})) {
+			sheet.setAttribute(attr, val);
+		}
+		return sheet;
+	})
 }
 
 function addCustomStylesheet() {
 	var p = webext.storage.sync.get('custom_css')
 	return p.then((storage) => {
 		if ('custom_css' in storage) {
-			var style = document.createElement('style');
-			style.textContent = storage.custom_css;
-			document.head.appendChild(style);
+			return addStylesheet(storage.custom_css);
 		}
 	});
 }
@@ -33,7 +38,7 @@ function makeAnchor(node) {
 	var anchor = node.textContent.trim().toLowerCase()
 		// single chars that are removed
 		.replace(/[`~!@#$%^&*()+=<>?,./:;"'|{}\[\]\\–—]/g, '')
-		// CJK punctuations that are removed
+		// CJK punctuations that are removed`
 		.replace(/[　。？！，、；：“”【】（）〔〕［］﹃﹄“”‘’﹁﹂—…－～《》〈〉「」]/g, '')
 		.replace(/\s+/g, '-').replace(/\-+$/, '');
 
@@ -115,13 +120,15 @@ async function processMarkdown(textContent, plugins) {
 
 	var html = md.render(textContent);
 
-	// Style the page and code highlights.
-	addExtensionStylesheet('/lib/sss/sss.css').classList.add('__markdown-viewer__md_css');
-	addExtensionStylesheet('/lib/sss/sss.print.css', 'print').classList.add('__markdown-viewer__md_css');
-	addExtensionStylesheet('/lib/highlightjs/styles/default.css').id = '__markdown-viewer__hljs_css';
-	addExtensionStylesheet('/ext/menu.css');
-	// User-defined stylesheet.
-	var styleSheetDone = addCustomStylesheet();
+	var styleSheetsDone = Promise.all([
+		// Style the page and code highlights.
+		addExtensionStylesheet('/lib/sss/sss.css', {class: '__markdown-viewer__md_css'}),
+		addExtensionStylesheet('/lib/sss/sss.print.css', {media: 'print', class: '__markdown-viewer__md_css'}),
+		addExtensionStylesheet('/lib/highlightjs/styles/default.css', {id: '__markdown-viewer__hljs_css'}),
+		addExtensionStylesheet('/ext/menu.css'),
+		// User-defined stylesheet.
+		addCustomStylesheet(),
+	])
 
 	// This is considered a good practice for mobiles.
 	var viewport = document.createElement('meta');
@@ -179,7 +186,7 @@ async function processMarkdown(textContent, plugins) {
 	// Finally insert the markdown.
 	document.body.appendChild(markdownRoot);
 
-	return await styleSheetDone;
+	return await styleSheetsDone;
 }
 
 function buildStyleOptions() {
@@ -190,35 +197,34 @@ function buildStyleOptions() {
 
 	var mdselect = p.appendChild(document.createElement('select'));
 	mdselect.id = '__markdown-viewer__mdselect';
-	Object.keys(mdcss).forEach(val => {
+	for (const val of Object.keys(mdcss)) {
 		var opt = mdselect.appendChild(document.createElement('option'));
 		opt.textContent = val;
 		opt.value = mdcss[val];
 		opt.selected = opt.value == 'sss';
-	});
+	}
 
 	mdselect.onchange = () => {
-		Array.from(document.getElementsByClassName('__markdown-viewer__md_css')).forEach(style => {
-			var mdchosen = mdselect.value;
-			if (style.hasAttribute('media')) {
-				mdchosen += '.' + style.getAttribute('media');
-			}
-			style.href = webext.extension.getURL('/lib/sss/'+mdchosen+'.css');
-		});
-		webext.storage.sync.set({chosen_md_style: mdselect.value});
+		const mdchosen = mdselect.value;
+
+		for (const css of document.getElementsByClassName('__markdown-viewer__md_css')) {
+			const suffix = css.hasAttribute('media') ? '.' + css.getAttribute('media') : '';
+			addExtensionStylesheet(`/lib/sss/${mdchosen}${suffix}.css`, {}, css);
+		}
+		webext.storage.sync.set({ chosen_md_style: mdselect.value });
 	}
 
 	var hlselect = p.appendChild(document.createElement('select'));
 	hlselect.id = '__markdown-viewer__hlselect';
-	hlcss.forEach(val => {
+	for (const hlopt of hlcss) {
 		var opt = hlselect.appendChild(document.createElement('option'));
-		opt.textContent = val;
-		opt.value = webext.extension.getURL('/lib/highlightjs/styles/'+val+'.css');
-		opt.selected = val == 'default';
-	});
+		opt.value = opt.textContent = hlopt;
+		opt.selected = hlopt == 'default';
+	}
 
 	hlselect.onchange = () => {
-		document.getElementById('__markdown-viewer__hljs_css').href = hlselect.value;
+		addExtensionStylesheet(`/lib/highlightjs/styles/${hlselect.value}.css`, {},
+							   document.getElementById('__markdown-viewer__hljs_css'));
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
 	}
 
@@ -228,7 +234,7 @@ function buildStyleOptions() {
 			mdselect.dispatchEvent(new Event('change'));
 		}
 
-		if ('chosen_hl_style' in storage && mdselect.value != storage.chosen_hl_style) {
+		if ('chosen_hl_style' in storage && hlselect.value != storage.chosen_hl_style) {
 			hlselect.value = storage.chosen_hl_style;
 			hlselect.dispatchEvent(new Event('change'));
 		}
