@@ -1,0 +1,21 @@
+name: ESLint linting
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm i eslint-plugin-no-unsanitized@latest eslint@latest
+
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run:
+        - eslint ext/options.js
+        - eslint --global hljs --global fancyList ext/content.js
