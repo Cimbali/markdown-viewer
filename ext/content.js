@@ -193,14 +193,14 @@ function buildStyleOptions() {
 
 	const mdselect = p.appendChild(document.createElement('select'));
 	mdselect.id = '__markdown-viewer__mdselect';
-	for (const val of Object.keys(mdcss)) {
+	for (const [key, val] of Object.entries(mdcss)) {
 		const opt = mdselect.appendChild(document.createElement('option'));
-		opt.textContent = val;
-		opt.value = mdcss[val];
-		opt.selected = opt.value === 'sss';
+		opt.textContent = key;
+		opt.value = val;
+		opt.selected = key === 'default';
 	}
 
-	mdselect.onchange = () => {
+	mdselect.addEventListener('change', () => {
 		const mdchosen = mdselect.value;
 
 		for (const css of document.getElementsByClassName('__markdown-viewer__md_css')) {
@@ -208,7 +208,7 @@ function buildStyleOptions() {
 			addExtensionStylesheet(`/lib/sss/${mdchosen}${suffix}.css`, {}, css);
 		}
 		webext.storage.sync.set({ chosen_md_style: mdselect.value });
-	}
+	})
 
 	const hlselect = p.appendChild(document.createElement('select'));
 	hlselect.id = '__markdown-viewer__hlselect';
@@ -218,11 +218,11 @@ function buildStyleOptions() {
 		opt.selected = hlopt === 'default';
 	}
 
-	hlselect.onchange = () => {
+	hlselect.addEventListener('change', () => {
 		addExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, {},
 								document.getElementById('__markdown-viewer__hljs_css'));
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
-	}
+	})
 
 	return webext.storage.sync.get(['chosen_md_style', 'chosen_hl_style']).then((storage) => {
 		if ('chosen_md_style' in storage && mdselect.value !== storage.chosen_md_style) {
