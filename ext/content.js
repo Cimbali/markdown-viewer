@@ -72,39 +72,10 @@ function makeAnchor(node) {
 async function createHTMLSourceBlob() {
 	const a = document.getElementById('__markdown-viewer__download');
 
-	/* create a string containing the html headers, but inline all the <link rel="stylesheet" /> tags */
-	let headerContent = '';
-	for (let i = 0, t = document.head.children[i]; i < document.head.children.length; t = document.head.children[++i]) {
-		if (t.tagName === 'LINK' && t.hasAttribute('rel') && t.getAttribute('rel').includes('stylesheet')) {
-			if (!t.hasAttribute('href') || new URL(t.href).protocol === 'resource:') {
-				continue;
-			}
-
-			/* async + await so stylesheets get processed in order, and to know when we finished parsing them all */
-			let res, css;
-			try {
-				res = await window.fetch(t.href);
-				css = await res.text();
-			} catch (e) {
-				continue;
-			}
-			const style = document.createElement('style');
-			if (t.hasAttribute('media')) {
-				style.setAttribute('media', t.getAttribute('media'));
-			}
-			style.textContent = css;
-			headerContent += style.outerHTML;
-		}
-		else {
-			headerContent += t.outerHTML;
-		}
-	}
-
-	/* the body is copied as-is */
-	const html = `<html><head>${headerContent}</head><body>${document.body.innerHTML}</body></html>`;
+	const html = `<html>${document.head.outerHTML}${document.body.outerHTML}</html>`;
 	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
 
-	/* once we're done display the download button, so it does not appear in the downlaoded html */
+	// Once we're done display the download button, so it does not appear in the downlaoded html.
 	a.style.display = 'inline-block';
 }
 
