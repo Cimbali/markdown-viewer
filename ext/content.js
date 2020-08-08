@@ -5,7 +5,8 @@ const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
 const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false};
 
 const mdcss = {'default': 'sss', 'github': 'github'}
-const hlcss = ['a11y-dark', 'a11y-light', 'agate', 'androidstudio', 'an-old-hope', 'arduino-light', 'arta', 'ascetic',
+const hlcss = [
+	'a11y-dark', 'a11y-light', 'agate', 'androidstudio', 'an-old-hope', 'arduino-light', 'arta', 'ascetic',
 	'atelier-cave-dark', 'atelier-cave-light', 'atelier-dune-dark', 'atelier-dune-light', 'atelier-estuary-dark',
 	'atelier-estuary-light', 'atelier-forest-dark', 'atelier-forest-light', 'atelier-heath-dark', 'atelier-heath-light',
 	'atelier-lakeside-dark', 'atelier-lakeside-light', 'atelier-plateau-dark', 'atelier-plateau-light',
@@ -94,8 +95,7 @@ function highlightCodeBlock(str, lang)
 	return ''; // use external default escaping
 }
 
-async function processMarkdown(textContent, plugins) {
-	// Parse the content Markdown => HTML
+function getRenderer(plugins) {
 	const md = window.markdownit({
 		html: true,
 		linkify: true,
@@ -109,8 +109,10 @@ async function processMarkdown(textContent, plugins) {
 		md.block.ruler.at('list', fancyList, { alt: [ 'paragraph', 'reference', 'blockquote' ] });
 	}
 
-	const html = md.render(textContent);
+	return md;
+}
 
+function makeDocHeader(title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
 		addExtensionStylesheet('/lib/sss/sss.css', {class: '__markdown-viewer__md_css'}),
@@ -127,11 +129,28 @@ async function processMarkdown(textContent, plugins) {
 	viewport.content = 'width=device-width, initial-scale=1';
 	document.head.appendChild(viewport);
 
-	// Insert html for the markdown into an element for processing.
-	const markdownRoot = document.createElement('div');
-	markdownRoot.className = "markdownRoot";
-	markdownRoot.innerHTML = html;
+	// Set the page title.
+	if (!title) {
+		// Get first line if no header.
+		title = markdownRoot.textContent.trim().split("\n", 1)[0].trim();
+	}
+	if (title.length > 128) {
+		// Limit its length.
+		title = `${title.substr(0, 125)  }...`;
+	}
 
+	document.title = title;
+
+	return styleSheetsDone;
+}
+
+async function processMarkdown(element, plugins) {
+	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
+	const html = getRenderer(plugins).render(element.textContent);
+	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
+	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
+
+	// Perform some cleanup and extract headers
 	let title = null;
 	const jsLink = /^\s*javascript:/iu;
 	const allElements = document.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
@@ -146,38 +165,24 @@ async function processMarkdown(textContent, plugins) {
 		}
 		// Crush scripts.
 		if (tagName === 'SCRIPT') {
-			eachElement.innerText = '';
-			eachElement.src = '';
+			eachElement.remove();
 		}
 		// Trample JavaScript hrefs.
 		if (eachElement.getAttribute("href") && jsLink.test(eachElement.href)) {
-			eachElement.setAttribute("href", "");
+			eachElement.removeAttribute("href");
 		}
 		// Remove event handlers.
-		const eachAttributes = Array.from(eachElement.attributes);
-		for (let j = 0; j < eachAttributes.length; j++) {
-			const attr = eachAttributes[j];
+		for (const attr of eachElement.attributes) {
 			if (attr.name.toLowerCase().startsWith('on')) {
 				eachElement.removeAttribute(attr.name);
 			}
 		}
 	}
 
-	// Set the page title.
-	if (!title) {
-		// Get first line if no header.
-		title = markdownRoot.textContent.trim().split("\n", 1)[0].trim();
-	}
-	if (title.length > 128) {
-		// Limit its length.
-		title = `${title.substr(0, 125)  }...`;
-	}
-	document.title = title;
+	// Finally insert the markdown instead of the text-containing <pre/>
+	element.parentNode.replaceChild(markdownRoot, element);
 
-	// Finally insert the markdown.
-	document.body.appendChild(markdownRoot);
-
-	return await styleSheetsDone;
+	return title;
 }
 
 function buildStyleOptions() {
@@ -311,16 +316,14 @@ if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
-	const {textContent} = body;
-	body.textContent = '';
-
 	let url = window.location.href;
 	const hash = url.lastIndexOf('#');
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
 	webext.storage.sync.get('plugins').then(storage => Object.assign(pluginDefaults, storage.plugins)).
-		then(pluginPrefs => processMarkdown(textContent, pluginPrefs)).
+		then(pluginPrefs => processMarkdown(body.firstChild, pluginPrefs)).
+		then(title => makeDocHeader(title)).
 		then(() => addMarkdownViewerMenu()).
 		then(() => createHTMLSourceBlob());
 
