@@ -48,7 +48,7 @@ function addCustomStylesheet() {
 	});
 }
 
-function makeAnchor(node) {
+function makeAnchor(node, usedHeaders) {
 	// From @ChenYingChou https://gist.github.com/asabaylus/3071099#gistcomment-1479328
 	let anchor = node.textContent.trim().toLowerCase().
 		// single chars that are removed
@@ -57,20 +57,20 @@ function makeAnchor(node) {
 		replace(/[　。？！，、；：“”【】（）〔〕［］﹃﹄“”‘’﹁﹂—…－～《》〈〉「」]/gu, '').
 		replace(/\s+/gu, '-').replace(/-+$/u, '');
 
-	if (typeof makeAnchor.usedHeaders === 'undefined')
-		{makeAnchor.usedHeaders = [];}
-
-	if (makeAnchor.usedHeaders.indexOf(anchor) !== -1) {
+	if (usedHeaders.indexOf(anchor) !== -1) {
 		let i = 1;
-		while (makeAnchor.usedHeaders.indexOf(`${anchor  }-${  i}`) !== -1 && i <= 10)
-			{i++;}
-		anchor = `${anchor  }-${  i}`;
+		for (; i <= 10; i++) {
+			if (usedHeaders.indexOf(`${anchor}-${i}`) === -1) {
+				break;
+			}
+		}
+		anchor = `${anchor}-${i}`;
 	}
-	makeAnchor.usedHeaders.push(anchor);
-	node.id = anchor;
+
+	return anchor;
 }
 
-async function createHTMLSourceBlob() {
+function createHTMLSourceBlob() {
 	const a = document.getElementById('__markdown-viewer__download');
 
 	const html = `<html>${document.head.outerHTML}${document.body.outerHTML}</html>`;
@@ -112,7 +112,7 @@ function getRenderer(plugins) {
 	return md;
 }
 
-function makeDocHeader(title) {
+function makeDocHeader(markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
 		addExtensionStylesheet('/lib/sss/sss.css', {class: '__markdown-viewer__md_css'}),
@@ -144,7 +144,7 @@ function makeDocHeader(title) {
 	return styleSheetsDone;
 }
 
-async function processMarkdown(element, plugins) {
+function processMarkdown(element, plugins) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
 	const html = getRenderer(plugins).render(element.textContent);
 	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
@@ -152,6 +152,7 @@ async function processMarkdown(element, plugins) {
 
 	// Perform some cleanup and extract headers
 	let title = null;
+	const documentAnchors = [];
 	const jsLink = /^\s*javascript:/iu;
 	const allElements = document.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
 	let eachElement;
@@ -160,7 +161,8 @@ async function processMarkdown(element, plugins) {
 
 		// Make anchor for headers; use first header text as page title.
 		if (headerTags.includes(tagName)) {
-			makeAnchor(eachElement);
+			const anchor = makeAnchor(eachElement, documentAnchors);
+			documentAnchors.push(eachElement.id = anchor);
 			if (!title) { title = eachElement.textContent.trim(); }
 		}
 		// Crush scripts.
@@ -179,10 +181,7 @@ async function processMarkdown(element, plugins) {
 		}
 	}
 
-	// Finally insert the markdown instead of the text-containing <pre/>
-	element.parentNode.replaceChild(markdownRoot, element);
-
-	return title;
+	return [markdownRoot, title];
 }
 
 function buildStyleOptions() {
@@ -251,22 +250,18 @@ function buildDownloadButton() {
 }
 
 function buildTableOfContents() {
-	// build a table of contents if there are any headers
-	const allHeaders = Array.from(document.querySelectorAll(headerTags.join(',')));
+	const allHeaders = document.querySelectorAll(headerTags.join(','));
 	if (allHeaders.length) {
-		// list uniquely the used header titles, so we only consider those for nesting
-		const usedHeaderTags = allHeaders.map(header => header.tagName).filter((level, index, self) =>
-			self.indexOf(level) === index
-		).sort();
-
 		const tocdiv = document.createElement('div');
-		let level = 0, list = tocdiv.appendChild(document.createElement('ul'));
+		let level = 0;
+		let list = tocdiv.appendChild(document.createElement('ul'));
 		for (const header of allHeaders) {
 			/* Open/close the right amount of nested lists to fit tag level */
-			const headerLevel = usedHeaderTags.indexOf(header.tagName);
+			const headerLevel = headerTags.indexOf(header.tagName);
 			for (; level < headerLevel; level++) {
-				if (list.lastChild === null || list.lastChild.tagName !== 'LI')
-					{list.appendChild(document.createElement('li'))}
+				if (list.lastChild === null || list.lastChild.tagName !== 'LI') {
+					list.appendChild(document.createElement('li'))
+				}
 				list = list.lastChild.appendChild(document.createElement('ul'));
 			}
 			for (; level > headerLevel; level--) {
@@ -276,25 +271,34 @@ function buildTableOfContents() {
 			/* Make a list item with a link to the heading */
 			const link = document.createElement('a');
 			link.textContent = header.textContent;
-			link.href = `#${  header.id}`;
+			link.href = `#${header.id}`;
 			list.appendChild(document.createElement('li')).appendChild(link);
+		}
+
+		/* Squash empty levels by moving its children to the parent list */
+		for (const deleteList of tocdiv.querySelectorAll('li > ul:only-child')) {
+			const parentItem = deleteList.parentNode;
+			const parentList = parentItem.parentNode;
+			while (deleteList.children.length) {
+				parentList.appendChild(deleteList.removeChild(deleteList.firstChild));
+			}
+			parentList.removeChild(parentItem);
 		}
 
 		tocdiv.id = '__markdown-viewer__toc';
 		tocdiv.className = 'toggleable'
 		return Promise.resolve(tocdiv);
 	}
-	else
-		{return Promise.resolve(null);}
+	else {
+		return Promise.resolve(null);
+	}
 }
 
 function addMarkdownViewerMenu() {
 	const toolsdiv = document.createElement('div');
 	toolsdiv.id = '__markdown-viewer__tools';
 	toolsdiv.className = 'hidden';
-	const getMenuDisplayDone = webext.storage.sync.get('display_menu').then(storage => {
-		toolsdiv.className = 'display_menu' in storage ? storage.display_menu : 'floating';
-	});
+	const getMenuDisplay = webext.storage.sync.get({'display_menu': 'floating'});
 
 	const input = toolsdiv.appendChild(document.createElement('input'));
 	const label = toolsdiv.appendChild(document.createElement('label'));
@@ -302,12 +306,16 @@ function addMarkdownViewerMenu() {
 	input.id = '__markdown-viewer__show-tools';
 	label.setAttribute('for', input.id);
 
-	const p = Promise.all([getMenuDisplayDone, buildTableOfContents(), buildStyleOptions(), buildDownloadButton()]);
-	p.then(([, ...nodes]) => {
-		nodes.filter(node => node).forEach(node => toolsdiv.appendChild(node));
+	const p = [getMenuDisplay, buildTableOfContents(), buildStyleOptions(), buildDownloadButton()];
+	return Promise.all(p).then(([{display_menu: menuDisplay}, ...nodes]) => {
+		toolsdiv.className = menuDisplay;
+		for (const node of nodes) {
+			if (node) {
+				toolsdiv.appendChild(node);
+			}
+		}
 		document.body.prepend(toolsdiv);
 	});
-	return p;
 }
 
 // Process only if document is unprocessed text.
@@ -321,9 +329,12 @@ if (body.childNodes.length === 1 &&
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
-	webext.storage.sync.get('plugins').then(storage => Object.assign(pluginDefaults, storage.plugins)).
+	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins})).
 		then(pluginPrefs => processMarkdown(body.firstChild, pluginPrefs)).
-		then(title => makeDocHeader(title)).
+		then(([renderedDOM, title]) => {
+			makeDocHeader(renderedDOM, title);
+			body.replaceChild(renderedDOM, body.firstChild);
+		}).
 		then(() => addMarkdownViewerMenu()).
 		then(() => createHTMLSourceBlob());
 
