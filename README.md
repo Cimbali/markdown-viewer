@@ -133,6 +133,6 @@ $ update-mime-database ~/.local/share/mime
 These mime types are stored in a file indicated by `helpers.private_mime_types_file`, by default it is `~/.mime.types`.
 Create this file if it does not exist, otherwise edit it, and add the following line:
 
-    type=text/plain exts=md,mkd,mkdn,mdwn,mdown,markdown desc="Markdown document"
+    type=text/plain exts=md,mkd,mkdn,mdwn,mdown,markdown, desc="Markdown document"
 
 Then restart firefox.
