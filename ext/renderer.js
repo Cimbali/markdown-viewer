@@ -44,8 +44,33 @@ class Renderer {
 		return md;
 	}
 
-	render(text) {
+	work(text) {
 		const html = this.getRenderer(this.plugins).render(text);
 		return Promise.resolve({ html });
+	}
+
+	offload(text) {
+		const worker = new Worker('./worker.js');
+		const { plugins } = this;
+
+		return new Promise((resolve, reject) => {
+			worker.addEventListener('message', e => {
+				resolve(e.data);
+				worker.terminate();
+			});
+			worker.addEventListener('error', reject);
+			worker.postMessage({ plugins, text });
+		});
+	}
+
+	// If we did not load the scripts we need to offload
+	static prefersOffloading = typeof markdownit === 'undefined';
+
+	render(text) {
+		if (Renderer.prefersOffloading) {
+			return this.offload(text);
+		} else {
+			return this.work(text);
+		}
 	}
 }
