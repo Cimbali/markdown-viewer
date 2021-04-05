@@ -2,7 +2,7 @@
 
 const webext = typeof browser === 'undefined' ? chrome : browser;
 const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
-const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false};
+const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false, 'texmath': false};
 
 const mdcss = {'default': 'sss', 'github': 'github'}
 const hlcss = [
@@ -105,6 +105,14 @@ function getRenderer(plugins) {
 	if (plugins.checkbox) {md.use(window.markdownitCheckbox);}
 	if (plugins.emojis) {md.use(window.markdownitEmoji);}
 	if (plugins.footnotes) {md.use(window.markdownitFootnote);}
+	if (plugins.texmath) {
+		const tm = texmath.use(katex);
+		md.use(tm, {
+			engine: katex,
+			delimiters:'dollars',
+			katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
+		})
+	}
 	if (plugins['fancy-lists']) {
 		md.block.ruler.at('list', fancyList, { alt: [ 'paragraph', 'reference', 'blockquote' ] });
 	}
@@ -118,6 +126,8 @@ function makeDocHeader(markdownRoot, title) {
 		addExtensionStylesheet('/lib/sss/sss.css', {class: '__markdown-viewer__md_css'}),
 		addExtensionStylesheet('/lib/sss/sss.print.css', {media: 'print', class: '__markdown-viewer__md_css'}),
 		addExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css', {id: '__markdown-viewer__hljs_css'}),
+		addExtensionStylesheet('/lib/katex/dist/katex.min.css'),
+		addExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css'),
 		addExtensionStylesheet('/ext/menu.css'),
 		// User-defined stylesheet.
 		addCustomStylesheet(),

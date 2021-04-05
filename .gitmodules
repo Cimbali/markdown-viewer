@@ -17,3 +17,9 @@
 [submodule "lib/markdown-it-fancy-lists"]
 	path = lib/markdown-it-fancy-lists
 	url = https://github.com/mminer237/markdown-it-fancy-lists
+[submodule "lib/markdown-it-texmath"]
+	path = lib/markdown-it-texmath
+	url = https://github.com/goessner/markdown-it-texmath
+[submodule "lib/katex"]
+	path = lib/katex
+	url = https://github.com/KaTeX/KaTeX

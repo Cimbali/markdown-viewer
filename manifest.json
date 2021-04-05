@@ -62,6 +62,8 @@
 				"lib/markdown-it-footnote/dist/markdown-it-footnote.min.js",
 				"lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js",
 				"lib/highlightjs/build/highlight.min.js",
+				"lib/katex/dist/katex.min.js",
+				"lib/markdown-it-texmath/texmath.js",
 				"ext/content.js"
 			]
 		}
@@ -70,6 +72,8 @@
 	"web_accessible_resources": [
 		"lib/sss/*.css",
 		"lib/highlightjs/build/styles/*.min.css",
+		"lib/markdown-it-texmath/css/texmath.css",
+		"lib/katex/dist/katex.min.css",
 		"ext/menu.css"
 	],
 

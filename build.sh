@@ -11,6 +11,10 @@ for f in LICENSE \
 	lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \
 	lib/markdown-it-footnote/dist/markdown-it-footnote.min.js \
 	lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js \
+	lib/markdown-it-texmath/texmath.js \
+	lib/markdown-it-texmath/css/texmath.css \
+	lib/katex/dist/katex.min.js \
+	lib/katex/dist/katex.min.css \
 	lib/sss/sss.css \
 	lib/sss/sss.print.css \
 	lib/sss/github.css

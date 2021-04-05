@@ -76,6 +76,8 @@ function myFunction() {
 
 <a href=" JavaScript:alert('XSS')">JavaScript links are trampled out, too</a>
 
+LaTeX rendering: $\sqrt 5$
+
 # Anchor links tests for #49
 
 1. [متطلبات التشغيل الأولي](#متطلبات-التشغيل-الأولي)
