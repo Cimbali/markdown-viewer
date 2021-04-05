@@ -409,7 +409,7 @@ function renderInIframe(parentDoc, text, { inserter, url }) {
 			});
 		});
 
-		window.addEventListener('hashchange', (e) => {
+		window.addEventListener('hashchange', () => {
 			iframe.contentWindow.location.hash = window.location.hash;
 		});
 		iframe.contentWindow.addEventListener('hashchange', () => {
