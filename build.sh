@@ -1,4 +1,5 @@
 #!/bin/sh
+(cd lib/katex && npm install && USE_TTF=false USE_WOFF=false USE_WOFF2=false npm run build)
 rm -r staging 2>/dev/null
 rm -r web-ext-artifacts 2>/dev/null
 for f in LICENSE \

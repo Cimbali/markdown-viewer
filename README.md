@@ -97,6 +97,13 @@ Many thanks to them and to our future contributors. Pull requests are welcomed.
 Firefox won't install the generated `.zip` file permanently until it's signed by Mozilla.
 You can test any changes using the cloned project files.
 
+Before that you’ll need to have generated `katex` dist files with:
+```sh
+cd lib/katex
+npm install
+USE_TTF=false USE_WOFF=false USE_WOFF2=false npm run build
+```
+
 * In a command prompt, navigate to the project root folder (containing the `manifest.json`) and run `web-ext run`.
 * Or to install the extension [temporarily in Firefox](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Temporary_Installation_in_Firefox):
   * First, uninstall this add-on if you have it already

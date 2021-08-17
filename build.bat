@@ -1,3 +1,10 @@
+@cd lib\katex
+npm install
+set USE_TTF=false
+set USE_WOFF=false
+set USE_WOFF2=false
+npm run build
+@cd ..\..
 
 @rmdir /s /q staging 2>nul
 @rmdir /s /q web-ext-artifacts 2>nul
@@ -5,13 +12,17 @@
 	LICENSE
 	manifest.json
 	ext\*.*
-	lib\highlightjs\highlight.pack.min.js
-	lib\highlightjs\styles\*.css
+	lib\highlightjs\build\highlight.min.js
+	lib\highlightjs\build\styles\*.min.css
 	lib\markdown-it\dist\markdown-it.min.js
 	lib\markdown-it-checkbox\dist\markdown-it-checkbox.min.js
 	lib\markdown-it-emoji\dist\markdown-it-emoji.min.js
 	lib\markdown-it-footnote\dist\markdown-it-footnote.min.js
 	lib\markdown-it-fancy-lists\markdown-it-fancy-lists.js
+	lib\markdown-it-texmath\texmath.js
+	lib\markdown-it-texmath\css\texmath.css
+	lib\katex\dist\katex.min.js
+	lib\katex\dist\katex.min.css
 	lib\sss\sss.css
 	lib\sss\sss.print.css
 	lib\sss\github.css
