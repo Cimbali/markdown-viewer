@@ -60,7 +60,8 @@ pre code {
 }
 
 blockquote {
-	border-left: 5px solid #EEE;
+	border-left: 5px solid;
+	border-color: #EEE;
 	margin: 0;
 	padding: 0 10px;
 }
@@ -85,4 +86,35 @@ hr {
 	background: #EEE;
 	border: 0;
 	height: 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background: #1C1B22;
+		color: #FBFBFE;
+	}
+	a {
+		color: #5CF;
+	}
+	a:visited {
+		color: #08C;
+	}
+	code {
+		background: #444;
+	}
+	pre {
+		background: #444;
+	}
+	thead {
+		background: #444;
+	}
+	th, td {
+		border-color: #444;
+	}
+	hr {
+		background: #444;
+	}
+	blockquote {
+		border-color: #444;
+	}
 }
