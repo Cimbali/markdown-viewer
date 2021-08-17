@@ -156,7 +156,7 @@ input#__markdown-viewer__show-tools:checked ~ #__markdown-viewer__toc::before {
   text-overflow: ellipsis;
 }
 
-#__markdown-viewer__toc a {
+#__markdown-viewer__tools a {
   color: white;
   text-decoration: none;
 }
@@ -184,6 +184,5 @@ input#__markdown-viewer__show-tools:checked ~ #__markdown-viewer__toc::before {
   display:inline-block;
   text-align: center;
   text-decoration:none;
-  color:#000;
   margin: .5em auto;
 }
