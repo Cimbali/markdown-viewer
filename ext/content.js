@@ -38,7 +38,7 @@ function addExtensionStylesheet(href, attributes, existingStyleElement) {
 			sheet.setAttribute(attr, val);
 		}
 		return sheet;
-	})
+	}).catch(err => console.error(`Failed fetching or setting stylesheet ${href}`))
 }
 
 function addCustomStylesheet() {
@@ -123,8 +123,8 @@ function getRenderer(plugins) {
 function makeDocHeader(markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
-		addExtensionStylesheet('/lib/sss/sss.css', {class: '__markdown-viewer__md_css'}),
-		addExtensionStylesheet('/lib/sss/sss.print.css', {media: 'print', class: '__markdown-viewer__md_css'}),
+		addExtensionStylesheet('/lib/sss/sss.css', {id: '__markdown-viewer__md_css'}),
+		addExtensionStylesheet('/lib/sss/sss.print.css', {media: 'print', id: '__markdown-viewer__md_print_css'}),
 		addExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css', {id: '__markdown-viewer__hljs_css'}),
 		addExtensionStylesheet('/lib/katex/dist/katex.min.css'),
 		addExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css'),
@@ -212,10 +212,12 @@ function buildStyleOptions() {
 	mdselect.addEventListener('change', () => {
 		const mdchosen = mdselect.value;
 
-		for (const css of document.getElementsByClassName('__markdown-viewer__md_css')) {
-			const suffix = css.hasAttribute('media') ? `.${css.getAttribute('media')}` : '';
-			addExtensionStylesheet(`/lib/sss/${mdchosen}${suffix}.css`, {}, css);
-		}
+		console.log('mdchosen triggered')
+		addExtensionStylesheet(`/lib/sss/${mdchosen}.css`, {},
+								document.getElementById('__markdown-viewer__md_css'));
+		addExtensionStylesheet(`/lib/sss/${mdchosen}.print.css`, {},
+								document.getElementById('__markdown-viewer__md_print_css'));
+
 		webext.storage.sync.set({ chosen_md_style: mdselect.value });
 	})
 
