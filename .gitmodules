@@ -1,6 +1,6 @@
 [submodule "lib/highlightjs"]
 	path = lib/highlightjs
-	url = https://github.com/components/highlightjs.git
+	url = https://github.com/highlightjs/cdn-release/
 [submodule "lib/markdown-it"]
 	path = lib/markdown-it
 	url = https://github.com/markdown-it/markdown-it.git

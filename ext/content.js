@@ -85,7 +85,7 @@ function highlightCodeBlock(str, lang)
 	// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
 	if (lang && hljs.getLanguage(lang)) {
 		try {
-			return hljs.highlight(lang, str).value;
+			return hljs.highlight(str, {language: lang}).value;
 		} catch (e) {}
 	}
 
@@ -96,7 +96,7 @@ function highlightCodeBlock(str, lang)
 }
 
 function getRenderer(plugins) {
-	const md = window.markdownit({
+	const md = markdownit({
 		html: true,
 		linkify: true,
 		...plugins.hljs ? {highlight: highlightCodeBlock} : {},
