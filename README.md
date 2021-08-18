@@ -1,7 +1,7 @@
 ﻿# markdown-viewer
 
 Markdown (.md file) Viewer [WebExtension](https://developer.mozilla.org/en-US/Add-ons/WebExtensions).
-Displays markdown documents beatified in your browser.
+Displays markdown documents beautified in your browser.
 
 Markdown is a lightweight markup language which uses plain text to describe formatting information, such as `# Heading`, `1. numbered lists`, `**bold**`, etc.
 This add-on identifies markdown documents by the extension in the URL (one of .markdown, .md, .mdown, .mdwn, .mkd, .mkdn).
