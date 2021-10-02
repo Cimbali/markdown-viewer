@@ -25,7 +25,9 @@ const hlcss = [
 function addStylesheet(data) {
 	const style = document.createElement('style');
 	style.textContent = data;
-	return document.head.appendChild(style);
+	document.head.appendChild(style);
+	createHTMLSourceBlob();
+	return style
 }
 
 function addExtensionStylesheet(href, attributes, existingStyleElement) {
@@ -72,11 +74,12 @@ function makeAnchor(node, usedHeaders) {
 
 function createHTMLSourceBlob() {
 	const a = document.getElementById('__markdown-viewer__download');
+	a.style.display = 'none';
 
 	const html = `<html>${document.head.outerHTML}${document.body.outerHTML}</html>`;
 	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
 
-	// Once we're done display the download button, so it does not appear in the downlaoded html.
+	// Once we're done display the download button, so it does not appear in the downloaded html.
 	a.style.display = 'inline-block';
 }
 
