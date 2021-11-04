@@ -6,47 +6,55 @@ const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnot
 
 const mdcss = {'default': 'sss', 'github': 'github'}
 const hlcss = [
-	'a11y-dark', 'a11y-light', 'agate', 'androidstudio', 'an-old-hope', 'arduino-light', 'arta', 'ascetic',
-	'atelier-cave-dark', 'atelier-cave-light', 'atelier-dune-dark', 'atelier-dune-light', 'atelier-estuary-dark',
-	'atelier-estuary-light', 'atelier-forest-dark', 'atelier-forest-light', 'atelier-heath-dark', 'atelier-heath-light',
-	'atelier-lakeside-dark', 'atelier-lakeside-light', 'atelier-plateau-dark', 'atelier-plateau-light',
-	'atelier-savanna-dark', 'atelier-savanna-light', 'atelier-seaside-dark', 'atelier-seaside-light',
-	'atelier-sulphurpool-dark', 'atelier-sulphurpool-light', 'atom-one-dark', 'atom-one-dark-reasonable',
-	'atom-one-light', 'brown-paper', 'brown-papersq', 'codepen-embed', 'color-brewer', 'darcula', 'dark', 'default',
-	'docco', 'dracula', 'far', 'foundation', 'github', 'github-gist', 'gml', 'googlecode', 'gradient-dark', 'grayscale',
-	'gruvbox-dark', 'gruvbox-light', 'hopscotch', 'hybrid', 'idea', 'ir-black', 'isbl-editor-dark', 'isbl-editor-light',
-	'kimbie', 'kimbie', 'lightfair', 'lioshi', 'magula', 'monokai', 'monokai-sublime', 'mono-blue', 'night-owl', 'nnfx',
-	'nnfx-dark', 'nord', 'obsidian', 'ocean', 'paraiso-dark', 'paraiso-light', 'pojoaque', 'pojoaque', 'purebasic',
-	'qtcreator_dark', 'qtcreator_light', 'railscasts', 'rainbow', 'routeros', 'school-book', 'school-book',
-	'shades-of-purple', 'solarized-dark', 'solarized-light', 'srcery', 'sunburst', 'tomorrow', 'tomorrow-night', 'vs',
-	'tomorrow-night-blue', 'tomorrow-night-bright', 'tomorrow-night-eighties', 'vs2015', 'xcode', 'xt256', 'zenburn',
+	'a11y-dark', 'a11y-light', 'a11y-auto', 'agate', 'androidstudio', 'an-old-hope', 'arduino-light', 'arta', 'ascetic',
+	'atelier-cave-dark', 'atelier-cave-light', 'atelier-cave-auto', 'atelier-dune-dark', 'atelier-dune-light',
+	'atelier-dune-auto', 'atelier-estuary-dark', 'atelier-estuary-light', 'atelier-estuary-auto', 'atelier-forest-dark',
+	'atelier-forest-light', 'atelier-forest-auto', 'atelier-heath-dark', 'atelier-heath-light', 'atelier-heath-auto',
+	'atelier-lakeside-dark', 'atelier-lakeside-light', 'atelier-lakeside-auto', 'atelier-plateau-dark',
+	'atelier-plateau-light', 'atelier-plateau-auto', 'atelier-savanna-dark', 'atelier-savanna-light',
+	'atelier-savanna-auto', 'atelier-seaside-dark', 'atelier-seaside-light', 'atelier-seaside-auto',
+	'atelier-sulphurpool-dark', 'atelier-sulphurpool-light', 'atelier-sulphurpool-auto', 'atom-one-dark',
+	'atom-one-dark-reasonable', 'atom-one-light', 'brown-paper', 'codepen-embed', 'color-brewer', 'darcula', 'dark',
+	'default', 'docco', 'dracula', 'far', 'foundation', 'github', 'github-gist', 'gml', 'googlecode', 'gradient-dark',
+	'grayscale', 'gruvbox-dark', 'gruvbox-light', 'gruvbox-auto', 'hopscotch', 'hybrid', 'idea', 'ir-black',
+	'isbl-editor-dark', 'isbl-editor-light', 'isbl-editor-auto', 'kimbie', 'kimbie', 'lightfair', 'lioshi', 'magula',
+	'mono-blue', 'monokai', 'monokai-sublime', 'night-owl', 'nnfx', 'nnfx-dark', 'nord', 'obsidian', 'ocean',
+	'paraiso-dark', 'paraiso-light', 'paraiso-auto', 'pojoaque', 'purebasic', 'qtcreator_dark', 'qtcreator_light',
+	'qtcreator_auto', 'railscasts', 'rainbow', 'routeros', 'school-book', 'shades-of-purple', 'solarized-dark',
+	'solarized-light', 'solarized-auto', 'srcery', 'sunburst', 'tomorrow', 'tomorrow-night', 'tomorrow-night-blue',
+	'tomorrow-night-bright', 'tomorrow-night-eighties', 'vs', 'vs2015', 'xcode', 'xt256', 'zenburn',
 ]
 
-function addStylesheet(data) {
+function addStylesheet(attributes) {
 	const style = document.createElement('style');
-	style.textContent = data;
+	for (const [attr, val] of Object.entries(attributes || {})) {
+		style.setAttribute(attr, val);
+	}
 	document.head.appendChild(style);
-	createHTMLSourceBlob();
 	return style
 }
 
-function addExtensionStylesheet(href, attributes, existingStyleElement) {
+function setExtensionStylesheet(href, sheet) {
 	return fetch(webext.extension.getURL(href)).then(response => response.text()).then(data => {
-		const sheet = existingStyleElement || addStylesheet(data);
-		if (existingStyleElement) {
-			sheet.textContent = data;
-		}
-		for (const [attr, val] of Object.entries(attributes || {})) {
-			sheet.setAttribute(attr, val);
-		}
+		sheet.textContent = data;
 		return sheet;
 	}).catch(err => console.error(`Failed fetching or setting stylesheet ${href}`))
 }
 
-function addCustomStylesheet() {
-	const p = webext.storage.sync.get({'custom_css': ''})
-	return p.then(({custom_css: data}) => {
-		return addStylesheet(data);
+function setExtensionStylesheetAuto(href_dark, href_light, sheet) {
+	return Promise.all([
+		fetch(webext.extension.getURL(href_dark)).then(response => response.text()),
+		fetch(webext.extension.getURL(href_light)).then(response => response.text()),
+	]).then(([data_dark, data_light]) => {
+		sheet.textContent = `@media (prefers-color-scheme: light) { ${data_light} }` + '\n\n' +
+							`@media (prefers-color-scheme: dark) { ${data_dark} }`;
+		return sheet;
+	}).catch(err => console.error(`Failed fetching or setting stylesheet ${href}`))
+}
+
+function setCustomStylesheet(sheet) {
+	return webext.storage.sync.get({'custom_css': ''}).then(({custom_css: data}) => {
+		sheet.textContent = data;
 	});
 }
 
@@ -74,6 +82,9 @@ function makeAnchor(node, usedHeaders) {
 
 function createHTMLSourceBlob() {
 	const a = document.getElementById('__markdown-viewer__download');
+	if (a === null) {
+		return
+	}
 	a.style.display = 'none';
 
 	const html = `<html>${document.head.outerHTML}${document.body.outerHTML}</html>`;
@@ -126,14 +137,17 @@ function getRenderer(plugins) {
 function makeDocHeader(markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
-		addExtensionStylesheet('/lib/sss/sss.css', {id: '__markdown-viewer__md_css'}),
-		addExtensionStylesheet('/lib/sss/sss.print.css', {media: 'print', id: '__markdown-viewer__md_print_css'}),
-		addExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css', {id: '__markdown-viewer__hljs_css'}),
-		addExtensionStylesheet('/lib/katex/dist/katex.min.css'),
-		addExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css'),
-		addExtensionStylesheet('/ext/menu.css'),
+		setExtensionStylesheet('/lib/sss/sss.css', addStylesheet({id: '__markdown-viewer__md_css'})),
+		setExtensionStylesheet('/lib/sss/sss.print.css', addStylesheet({media: 'print',
+																		id: '__markdown-viewer__md_print_css'})),
+		setExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css',
+							   addStylesheet({id: '__markdown-viewer__hljs_css'})),
+		setExtensionStylesheet('/lib/katex/dist/katex.min.css', addStylesheet({id: '__markdown-viewer__katex_css'})),
+		setExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css',
+							   addStylesheet({id: '__markdown-viewer__texmath_css'})),
+		setExtensionStylesheet('/ext/menu.css', addStylesheet({id: '__markdown-viewer__menu_css'})),
 		// User-defined stylesheet.
-		addCustomStylesheet(),
+		setCustomStylesheet(addStylesheet({id: '__markdown-viewer__custom_css'})),
 	])
 
 	// This is considered a good practice for mobiles.
@@ -215,13 +229,13 @@ function buildStyleOptions() {
 	mdselect.addEventListener('change', () => {
 		const mdchosen = mdselect.value;
 
-		console.log('mdchosen triggered')
-		addExtensionStylesheet(`/lib/sss/${mdchosen}.css`, {},
+		setExtensionStylesheet(`/lib/sss/${mdchosen}.css`,
 								document.getElementById('__markdown-viewer__md_css'));
-		addExtensionStylesheet(`/lib/sss/${mdchosen}.print.css`, {},
+		setExtensionStylesheet(`/lib/sss/${mdchosen}.print.css`,
 								document.getElementById('__markdown-viewer__md_print_css'));
 
 		webext.storage.sync.set({ chosen_md_style: mdselect.value });
+		createHTMLSourceBlob();
 	})
 
 	const hlselect = p.appendChild(document.createElement('select'));
@@ -233,9 +247,17 @@ function buildStyleOptions() {
 	}
 
 	hlselect.addEventListener('change', () => {
-		addExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, {},
-								document.getElementById('__markdown-viewer__hljs_css'));
+		const sheet = document.getElementById('__markdown-viewer__hljs_css');
+		if (hlselect.value.endsWith('auto')) {
+			const dark = hlselect.value.slice(0, -4) + 'dark';
+			const light = hlselect.value.slice(0, -4) + 'light';
+			setExtensionStylesheetAuto(`/lib/highlightjs/build/styles/${dark}.min.css`,
+									   `/lib/highlightjs/build/styles/${light}.min.css`, sheet);
+		} else {
+			setExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, sheet);
+		}
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
+		createHTMLSourceBlob();
 	})
 
 	return webext.storage.sync.get(['chosen_md_style', 'chosen_hl_style']).then((storage) => {

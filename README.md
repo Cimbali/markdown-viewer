@@ -52,6 +52,9 @@ There are currently 2 default styles to choose from (not from this repo − unde
 - [SSS (Simple Style Sheet)](https://github.com/Thiht/sss)
 - [github markdown css](https://github.com/sindresorhus/github-markdown-css)
 
+There are also a number of [highlight.js](https://github.com/highlightjs/highlight.js) styles to choose from.
+Styles ending in `auto` will automatically pick the `dark` and `light` variant based on the `prefers-color-scheme` value of your browser.
+
 Using CSS, you can further customize the appearance any way you like it.
 View Add-ons (about:addons), and click Options for the Markdown Viewer.
 There is a box to enter your Custom CSS text. (Sorry, there is not currently a "user-friendly" drop-down option.)

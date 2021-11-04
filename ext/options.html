@@ -54,18 +54,34 @@
 	<p>Click or tab out of the text area to save changes. Refresh this page to revert changes.
 	If you enable syncing Add-ons with your <span id="browser_name">Firefox</span> account, the CSS will synchronize across your devices.</p>
 	<p>Try for example:
-	<pre style="font-size:.6em; margin: 15px;">
-:root {
-  background-color: #f5f5f5;
-}
+	<pre style="font-size:.6em; margin: 15px; -moz-user-select: text;">
 .markdownRoot {
-  background-color: #fff;
+  border: 1px solid;
   box-sizing: border-box;
   min-width: 200px;
   max-width: 980px;
   margin: 0 auto;
   padding: 45px;
-  border: 1px solid #ccc;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    background-color: #f5f5f5;
+  }
+  .markdownRoot {
+    background-color: #fff;
+    border-color: #ccc;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    background-color: black;
+  }
+  .markdownRoot {
+    background-color: #1C1B22;
+    border-color: #333;
+  }
 }
 	</pre></p>
 
