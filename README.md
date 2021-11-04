@@ -48,7 +48,11 @@ If you would like to save the HTML-converted text, it is possible to do so in th
 ## Custom Appearance
 
 You don't like how the styled markdown looks?
-Using CSS, you can customize the appearance any way you like it.
+There are currently 2 default styles to choose from (not from this repo − under MIT):
+- [SSS (Simple Style Sheet)](https://github.com/Thiht/sss)
+- [github markdown css](https://github.com/sindresorhus/github-markdown-css)
+
+Using CSS, you can further customize the appearance any way you like it.
 View Add-ons (about:addons), and click Options for the Markdown Viewer.
 There is a box to enter your Custom CSS text. (Sorry, there is not currently a "user-friendly" drop-down option.)
 As the instructions there state, click or tab out of the text box to save your changes.

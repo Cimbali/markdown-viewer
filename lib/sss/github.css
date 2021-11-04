@@ -1,410 +1,1016 @@
 /*
-Copyright (c) 2017 Chris Patuzzo
-https://twitter.com/chrispatuzzo
+ * Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-body {
-  font-family: Helvetica, arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  background-color: white;
-  padding: 30px;
-  color: #333;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-prettylights-syntax-comment: #8b949e;
+    --color-prettylights-syntax-constant: #79c0ff;
+    --color-prettylights-syntax-entity: #d2a8ff;
+    --color-prettylights-syntax-storage-modifier-import: #c9d1d9;
+    --color-prettylights-syntax-entity-tag: #7ee787;
+    --color-prettylights-syntax-keyword: #ff7b72;
+    --color-prettylights-syntax-string: #a5d6ff;
+    --color-prettylights-syntax-variable: #ffa657;
+    --color-prettylights-syntax-brackethighlighter-unmatched: #f85149;
+    --color-prettylights-syntax-invalid-illegal-text: #f0f6fc;
+    --color-prettylights-syntax-invalid-illegal-bg: #8e1519;
+    --color-prettylights-syntax-carriage-return-text: #f0f6fc;
+    --color-prettylights-syntax-carriage-return-bg: #b62324;
+    --color-prettylights-syntax-string-regexp: #7ee787;
+    --color-prettylights-syntax-markup-list: #f2cc60;
+    --color-prettylights-syntax-markup-heading: #1f6feb;
+    --color-prettylights-syntax-markup-italic: #c9d1d9;
+    --color-prettylights-syntax-markup-bold: #c9d1d9;
+    --color-prettylights-syntax-markup-deleted-text: #ffdcd7;
+    --color-prettylights-syntax-markup-deleted-bg: #67060c;
+    --color-prettylights-syntax-markup-inserted-text: #aff5b4;
+    --color-prettylights-syntax-markup-inserted-bg: #033a16;
+    --color-prettylights-syntax-markup-changed-text: #ffdfb6;
+    --color-prettylights-syntax-markup-changed-bg: #5a1e02;
+    --color-prettylights-syntax-markup-ignored-text: #c9d1d9;
+    --color-prettylights-syntax-markup-ignored-bg: #1158c7;
+    --color-prettylights-syntax-meta-diff-range: #d2a8ff;
+    --color-prettylights-syntax-brackethighlighter-angle: #8b949e;
+    --color-prettylights-syntax-sublimelinter-gutter-mark: #484f58;
+    --color-prettylights-syntax-constant-other-reference-link: #a5d6ff;
+    --color-fg-default: #c9d1d9;
+    --color-fg-muted: #8b949e;
+    --color-fg-subtle: #484f58;
+    --color-canvas-default: #0d1117;
+    --color-canvas-subtle: #161b22;
+    --color-border-default: #30363d;
+    --color-border-muted: #21262d;
+    --color-neutral-muted: rgba(110,118,129,0.4);
+    --color-accent-fg: #58a6ff;
+    --color-accent-emphasis: #1f6feb;
+    --color-danger-fg: #f85149;
+  }
 }
 
-body > *:first-child {
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-prettylights-syntax-comment: #6e7781;
+    --color-prettylights-syntax-constant: #0550ae;
+    --color-prettylights-syntax-entity: #8250df;
+    --color-prettylights-syntax-storage-modifier-import: #24292f;
+    --color-prettylights-syntax-entity-tag: #116329;
+    --color-prettylights-syntax-keyword: #cf222e;
+    --color-prettylights-syntax-string: #0a3069;
+    --color-prettylights-syntax-variable: #953800;
+    --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+    --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+    --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+    --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+    --color-prettylights-syntax-carriage-return-bg: #cf222e;
+    --color-prettylights-syntax-string-regexp: #116329;
+    --color-prettylights-syntax-markup-list: #3b2300;
+    --color-prettylights-syntax-markup-heading: #0550ae;
+    --color-prettylights-syntax-markup-italic: #24292f;
+    --color-prettylights-syntax-markup-bold: #24292f;
+    --color-prettylights-syntax-markup-deleted-text: #82071e;
+    --color-prettylights-syntax-markup-deleted-bg: #FFEBE9;
+    --color-prettylights-syntax-markup-inserted-text: #116329;
+    --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+    --color-prettylights-syntax-markup-changed-text: #953800;
+    --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+    --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+    --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+    --color-prettylights-syntax-meta-diff-range: #8250df;
+    --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+    --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+    --color-prettylights-syntax-constant-other-reference-link: #0a3069;
+    --color-fg-default: #24292f;
+    --color-fg-muted: #57606a;
+    --color-fg-subtle: #6e7781;
+    --color-canvas-default: #ffffff;
+    --color-canvas-subtle: #f6f8fa;
+    --color-border-default: #d0d7de;
+    --color-border-muted: hsla(210,18%,87%,1);
+    --color-neutral-muted: rgba(175,184,193,0.2);
+    --color-accent-fg: #0969da;
+    --color-accent-emphasis: #0969da;
+    --color-danger-fg: #cf222e;
+  }
+}
+
+:root {
+  color: var(--color-fg-default);
+  background-color: var(--color-canvas-default);
+}
+
+.markdownroot {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin: 0;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.markdownroot .octicon {
+  display: inline-block;
+  fill: currentColor;
+  vertical-align: text-bottom;
+}
+
+.markdownroot h1:hover .anchor .octicon-link:before,
+.markdownroot h2:hover .anchor .octicon-link:before,
+.markdownroot h3:hover .anchor .octicon-link:before,
+.markdownroot h4:hover .anchor .octicon-link:before,
+.markdownroot h5:hover .anchor .octicon-link:before,
+.markdownroot h6:hover .anchor .octicon-link:before {
+  width: 16px;
+  height: 16px;
+  content: ' ';
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");
+}
+
+.markdownroot details,
+.markdownroot figcaption,
+.markdownroot figure {
+  display: block;
+}
+
+.markdownroot summary {
+  display: list-item;
+}
+
+.markdownroot a {
+  background-color: transparent;
+  color: var(--color-accent-fg);
+  text-decoration: none;
+}
+
+.markdownroot a:active,
+.markdownroot a:hover {
+  outline-width: 0;
+}
+
+.markdownroot abbr[title] {
+  border-bottom: none;
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted;
+}
+
+.markdownroot b,
+.markdownroot strong {
+  font-weight: 600;
+}
+
+.markdownroot dfn {
+  font-style: italic;
+}
+
+.markdownroot h1 {
+  margin: .67em 0;
+  font-weight: 600;
+  padding-bottom: .3em;
+  font-size: 2em;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.markdownroot mark {
+  background-color: #ff0;
+  color: var(--color-text-primary);
+}
+
+.markdownroot small {
+  font-size: 90%;
+}
+
+.markdownroot sub,
+.markdownroot sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.markdownroot sub {
+  bottom: -0.25em;
+}
+
+.markdownroot sup {
+  top: -0.5em;
+}
+
+.markdownroot img {
+  border-style: none;
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: var(--color-canvas-default);
+}
+
+.markdownroot code,
+.markdownroot kbd,
+.markdownroot pre,
+.markdownroot samp {
+  font-family: monospace,monospace;
+  font-size: 1em;
+}
+
+.markdownroot figure {
+  margin: 1em 40px;
+}
+
+.markdownroot hr {
+  box-sizing: content-box;
+  overflow: hidden;
+  background: transparent;
+  border-bottom: 1px solid var(--color-border-muted);
+  height: .25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: var(--color-border-default);
+  border: 0;
+}
+
+.markdownroot html [type=button],
+.markdownroot [type=reset],
+.markdownroot [type=submit] {
+  -webkit-appearance: button;
+}
+
+.markdownroot [type=button]::-moz-focus-inner,
+.markdownroot [type=reset]::-moz-focus-inner,
+.markdownroot [type=submit]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+.markdownroot [type=button]:-moz-focusring,
+.markdownroot [type=reset]:-moz-focusring,
+.markdownroot [type=submit]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+.markdownroot [type=checkbox],
+.markdownroot [type=radio] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdownroot [type=number]::-webkit-inner-spin-button,
+.markdownroot [type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+.markdownroot [type=search] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+.markdownroot [type=search]::-webkit-search-cancel-button,
+.markdownroot [type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+.markdownroot ::-webkit-input-placeholder {
+  color: inherit;
+  opacity: .54;
+}
+
+.markdownroot ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  font: inherit;
+}
+
+.markdownroot a:hover {
+  text-decoration: underline;
+}
+
+.markdownroot hr::before {
+  display: table;
+  content: "";
+}
+
+.markdownroot hr::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdownroot table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.markdownroot td,
+.markdownroot th {
+  padding: 0;
+}
+
+.markdownroot details summary {
+  cursor: pointer;
+}
+
+.markdownroot details:not([open])>*:not(summary) {
+  display: none !important;
+}
+
+.markdownroot kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font: 11px ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  line-height: 10px;
+  color: var(--color-fg-default);
+  vertical-align: middle;
+  background-color: var(--color-canvas-subtle);
+  border: solid 1px var(--color-neutral-muted);
+  border-bottom-color: var(--color-neutral-muted);
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 var(--color-neutral-muted);
+}
+
+.markdownroot h1,
+.markdownroot h2,
+.markdownroot h3,
+.markdownroot h4,
+.markdownroot h5,
+.markdownroot h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdownroot h2 {
+  font-weight: 600;
+  padding-bottom: .3em;
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.markdownroot h3 {
+  font-weight: 600;
+  font-size: 1.25em;
+}
+
+.markdownroot h4 {
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.markdownroot h5 {
+  font-weight: 600;
+  font-size: .875em;
+}
+
+.markdownroot h6 {
+  font-weight: 600;
+  font-size: .85em;
+  color: var(--color-fg-muted);
+}
+
+.markdownroot p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.markdownroot blockquote {
+  margin: 0;
+  padding: 0 1em;
+  color: var(--color-fg-muted);
+  border-left: .25em solid var(--color-border-default);
+}
+
+.markdownroot ul,
+.markdownroot ol {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2em;
+}
+
+.markdownroot ol ol,
+.markdownroot ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdownroot ul ul ol,
+.markdownroot ul ol ol,
+.markdownroot ol ul ol,
+.markdownroot ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdownroot dd {
+  margin-left: 0;
+}
+
+.markdownroot tt,
+.markdownroot code {
+  font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  font-size: 12px;
+}
+
+.markdownroot pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  font-size: 12px;
+  word-wrap: normal;
+}
+
+.markdownroot :-ms-input-placeholder {
+  color: var(--color-fg-subtle);
+  opacity: 1;
+}
+
+.markdownroot ::-ms-input-placeholder {
+  color: var(--color-fg-subtle);
+  opacity: 1;
+}
+
+.markdownroot ::placeholder {
+  color: var(--color-fg-subtle);
+  opacity: 1;
+}
+
+.markdownroot .pl-c {
+  color: var(--color-prettylights-syntax-comment);
+}
+
+.markdownroot .pl-c1,
+.markdownroot .pl-s .pl-v {
+  color: var(--color-prettylights-syntax-constant);
+}
+
+.markdownroot .pl-e,
+.markdownroot .pl-en {
+  color: var(--color-prettylights-syntax-entity);
+}
+
+.markdownroot .pl-smi,
+.markdownroot .pl-s .pl-s1 {
+  color: var(--color-prettylights-syntax-storage-modifier-import);
+}
+
+.markdownroot .pl-ent {
+  color: var(--color-prettylights-syntax-entity-tag);
+}
+
+.markdownroot .pl-k {
+  color: var(--color-prettylights-syntax-keyword);
+}
+
+.markdownroot .pl-s,
+.markdownroot .pl-pds,
+.markdownroot .pl-s .pl-pse .pl-s1,
+.markdownroot .pl-sr,
+.markdownroot .pl-sr .pl-cce,
+.markdownroot .pl-sr .pl-sre,
+.markdownroot .pl-sr .pl-sra {
+  color: var(--color-prettylights-syntax-string);
+}
+
+.markdownroot .pl-v,
+.markdownroot .pl-smw {
+  color: var(--color-prettylights-syntax-variable);
+}
+
+.markdownroot .pl-bu {
+  color: var(--color-prettylights-syntax-brackethighlighter-unmatched);
+}
+
+.markdownroot .pl-ii {
+  color: var(--color-prettylights-syntax-invalid-illegal-text);
+  background-color: var(--color-prettylights-syntax-invalid-illegal-bg);
+}
+
+.markdownroot .pl-c2 {
+  color: var(--color-prettylights-syntax-carriage-return-text);
+  background-color: var(--color-prettylights-syntax-carriage-return-bg);
+}
+
+.markdownroot .pl-sr .pl-cce {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-string-regexp);
+}
+
+.markdownroot .pl-ml {
+  color: var(--color-prettylights-syntax-markup-list);
+}
+
+.markdownroot .pl-mh,
+.markdownroot .pl-mh .pl-en,
+.markdownroot .pl-ms {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-markup-heading);
+}
+
+.markdownroot .pl-mi {
+  font-style: italic;
+  color: var(--color-prettylights-syntax-markup-italic);
+}
+
+.markdownroot .pl-mb {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-markup-bold);
+}
+
+.markdownroot .pl-md {
+  color: var(--color-prettylights-syntax-markup-deleted-text);
+  background-color: var(--color-prettylights-syntax-markup-deleted-bg);
+}
+
+.markdownroot .pl-mi1 {
+  color: var(--color-prettylights-syntax-markup-inserted-text);
+  background-color: var(--color-prettylights-syntax-markup-inserted-bg);
+}
+
+.markdownroot .pl-mc {
+  color: var(--color-prettylights-syntax-markup-changed-text);
+  background-color: var(--color-prettylights-syntax-markup-changed-bg);
+}
+
+.markdownroot .pl-mi2 {
+  color: var(--color-prettylights-syntax-markup-ignored-text);
+  background-color: var(--color-prettylights-syntax-markup-ignored-bg);
+}
+
+.markdownroot .pl-mdr {
+  font-weight: bold;
+  color: var(--color-prettylights-syntax-meta-diff-range);
+}
+
+.markdownroot .pl-ba {
+  color: var(--color-prettylights-syntax-brackethighlighter-angle);
+}
+
+.markdownroot .pl-sg {
+  color: var(--color-prettylights-syntax-sublimelinter-gutter-mark);
+}
+
+.markdownroot .pl-corl {
+  text-decoration: underline;
+  color: var(--color-prettylights-syntax-constant-other-reference-link);
+}
+
+.markdownroot [data-catalyst] {
+  display: block;
+}
+
+.markdownroot g-emoji {
+  font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 1em;
+  font-style: normal !important;
+  font-weight: 400;
+  line-height: 1;
+  vertical-align: -0.075em;
+}
+
+.markdownroot g-emoji img {
+  width: 1em;
+  height: 1em;
+}
+
+.markdownroot::before {
+  display: table;
+  content: "";
+}
+
+.markdownroot::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdownroot>*:first-child {
   margin-top: 0 !important;
 }
 
-body > *:last-child {
+.markdownroot>*:last-child {
   margin-bottom: 0 !important;
 }
 
-a {
-  color: #4183C4;
+.markdownroot a:not([href]) {
+  color: inherit;
   text-decoration: none;
 }
 
-a.absent {
-  color: #cc0000;
+.markdownroot .absent {
+  color: var(--color-danger-fg);
 }
 
-a.anchor {
-  display: block;
-  padding-left: 30px;
-  margin-left: -30px;
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
+.markdownroot .anchor {
+  float: left;
+  padding-right: 4px;
+  margin-left: -20px;
+  line-height: 1;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 20px 0 10px;
-  padding: 0;
-  font-weight: bold;
-  -webkit-font-smoothing: antialiased;
-  cursor: text;
-  position: relative;
+.markdownroot .anchor:focus {
+  outline: none;
 }
 
-h2:first-child, h1:first-child, h1:first-child + h2, h3:first-child, h4:first-child, h5:first-child, h6:first-child {
+.markdownroot p,
+.markdownroot blockquote,
+.markdownroot ul,
+.markdownroot ol,
+.markdownroot dl,
+.markdownroot table,
+.markdownroot pre,
+.markdownroot details {
   margin-top: 0;
-  padding-top: 0;
+  margin-bottom: 16px;
 }
 
-h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
-  text-decoration: none;
-}
-
-h1 tt, h1 code {
-  font-size: inherit;
-}
-
-h2 tt, h2 code {
-  font-size: inherit;
-}
-
-h3 tt, h3 code {
-  font-size: inherit;
-}
-
-h4 tt, h4 code {
-  font-size: inherit;
-}
-
-h5 tt, h5 code {
-  font-size: inherit;
-}
-
-h6 tt, h6 code {
-  font-size: inherit;
-}
-
-h1 {
-  font-size: 28px;
-  color: black;
-}
-
-h2 {
-  font-size: 24px;
-  border-bottom: 1px solid #cccccc;
-  color: black;
-}
-
-h3 {
-  font-size: 18px;
-}
-
-h4 {
-  font-size: 16px;
-}
-
-h5 {
-  font-size: 14px;
-}
-
-h6 {
-  color: #777777;
-  font-size: 14px;
-}
-
-p, blockquote, ul, ol, dl, li, table, pre {
-  margin: 15px 0;
-}
-
-hr {
-  border: 0 none;
-  color: #cccccc;
-  height: 4px;
-  padding: 0;
-}
-
-body > h2:first-child {
-  margin-top: 0;
-  padding-top: 0;
-}
-
-body > h1:first-child {
-  margin-top: 0;
-  padding-top: 0;
-}
-
-body > h1:first-child + h2 {
-  margin-top: 0;
-  padding-top: 0;
-}
-
-body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
-  margin-top: 0;
-  padding-top: 0;
-}
-
-a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
-  margin-top: 0;
-  padding-top: 0;
-}
-
-h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+.markdownroot blockquote>:first-child {
   margin-top: 0;
 }
 
-li p.first {
-  display: inline-block;
-}
-
-ul, ol {
-  padding-left: 30px;
-}
-
-ul :first-child, ol :first-child {
-  margin-top: 0;
-}
-
-ul :last-child, ol :last-child {
+.markdownroot blockquote>:last-child {
   margin-bottom: 0;
 }
 
-dl {
+.markdownroot sup>a::before {
+  content: "[";
+}
+
+.markdownroot sup>a::after {
+  content: "]";
+}
+
+.markdownroot h1 .octicon-link,
+.markdownroot h2 .octicon-link,
+.markdownroot h3 .octicon-link,
+.markdownroot h4 .octicon-link,
+.markdownroot h5 .octicon-link,
+.markdownroot h6 .octicon-link {
+  color: var(--color-fg-default);
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.markdownroot h1:hover .anchor,
+.markdownroot h2:hover .anchor,
+.markdownroot h3:hover .anchor,
+.markdownroot h4:hover .anchor,
+.markdownroot h5:hover .anchor,
+.markdownroot h6:hover .anchor {
+  text-decoration: none;
+}
+
+.markdownroot h1:hover .anchor .octicon-link,
+.markdownroot h2:hover .anchor .octicon-link,
+.markdownroot h3:hover .anchor .octicon-link,
+.markdownroot h4:hover .anchor .octicon-link,
+.markdownroot h5:hover .anchor .octicon-link,
+.markdownroot h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+
+.markdownroot h1 tt,
+.markdownroot h1 code,
+.markdownroot h2 tt,
+.markdownroot h2 code,
+.markdownroot h3 tt,
+.markdownroot h3 code,
+.markdownroot h4 tt,
+.markdownroot h4 code,
+.markdownroot h5 tt,
+.markdownroot h5 code,
+.markdownroot h6 tt,
+.markdownroot h6 code {
+  padding: 0 .2em;
+  font-size: inherit;
+}
+
+.markdownroot ul.no-list,
+.markdownroot ol.no-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.markdownroot ol[type="1"] {
+  list-style-type: decimal;
+}
+
+.markdownroot ol[type=a] {
+  list-style-type: lower-alpha;
+}
+
+.markdownroot ol[type=i] {
+  list-style-type: lower-roman;
+}
+
+.markdownroot div>ol:not([type]) {
+  list-style-type: decimal;
+}
+
+.markdownroot ul ul,
+.markdownroot ul ol,
+.markdownroot ol ol,
+.markdownroot ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdownroot li>p {
+  margin-top: 16px;
+}
+
+.markdownroot li+li {
+  margin-top: .25em;
+}
+
+.markdownroot dl {
   padding: 0;
 }
 
-dl dt {
-  font-size: 14px;
-  font-weight: bold;
+.markdownroot dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
   font-style: italic;
-  padding: 0;
-  margin: 15px 0 5px;
+  font-weight: 600;
 }
 
-dl dt:first-child {
-  padding: 0;
+.markdownroot dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
 }
 
-dl dt > :first-child {
-  margin-top: 0;
+.markdownroot table th {
+  font-weight: 600;
 }
 
-dl dt > :last-child {
-  margin-bottom: 0;
-}
-
-dl dd {
-  margin: 0 0 15px;
-  padding: 0 15px;
-}
-
-dl dd > :first-child {
-  margin-top: 0;
-}
-
-dl dd > :last-child {
-  margin-bottom: 0;
-}
-
-blockquote {
-  border-left: 4px solid #dddddd;
-  padding: 0 15px;
-  color: #777777;
-}
-
-blockquote > :first-child {
-  margin-top: 0;
-}
-
-blockquote > :last-child {
-  margin-bottom: 0;
-}
-
-table {
-  padding: 0;
-  border-collapse:collapse;
-}
-table tr {
-  border-top: 1px solid #cccccc;
-  background-color: white;
-  margin: 0;
-  padding: 0;
-}
-
-table tr:nth-child(2n) {
-  background-color: #f8f8f8;
-}
-
-table tr th {
-  font-weight: bold;
-  border: 1px solid #cccccc;
-  text-align: left;
-  margin: 0;
+.markdownroot table th,
+.markdownroot table td {
   padding: 6px 13px;
+  border: 1px solid var(--color-border-default);
 }
 
-table tr td {
-  border: 1px solid #cccccc;
-  text-align: left;
-  margin: 0;
-  padding: 6px 13px;
+.markdownroot table tr {
+  background-color: var(--color-canvas-default);
+  border-top: 1px solid var(--color-border-muted);
 }
 
-table tr th :first-child, table tr td :first-child {
-  margin-top: 0;
+.markdownroot table tr:nth-child(2n) {
+  background-color: var(--color-canvas-subtle);
 }
 
-table tr th :last-child, table tr td :last-child {
-  margin-bottom: 0;
+.markdownroot table img {
+  background-color: transparent;
 }
 
-img {
-  max-width: 100%;
+.markdownroot img[align=right] {
+  padding-left: 20px;
 }
 
-span.frame {
+.markdownroot img[align=left] {
+  padding-right: 20px;
+}
+
+.markdownroot .emoji {
+  max-width: none;
+  vertical-align: text-top;
+  background-color: transparent;
+}
+
+.markdownroot span.frame {
   display: block;
   overflow: hidden;
 }
 
-span.frame > span {
-  border: 1px solid #dddddd;
+.markdownroot span.frame>span {
   display: block;
   float: left;
-  overflow: hidden;
-  margin: 13px 0 0;
-  padding: 7px;
   width: auto;
+  padding: 7px;
+  margin: 13px 0 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
 }
 
-span.frame span img {
+.markdownroot span.frame span img {
   display: block;
   float: left;
 }
 
-span.frame span span {
-  clear: both;
-  color: #333333;
+.markdownroot span.frame span span {
   display: block;
   padding: 5px 0 0;
+  clear: both;
+  color: var(--color-fg-default);
 }
 
-span.align-center {
+.markdownroot span.align-center {
   display: block;
   overflow: hidden;
   clear: both;
 }
 
-span.align-center > span {
+.markdownroot span.align-center>span {
   display: block;
-  overflow: hidden;
   margin: 13px auto 0;
+  overflow: hidden;
   text-align: center;
 }
 
-span.align-center span img {
+.markdownroot span.align-center span img {
   margin: 0 auto;
   text-align: center;
 }
 
-span.align-right {
+.markdownroot span.align-right {
   display: block;
   overflow: hidden;
   clear: both;
 }
 
-span.align-right > span {
+.markdownroot span.align-right>span {
   display: block;
-  overflow: hidden;
   margin: 13px 0 0;
+  overflow: hidden;
   text-align: right;
 }
 
-span.align-right span img {
+.markdownroot span.align-right span img {
   margin: 0;
   text-align: right;
 }
 
-span.float-left {
+.markdownroot span.float-left {
   display: block;
+  float: left;
   margin-right: 13px;
   overflow: hidden;
-  float: left;
 }
 
-span.float-left span {
+.markdownroot span.float-left span {
   margin: 13px 0 0;
 }
 
-span.float-right {
+.markdownroot span.float-right {
   display: block;
+  float: right;
   margin-left: 13px;
   overflow: hidden;
-  float: right;
 }
 
-span.float-right > span {
+.markdownroot span.float-right>span {
   display: block;
-  overflow: hidden;
   margin: 13px auto 0;
+  overflow: hidden;
   text-align: right;
 }
 
-code, tt {
-  margin: 0 2px;
-  padding: 0 5px;
-  white-space: nowrap;
-  border: 1px solid #eaeaea;
-  background-color: #f8f8f8;
-  border-radius: 3px;
-}
-
-pre code {
+.markdownroot code,
+.markdownroot tt {
+  padding: .2em .4em;
   margin: 0;
+  font-size: 85%;
+  background-color: var(--color-neutral-muted);
+  border-radius: 6px;
+}
+
+.markdownroot code br,
+.markdownroot tt br {
+  display: none;
+}
+
+.markdownroot del code {
+  text-decoration: inherit;
+}
+
+.markdownroot pre code {
+  font-size: 100%;
+}
+
+.markdownroot pre>code {
   padding: 0;
+  margin: 0;
+  word-break: normal;
   white-space: pre;
-  border: none;
   background: transparent;
+  border: 0;
 }
 
-.highlight pre {
-  background-color: #f8f8f8;
-  border: 1px solid #cccccc;
-  font-size: 13px;
-  line-height: 19px;
+.markdownroot .highlight {
+  margin-bottom: 16px;
+}
+
+.markdownroot .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdownroot .highlight pre,
+.markdownroot pre {
+  padding: 16px;
   overflow: auto;
-  padding: 6px 10px;
-  border-radius: 3px;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: var(--color-canvas-subtle);
+  border-radius: 6px;
 }
 
-pre {
-  background-color: #f8f8f8;
-  border: 1px solid #cccccc;
-  font-size: 13px;
-  line-height: 19px;
-  overflow: auto;
-  padding: 6px 10px;
-  border-radius: 3px;
-}
-
-pre code, pre tt {
+.markdownroot pre code,
+.markdownroot pre tt {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
   background-color: transparent;
-  border: none;
+  border: 0;
+}
+
+.markdownroot .csv-data td,
+.markdownroot .csv-data th {
+  padding: 5px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.markdownroot .csv-data .blob-num {
+  padding: 10px 8px 9px;
+  text-align: right;
+  background: var(--color-canvas-default);
+  border: 0;
+}
+
+.markdownroot .csv-data tr {
+  border-top: 0;
+}
+
+.markdownroot .csv-data th {
+  font-weight: 600;
+  background: var(--color-canvas-subtle);
+  border-top: 0;
+}
+
+.markdownroot .footnotes {
+  font-size: 12px;
+  color: var(--color-fg-muted);
+  border-top: 1px solid var(--color-border-default);
+}
+
+.markdownroot .footnotes ol {
+  padding-left: 16px;
+}
+
+.markdownroot .footnotes li {
+  position: relative;
+}
+
+.markdownroot .footnotes li:target::before {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  bottom: -8px;
+  left: -24px;
+  pointer-events: none;
+  content: "";
+  border: 2px solid var(--color-accent-emphasis);
+  border-radius: 6px;
+}
+
+.markdownroot .footnotes li:target {
+  color: var(--color-fg-default);
+}
+
+.markdownroot .footnotes .data-footnote-backref g-emoji {
+  font-family: monospace;
+}
+
+.markdownroot [hidden] {
+  display: none !important;
+}
+
+.markdownroot ::-webkit-calendar-picker-indicator {
+  filter: invert(50%);
 }

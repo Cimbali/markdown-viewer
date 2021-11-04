@@ -1,5 +1,51 @@
+/*
+ * Copyright (c) 2016 Thibaut Rousseau
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--back: white;
+		--text: #333333;
+		--link: #0088CC;
+		--alt-link: #005588;
+		--alt-back: #EEEEEE;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--back: #1C1B22;
+		--text: #FBFBFE;
+		--link: #55CCFF;
+		--alt-link: #0088CC;
+		--alt-back: #444444;
+	}
+}
+
+:root {
+	background: var(--back);
+	color: var(--text);
+}
+
 body {
-	color: #333;
 	font-family: 'Segoe UI', 'Lucida Grande', Helvetica, sans-serif;
 	line-height: 1.5;
 	margin: 2em;
@@ -24,14 +70,14 @@ h4, h5, h6 {
 }
 
 a {
-	color: #08C;
+	color: var(--link);
 	text-decoration: none;
 }
 a:hover, a:focus {
 	text-decoration: underline;
 }
 a:visited {
-	color: #058;
+	color: var(--alt-link);
 }
 
 img {
@@ -46,12 +92,12 @@ dt {
 }
 
 code {
-	background: #EEE;
+	background: var(--alt-back);
 	font-family: "Consolas", "Lucida Console", monospace;
 	padding: 1px 5px;
 }
 pre {
-	background: #EEE;
+	background: var(--alt-back);
 	padding: 5px 10px;
 	white-space: pre-wrap;
 }
@@ -60,8 +106,7 @@ pre code {
 }
 
 blockquote {
-	border-left: 5px solid;
-	border-color: #EEE;
+	border-left: 5px solid var(--alt-back);
 	margin: 0;
 	padding: 0 10px;
 }
@@ -74,47 +119,16 @@ table + table {
 	margin-top: 1em;
 }
 thead {
-	background: #EEE;
+	background: var(--alt-back);
 	text-align: left;
 }
 th, td {
-	border: 1px solid #EEE;
+	border: 1px solid var(--alt-back);
 	padding: 5px 10px;
 }
 
 hr {
-	background: #EEE;
+	background: var(--alt-back);
 	border: 0;
 	height: 1px;
-}
-
-@media (prefers-color-scheme: dark) {
-	body {
-		background: #1C1B22;
-		color: #FBFBFE;
-	}
-	a {
-		color: #5CF;
-	}
-	a:visited {
-		color: #08C;
-	}
-	code {
-		background: #444;
-	}
-	pre {
-		background: #444;
-	}
-	thead {
-		background: #444;
-	}
-	th, td {
-		border-color: #444;
-	}
-	hr {
-		background: #444;
-	}
-	blockquote {
-		border-color: #444;
-	}
 }
