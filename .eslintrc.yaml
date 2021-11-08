@@ -7,6 +7,13 @@ env:
   browser: true
   webextensions: true
 
+globals:
+  markdownit: readonly
+  fancyList: readonly
+  texmath: readonly
+  katex: readonly
+  hljs: readonly
+
 plugins:
   - no-unsanitized
 
@@ -47,7 +54,9 @@ rules:
     - error
     - skipRegExps: true
   no-misleading-character-class: error
-  no-mixed-spaces-and-tabs: error
+  no-mixed-spaces-and-tabs:
+    - error
+    - smart-tabs
   no-new-symbol: error
   no-obj-calls: error
   no-octal: error
@@ -73,7 +82,9 @@ rules:
   use-isnan: error
   valid-typeof: error
   radix: error
-  no-console: error
+  no-console:
+    - error
+    - allow: ["warn", "error"]
   no-promise-executor-return: error
   no-extra-parens:
     - error

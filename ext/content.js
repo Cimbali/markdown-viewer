@@ -2,7 +2,8 @@
 
 const webext = typeof browser === 'undefined' ? chrome : browser;
 const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
-const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false, 'texmath': false};
+const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false,
+						'texmath': false};
 
 const mdcss = {'default': 'sss', 'github': 'github'}
 const hlcss = [
@@ -38,18 +39,20 @@ function setExtensionStylesheet(href, sheet) {
 	return fetch(webext.extension.getURL(href)).then(response => response.text()).then(data => {
 		sheet.textContent = data;
 		return sheet;
-	}).catch(err => console.error(`Failed fetching or setting stylesheet ${href}`))
+	}).catch(() => console.error(`Failed fetching or setting stylesheet ${href}`))
 }
 
-function setExtensionStylesheetAuto(href_dark, href_light, sheet) {
+function setExtensionStylesheetAuto(hrefDark, hrefLight, sheet) {
 	return Promise.all([
-		fetch(webext.extension.getURL(href_dark)).then(response => response.text()),
-		fetch(webext.extension.getURL(href_light)).then(response => response.text()),
-	]).then(([data_dark, data_light]) => {
-		sheet.textContent = `@media (prefers-color-scheme: light) { ${data_light} }` + '\n\n' +
-							`@media (prefers-color-scheme: dark) { ${data_dark} }`;
+		fetch(webext.extension.getURL(hrefDark)).then(response => response.text()),
+		fetch(webext.extension.getURL(hrefLight)).then(response => response.text()),
+	]).then(([dataDark, dataLight]) => {
+		sheet.textContent = `
+@media (prefers-color-scheme: light) { ${dataLight} }
+
+@media (prefers-color-scheme: dark) { ${dataDark} }`;
 		return sheet;
-	}).catch(err => console.error(`Failed fetching or setting stylesheet ${href}`))
+	}).catch(() => console.error(`Failed fetching or setting hljs stylesheet(s) ${hrefDark} and/or ${hrefLight}`))
 }
 
 function setCustomStylesheet(sheet) {
@@ -249,8 +252,8 @@ function buildStyleOptions() {
 	hlselect.addEventListener('change', () => {
 		const sheet = document.getElementById('__markdown-viewer__hljs_css');
 		if (hlselect.value.endsWith('auto')) {
-			const dark = hlselect.value.slice(0, -4) + 'dark';
-			const light = hlselect.value.slice(0, -4) + 'light';
+			const dark = `${hlselect.value.slice(0, -4)}dark`;
+			const light = `${hlselect.value.slice(0, -4)}light`;
 			setExtensionStylesheetAuto(`/lib/highlightjs/build/styles/${dark}.min.css`,
 									   `/lib/highlightjs/build/styles/${light}.min.css`, sheet);
 		} else {
