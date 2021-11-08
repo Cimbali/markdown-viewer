@@ -150,3 +150,6 @@ Create this file if it does not exist, otherwise edit it, and add the following 
     type=text/plain exts=md,mkd,mkdn,mdwn,mdown,markdown, desc="Markdown document"
 
 Then restart firefox.
+
+**Important note:** On some systems, e.g. Ubuntu 21.10 or newer, firefox may be installed with a system like [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core), which prevents it from reading files from your disk such as `~/.mime.types`, see [#86](https://github.com/KeithLRobertson/markdown-viewer/issues/86).
+In that case you need to use a path accessible to firefox, and expand the `~` to the full path of your home, e.g. use as filename and config value: `/home/me/snap/firefox/common/mime.types` − where `me` is your username. A suitable directory is likely the parent of `.mozilla` in your profile path, which you can find in `about:profiles`.
