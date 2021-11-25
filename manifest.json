@@ -4,7 +4,7 @@
 	"version": "1.8.0",
 	"author": "Keith L Robertson, Cimbali",
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
-	"description": "Displays markdown documents beautified in your browser.",
+	"description": "Displays Markdown documents beautified in your browser.",
 
 	"applications": {
 		"gecko": {
