@@ -1,0 +1,58 @@
+:root {
+    background: white;
+    color: black;
+    font: 8pt serif;
+    line-height: 1.5;
+    vertical-align: baseline;
+}
+
+body, .markdownRoot {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+ul, ol {
+    padding-left: 2em
+}
+
+a {
+    color: #666;
+    text-decoration: underline;
+}
+
+a[href]:after {
+    content: ' (' attr(href) ')';
+    font-size: 1rem;
+}
+
+img {
+    max-width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    padding: .1em 0 .2em 0;
+}
+
+h1, h2, h3, h4, h5, h6, dt {
+    /* break-after: avoid; */
+    break-inside: avoid;
+}
+
+/* Hack to fix break-after: https://stackoverflow.com/a/53742871 */
+h1:after, h2:after, h3:after, h4:after, h5:after, h6:after, dt:after {
+    content: "";
+    display: block;
+    /* .2em of padding + 3em for 2 full lines */
+    height: 3.2em;
+    margin-bottom: -3.2em;
+}
+
+blockquote, pre, li, dt, dd {
+    break-inside: avoid;
+}

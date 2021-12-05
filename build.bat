@@ -24,7 +24,7 @@ npm run build
 	lib\katex\dist\katex.min.js
 	lib\katex\dist\katex.min.css
 	lib\sss\sss.css
-	lib\sss\sss.print.css
+	lib\sss\print.css
 	lib\sss\github.css
 ) do @call :copyfile %%f staging\%%f
 

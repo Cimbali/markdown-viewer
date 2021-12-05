@@ -17,7 +17,7 @@ for f in LICENSE \
 	lib/katex/dist/katex.min.js \
 	lib/katex/dist/katex.min.css \
 	lib/sss/sss.css \
-	lib/sss/sss.print.css \
+	lib/sss/print.css \
 	lib/sss/github.css
 do
 	mkdir -p `dirname staging/$f`
