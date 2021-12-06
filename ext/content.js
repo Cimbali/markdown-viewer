@@ -356,6 +356,25 @@ function addMarkdownViewerMenu() {
 	});
 }
 
+function revealDisclosures(state) {
+	state.splice(0, state.length);
+	state.push(...Array.from(document.getElementsByTagName('details')).map(tag => {
+		const wasOpen = tag.getAttribute('open');
+		tag.setAttribute('open', true)
+		return wasOpen;
+	}))
+}
+
+function restoreDisclosures(state) {
+	Array.from(document.getElementsByTagName('details')).forEach((tag, idx) => {
+		if (state[idx] === null) {
+			tag.removeAttribute('open')
+		} else {
+			tag.setAttribute('open', state[idx])
+		}
+	})
+}
+
 // Process only if document is unprocessed text.
 const {body} = document;
 if (body.childNodes.length === 1 &&
@@ -383,4 +402,8 @@ if (body.childNodes.length === 1 &&
 	window.addEventListener("unload", () => {
 		sessionStorage[scrollPosKey] = JSON.stringify([window.scrollX, window.scrollY]);
 	});
+
+	const disclosures = [];
+	window.addEventListener('beforeprint', evt => revealDisclosures(disclosures));
+	window.addEventListener('afterprint', evt => restoreDisclosures(disclosures));
 }
