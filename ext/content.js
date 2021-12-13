@@ -404,6 +404,6 @@ if (body.childNodes.length === 1 &&
 	});
 
 	const disclosures = [];
-	window.addEventListener('beforeprint', evt => revealDisclosures(disclosures));
-	window.addEventListener('afterprint', evt => restoreDisclosures(disclosures));
+	window.addEventListener('beforeprint', () => revealDisclosures(disclosures));
+	window.addEventListener('afterprint', () => restoreDisclosures(disclosures));
 }
