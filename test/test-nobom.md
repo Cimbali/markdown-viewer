@@ -25,6 +25,8 @@ Unicode: âêîôûŵŷ äëïöüẅÿ àèìòùẁỳ áéíóúẃý   Во�
 
 ~~strikethrough~~
 
+![image demo](MarkdownSample.PNG "hover text")
+
 multiple_underscores_in_text_without_parsing
 
 Unordered lists with:

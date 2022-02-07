@@ -25,6 +25,8 @@ Unicode: âêîôûŵŷ äëïöüẅÿ àèìòùẁỳ áéíóúẃý   Во�
 
 multiple_underscores_in_text_without_parsing
 
+![image demo](MarkdownSample.PNG "hover text")
+
 Let's try some :slightly_smiling_face: emoji[^1] :-) for your viewing :joy: pleasure^[footnotes can also be inline].
 
 [^1]: even if you do not like emojis, you might still enjoy footnotes
