@@ -26,6 +26,15 @@
 	<p>A fixed menu will stay at the same position when you scroll the page, but hide text underneath.
 	A floating menu will reflow that page's text around it, but will scroll with the page.</p>
 
+	<h3>Embedding mode</h3>
+	<p>Generated HTML can be embedded into the page either directly, or through an iframe with a sandbox attribute, which should provide better security:
+	<br />
+	<select id="embedding_mode">
+		<option value="iframe">iframe (beta)</option>
+		<option value="direct">direct</option>
+	</select>
+	</p>
+
 	<h3>Markdown-it plugins</h3>
 	<p>Select which plugins to enable for the Markdown parser, <a href="https://github.com/markdown-it/markdown-it">markdown-it</a>:
 	<label class="plugins"><input type="checkbox" name="hljs" checked="checked">

@@ -397,6 +397,66 @@ function render(url, source){
 	return res;
 }
 
+function createSandboxIframe() {
+	let iF = document.createElement("iframe");
+	iF.csp = "";
+	iF.sandbox = "allow-same-origin";
+	iF.referrerpolicy = "no-referrer";
+	return iF;
+}
+
+const blankDoc = "<!DOCTYPE html>\n<html><head></head><body></body></html>";
+
+function initializeBlankIframe(iF) {
+	return new Promise((resolve, reject) => {
+		iF.addEventListener("load", () => {
+			resolve(iF.contentDocument);
+		}, false);
+		iF.src = URL.createObjectURL(new Blob([blankDoc], {
+			type: "text/html"
+		}));
+	});
+}
+
+const IFRAME_NAME = "sandbox";
+
+function renderIntoIframe(uri, source, placerLambda) {
+	return render(uri, source).then(([renderedDOM, title]) => {
+		console.log(renderedDOM);
+		let iF = createSandboxIframe(); // an iframe cannot be fully initialized befor it is embedded into the doc.
+		placerLambda(iF);
+
+		initializeBlankIframe(iF).then(doc => {
+			iF.style.position = "fixed";
+			iF.frameborder = true;
+			iF.border = true;
+
+			iF.style.overflow = "scroll";
+			iF.style.width = "100%";
+			iF.style.height = "100%"; // https://stackoverflow.com/questions/5272519/how-do-you-give-iframe-100-height#19228136 , comment by @Zeni	
+			iF.style.margin = "0px";
+			iF.style.padding = "0px";
+			iF.style.border = "0px";
+			iF.style.display = "inline-block";
+
+			iF.style.resize = "both";
+			iF.name = IFRAME_NAME;
+
+			doc.documentElement.appendChild(renderedDOM);
+			
+			window.addEventListener('hashchange', (e) => {
+				console.log(e);
+				iF.contentWindow.location.hash = window.location.hash;
+			});
+			iF.contentWindow.addEventListener('hashchange', () => {
+				window.location.hash = window.location.hash;
+			});
+
+			return makeDocHeader(doc, renderedDOM, title).then(() => addMarkdownViewerMenu(doc)).then(() => createHTMLSourceBlob(doc)).then(() => Promise.resolve(iF));
+		});
+	});
+}
+
 function renderIntoMainDoc(uri, source, placerLambda){
 	render(uri, source).then(([renderedDOM, title]) => {
 		makeDocHeader(document, renderedDOM, title);
@@ -405,3 +465,8 @@ function renderIntoMainDoc(uri, source, placerLambda){
 	then(() => addMarkdownViewerMenu(document)).
 	then(() => createHTMLSourceBlob(document));
 }
+
+const embeddingModes = new Map([
+	["iframe", renderIntoIframe],
+	["direct", renderIntoMainDoc]
+]);

@@ -37,6 +37,16 @@ webext.storage.sync.get('display_menu', (storage) => {
 });
 
 
+const embeddingMode = document.getElementById('embedding_mode');
+webext.storage.sync.get('embedding_mode', (storage) => {
+	if ('display_menu' in storage) { embeddingMode.value = storage.embedding_mode; }
+
+	embeddingMode.onchange = () => {
+		webext.storage.sync.set({embedding_mode: embeddingMode.value})
+	};
+});
+
+
 webext.storage.sync.get('plugins', (storage) => {
 	const pluginPrefs = storage.plugins || {};
 
