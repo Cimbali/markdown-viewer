@@ -77,14 +77,6 @@
 		}
 	],
 
-	"web_accessible_resources": [
-		"lib/sss/*.css",
-		"lib/highlightjs/build/styles/*.min.css",
-		"lib/markdown-it-texmath/css/texmath.css",
-		"lib/katex/dist/katex.min.css",
-		"ext/menu.css"
-	],
-
 	"options_ui": {
 		"page": "ext/options.html",
 		"browser_style": true
