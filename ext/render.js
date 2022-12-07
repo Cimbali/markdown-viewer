@@ -323,7 +323,7 @@ function buildTableOfContents() {
 			parentList.removeChild(parentItem);
 		}
 
-		tocdiv.id = '__markdown-viewer__toc';
+		tocdiv.id = 'toc';
 		tocdiv.className = 'toggleable'
 		return Promise.resolve(tocdiv);
 	}
@@ -381,13 +381,7 @@ function render(url, source){
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
 	let res = webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins})).
-		then(pluginPrefs => processMarkdown(source, pluginPrefs)).
-		then(([renderedDOM, title]) => {
-			makeDocHeader(renderedDOM, title);
-			body.replaceChild(renderedDOM, body.firstChild);
-		}).
-		then(() => addMarkdownViewerMenu()).
-		then(() => createHTMLSourceBlob());
+		then(pluginPrefs => processMarkdown(source, pluginPrefs));
 
 	try {
 		window.scrollTo(...JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
@@ -410,5 +404,10 @@ if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
-	render(window.location.href, body.firstChild.textContent);
+	render(window.location.href, body.firstChild.textContent).then(([renderedDOM, title]) => {
+		makeDocHeader(renderedDOM, title);
+		body.replaceChild(renderedDOM, body.firstChild);
+	}).
+	then(() => addMarkdownViewerMenu()).
+	then(() => createHTMLSourceBlob());;
 }
