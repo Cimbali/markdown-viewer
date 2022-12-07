@@ -174,9 +174,9 @@ function makeDocHeader(markdownRoot, title) {
 	return styleSheetsDone;
 }
 
-function processMarkdown(element, plugins) {
+function processMarkdown(source, plugins) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
-	const html = getRenderer(plugins).render(element.textContent);
+	const html = getRenderer(plugins).render(source);
 	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
 	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
 
@@ -375,13 +375,13 @@ function restoreDisclosures(state) {
 	})
 }
 
-function render(url){
+function render(url, source){
 	const hash = url.lastIndexOf('#');
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
 	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins})).
-		then(pluginPrefs => processMarkdown(body.firstChild, pluginPrefs)).
+		then(pluginPrefs => processMarkdown(source, pluginPrefs)).
 		then(([renderedDOM, title]) => {
 			makeDocHeader(renderedDOM, title);
 			body.replaceChild(renderedDOM, body.firstChild);
@@ -409,5 +409,5 @@ if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
-	render(window.location.href);
+	render(window.location.href, body.firstChild.textContent);
 }
