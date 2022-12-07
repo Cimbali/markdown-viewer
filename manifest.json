@@ -32,6 +32,8 @@
 		"tabs"
 	],
 
+	"content_security_policy": "default-src: 'self'; object-src 'none'; frame-src 'self'; script-src 'self'; img-src blob: https: filesystem:; media-src blob: https: filesystem:; connect-src blob: https: filesystem:; style-src: 'self' 'unsafe-inline'; upgrade-insecure-requests;",
+
 	"protocol_handlers": [
 		{
 			"protocol": "ext+view-markdown",

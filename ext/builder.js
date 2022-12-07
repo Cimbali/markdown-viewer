@@ -424,9 +424,7 @@ function renderInIframe(parentDoc, text, { inserter, url }) {
 
 	return new Promise(resolve => {
 		iframe.addEventListener("load", () => resolve(iframe.contentDocument));
-		iframe.src = URL.createObjectURL(new Blob([
-			'<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>'
-		], {type: "text/html"}));
+		iframe.src = webext.extension.getURL('/ext/frame.html');
 	}).then(doc => {
 		render(doc, text, n => doc.body.appendChild(n)).then(() => {
 			parentDoc.title = doc.title;
