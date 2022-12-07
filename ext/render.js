@@ -380,7 +380,7 @@ function render(url, source){
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
-	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins})).
+	let res = webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins})).
 		then(pluginPrefs => processMarkdown(source, pluginPrefs)).
 		then(([renderedDOM, title]) => {
 			makeDocHeader(renderedDOM, title);
@@ -400,6 +400,7 @@ function render(url, source){
 	const disclosures = [];
 	window.addEventListener('beforeprint', () => revealDisclosures(disclosures));
 	window.addEventListener('afterprint', () => restoreDisclosures(disclosures));
+	return res;
 }
 
 
