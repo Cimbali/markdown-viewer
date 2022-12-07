@@ -375,8 +375,7 @@ function restoreDisclosures(state) {
 	})
 }
 
-function render(){
-	let url = window.location.href;
+function render(url){
 	const hash = url.lastIndexOf('#');
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
@@ -410,5 +409,5 @@ if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
-	render();
+	render(window.location.href);
 }
