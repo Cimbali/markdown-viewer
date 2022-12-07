@@ -26,12 +26,12 @@ const hlcss = [
 	'tomorrow-night-bright', 'tomorrow-night-eighties', 'vs', 'vs2015', 'xcode', 'xt256', 'zenburn',
 ]
 
-function addStylesheet(attributes) {
-	const style = document.createElement('style');
+function addStylesheet(doc, attributes) {
+	const style = doc.createElement('style');
 	for (const [attr, val] of Object.entries(attributes || {})) {
 		style.setAttribute(attr, val);
 	}
-	document.head.appendChild(style);
+	doc.head.appendChild(style);
 	return style
 }
 
@@ -83,14 +83,14 @@ function makeAnchor(node, usedHeaders) {
 	return anchor;
 }
 
-function createHTMLSourceBlob() {
+function createHTMLSourceBlob(doc) {
 	const a = document.getElementById('__markdown-viewer__download');
 	if (a === null) {
 		return
 	}
 	a.style.display = 'none';
 
-	const html = `<html>${document.head.outerHTML}${document.body.outerHTML}</html>`;
+	const html = `<html>${doc.head.outerHTML}${doc.body.outerHTML}</html>`;
 	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
 
 	// Once we're done display the download button, so it does not appear in the downloaded html.
@@ -137,20 +137,20 @@ function getRenderer(plugins) {
 	return md;
 }
 
-function makeDocHeader(markdownRoot, title) {
+function makeDocHeader(doc, markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
-		setExtensionStylesheet('/lib/sss/sss.css', addStylesheet({media: 'screen', id: '__markdown-viewer__md_css'})),
-		setExtensionStylesheet('/lib/sss/print.css', addStylesheet({media: 'print',
+		setExtensionStylesheet('/lib/sss/sss.css', addStylesheet(doc, {media: 'screen', id: '__markdown-viewer__md_css'})),
+		setExtensionStylesheet('/lib/sss/print.css', addStylesheet(doc, {media: 'print',
 																	id: '__markdown-viewer__md_print_css'})),
 		setExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css',
-							   addStylesheet({id: '__markdown-viewer__hljs_css'})),
-		setExtensionStylesheet('/lib/katex/dist/katex.min.css', addStylesheet({id: '__markdown-viewer__katex_css'})),
+							   addStylesheet(doc, {id: '__markdown-viewer__hljs_css'})),
+		setExtensionStylesheet('/lib/katex/dist/katex.min.css', addStylesheet(doc, {id: '__markdown-viewer__katex_css'})),
 		setExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css',
-							   addStylesheet({id: '__markdown-viewer__texmath_css'})),
-		setExtensionStylesheet('/ext/menu.css', addStylesheet({id: '__markdown-viewer__menu_css'})),
+							   addStylesheet(doc, {id: '__markdown-viewer__texmath_css'})),
+		setExtensionStylesheet('/ext/menu.css', addStylesheet(document, {id: '__markdown-viewer__menu_css'})),
 		// User-defined stylesheet.
-		setCustomStylesheet(addStylesheet({id: '__markdown-viewer__custom_css'})),
+		setCustomStylesheet(addStylesheet(doc, {id: '__markdown-viewer__custom_css'})),
 	])
 
 	// This is considered a good practice for mobiles.
@@ -214,7 +214,7 @@ function processMarkdown(source, plugins) {
 	return [markdownRoot, title];
 }
 
-function buildStyleOptions() {
+function buildStyleOptions(doc) {
 	const p = document.createElement('p');
 	p.appendChild(document.createTextNode('Pick a markdown and code style:'));
 	p.appendChild(document.createElement('br'));
@@ -233,10 +233,10 @@ function buildStyleOptions() {
 		const mdchosen = mdselect.value;
 
 		setExtensionStylesheet(`/lib/sss/${mdchosen}.css`,
-								document.getElementById('__markdown-viewer__md_css'));
+								doc.getElementById('__markdown-viewer__md_css'));
 
 		webext.storage.sync.set({ chosen_md_style: mdselect.value });
-		createHTMLSourceBlob();
+		createHTMLSourceBlob(doc);
 	})
 
 	const hlselect = p.appendChild(document.createElement('select'));
@@ -248,7 +248,7 @@ function buildStyleOptions() {
 	}
 
 	hlselect.addEventListener('change', () => {
-		const sheet = document.getElementById('__markdown-viewer__hljs_css');
+		const sheet = doc.getElementById('__markdown-viewer__hljs_css');
 		if (hlselect.value.endsWith('auto')) {
 			const dark = `${hlselect.value.slice(0, -4)}dark`;
 			const light = `${hlselect.value.slice(0, -4)}light`;
@@ -258,7 +258,7 @@ function buildStyleOptions() {
 			setExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, sheet);
 		}
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
-		createHTMLSourceBlob();
+		createHTMLSourceBlob(doc);
 	})
 
 	return webext.storage.sync.get(['chosen_md_style', 'chosen_hl_style']).then((storage) => {
@@ -287,8 +287,8 @@ function buildDownloadButton() {
 	return Promise.resolve(a.parentNode);
 }
 
-function buildTableOfContents() {
-	const allHeaders = document.querySelectorAll(headerTags.join(','));
+function buildTableOfContents(doc) {
+	const allHeaders = doc.querySelectorAll(headerTags.join(','));
 	if (allHeaders.length) {
 		const tocdiv = document.createElement('div');
 		let level = 0;
@@ -332,7 +332,7 @@ function buildTableOfContents() {
 	}
 }
 
-function addMarkdownViewerMenu() {
+function addMarkdownViewerMenu(doc) {
 	const toolsdiv = document.createElement('div');
 	toolsdiv.id = '__markdown-viewer__tools';
 	toolsdiv.className = 'hidden';
@@ -344,7 +344,7 @@ function addMarkdownViewerMenu() {
 	input.id = '__markdown-viewer__show-tools';
 	label.setAttribute('for', input.id);
 
-	const p = [getMenuDisplay, buildTableOfContents(), buildStyleOptions(), buildDownloadButton()];
+	const p = [getMenuDisplay, buildTableOfContents(doc), buildStyleOptions(doc), buildDownloadButton()];
 	return Promise.all(p).then(([{display_menu: menuDisplay}, ...nodes]) => {
 		toolsdiv.className = menuDisplay;
 		for (const node of nodes) {
@@ -405,9 +405,9 @@ if (body.childNodes.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
 	render(window.location.href, body.firstChild.textContent).then(([renderedDOM, title]) => {
-		makeDocHeader(renderedDOM, title);
+		makeDocHeader(document, renderedDOM, title);
 		body.replaceChild(renderedDOM, body.firstChild);
 	}).
-	then(() => addMarkdownViewerMenu()).
-	then(() => createHTMLSourceBlob());;
+	then(() => addMarkdownViewerMenu(document)).
+	then(() => createHTMLSourceBlob(document));;
 }
