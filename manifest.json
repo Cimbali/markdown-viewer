@@ -26,7 +26,13 @@
 		"*://*/*.mkd",
 		"*://*/*.mkdn"
 	],
-
+	"protocol_handlers": [
+		{
+			"protocol": "ext+view-markdown",
+			"name": "Markdown Viewer",
+			"uriTemplate": "/ext/view-md.html?file=%s"
+		}
+	],
 	"content_scripts": [
 		{
 			"matches": [
