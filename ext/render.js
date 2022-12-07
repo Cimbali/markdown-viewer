@@ -397,6 +397,14 @@ function render(url, source){
 	return res;
 }
 
+function renderIntoMainDoc(uri, source, placerLambda){
+	render(uri, source).then(([renderedDOM, title]) => {
+		makeDocHeader(document, renderedDOM, title);
+		placerLambda(renderedDOM);
+	}).
+	then(() => addMarkdownViewerMenu(document)).
+	then(() => createHTMLSourceBlob(document));
+}
 
 // Process only if document is unprocessed text.
 const {body} = document;
@@ -404,10 +412,6 @@ if (body.childNodes.length === 1 &&
 	body.children.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
-	render(window.location.href, body.firstChild.textContent).then(([renderedDOM, title]) => {
-		makeDocHeader(document, renderedDOM, title);
-		body.replaceChild(renderedDOM, body.firstChild);
-	}).
-	then(() => addMarkdownViewerMenu(document)).
-	then(() => createHTMLSourceBlob(document));;
+	let placerLambda = (renderedDOM) => {body.replaceChild(renderedDOM, body.firstChild);}
+	renderIntoMainDoc(window.location.href, body.firstChild.textContent, placerLambda);
 }
