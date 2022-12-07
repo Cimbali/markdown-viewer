@@ -375,12 +375,7 @@ function restoreDisclosures(state) {
 	})
 }
 
-// Process only if document is unprocessed text.
-const {body} = document;
-if (body.childNodes.length === 1 &&
-	body.children.length === 1 &&
-	body.children[0].nodeName.toUpperCase() === 'PRE')
-{
+function render(){
 	let url = window.location.href;
 	const hash = url.lastIndexOf('#');
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
@@ -406,4 +401,14 @@ if (body.childNodes.length === 1 &&
 	const disclosures = [];
 	window.addEventListener('beforeprint', () => revealDisclosures(disclosures));
 	window.addEventListener('afterprint', () => restoreDisclosures(disclosures));
+}
+
+
+// Process only if document is unprocessed text.
+const {body} = document;
+if (body.childNodes.length === 1 &&
+	body.children.length === 1 &&
+	body.children[0].nodeName.toUpperCase() === 'PRE')
+{
+	render();
 }
