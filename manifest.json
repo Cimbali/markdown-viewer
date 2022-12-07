@@ -64,7 +64,7 @@
 				"lib/highlightjs/build/highlight.min.js",
 				"lib/katex/dist/katex.min.js",
 				"lib/markdown-it-texmath/texmath.js",
-				"ext/content.js"
+				"ext/render.js"
 			]
 		}
 	],
