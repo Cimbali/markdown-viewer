@@ -26,6 +26,7 @@
 		"*://*/*.mkd",
 		"*://*/*.mkdn"
 	],
+	"content_security_policy": "default-src 'self'; style-src 'self'; object-src 'none'; frame-src blob:; img-src blob: https://*; media-src blob:; connect-src https://* file: blob: data: filesystem:; upgrade-insecure-requests;",
 	"protocol_handlers": [
 		{
 			"protocol": "ext+view-markdown",
