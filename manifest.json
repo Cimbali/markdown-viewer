@@ -12,6 +12,10 @@
 		}
 	},
 
+	"background": {
+		"scripts": ["ext/background.js"]
+	},
+
 	"icons": {
 		"48": "ext/markdown-mark.svg",
 		"96": "ext/markdown-mark.svg"
@@ -24,7 +28,8 @@
 		"*://*/*.mdown",
 		"*://*/*.mdwn",
 		"*://*/*.mkd",
-		"*://*/*.mkdn"
+		"*://*/*.mkdn",
+		"tabs"
 	],
 
 	"protocol_handlers": [
@@ -81,5 +86,25 @@
 	"options_ui": {
 		"page": "ext/options.html",
 		"browser_style": true
+	},
+
+	"page_action": {
+		"browser_style": true,
+		"default_icon": "ext/markdown-mark.svg",
+		"default_title": "Force rendering Markdown",
+		"show_matches": [
+			"*://*/*.markdown",
+			"*://*/*.MARKDOWN",
+			"*://*/*.md",
+			"*://*/*.MD",
+			"*://*/*.mdown",
+			"*://*/*.MDOWN",
+			"*://*/*.mdwn",
+			"*://*/*.MDWN",
+			"*://*/*.mkd",
+			"*://*/*.MKD",
+			"*://*/*.mkdn",
+			"*://*/*.MKDN"
+		]
 	}
 }
