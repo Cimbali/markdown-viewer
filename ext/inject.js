@@ -12,3 +12,5 @@ if (body.childNodes.length === 1 &&
 	const inserter = renderedDOM => body.replaceChild(renderedDOM, body.firstChild);
 	renderDocument(document, body.firstChild.textContent, { inserter, url: window.location.href })
 }
+
+webext.runtime.sendMessage('content script running');
