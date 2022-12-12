@@ -63,12 +63,12 @@ function setCustomStylesheet(sheet) {
 
 function makeAnchor(node, usedHeaders) {
 	// From @ChenYingChou https://gist.github.com/asabaylus/3071099#gistcomment-1479328
-	let anchor = node.textContent.trim().toLowerCase().
+	let anchor = node.textContent.trim().toLowerCase()
 		// single chars that are removed
-		replace(/[`~!@#$%^&*()+=<>?,./:;"'|{}[\]\\–—]/gu, ''). // `
+		.replace(/[`~!@#$%^&*()+=<>?,./:;"'|{}[\]\\–—]/gu, '') // `
 		// CJK punctuations that are removed
-		replace(/[　。？！，、；：“”【】（）〔〕［］﹃﹄“”‘’﹁﹂—…－～《》〈〉「」]/gu, '').
-		replace(/\s+/gu, '-').replace(/-+$/u, '');
+		.replace(/[　。？！，、；：“”【】（）〔〕［］﹃﹄“”‘’﹁﹂—…－～《》〈〉「」]/gu, '')
+		.replace(/\s+/gu, '-').replace(/-+$/u, '');
 
 	if (usedHeaders.indexOf(anchor) !== -1) {
 		let i = 1;
@@ -386,14 +386,14 @@ if (body.childNodes.length === 1 &&
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
-	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins})).
-		then(pluginPrefs => processMarkdown(body.firstChild, pluginPrefs)).
-		then(([renderedDOM, title]) => {
+	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
+		.then(pluginPrefs => processMarkdown(body.firstChild, pluginPrefs))
+		.then(([renderedDOM, title]) => {
 			makeDocHeader(renderedDOM, title);
 			body.replaceChild(renderedDOM, body.firstChild);
-		}).
-		then(() => addMarkdownViewerMenu()).
-		then(() => createHTMLSourceBlob());
+		})
+		.then(() => addMarkdownViewerMenu())
+		.then(() => createHTMLSourceBlob());
 
 	try {
 		window.scrollTo(...JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
