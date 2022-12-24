@@ -11,3 +11,18 @@ iframe {
 	height: 100vh;
 	resize: both;
 }
+
+.error {
+	text-align: center;
+	display: block;
+	margin: 20vh auto 0;
+	padding: 15px;
+	background-color: #FF000080;
+	border-radius: 10px;
+	max-width: 50vw;
+	line-height: 200%;
+}
+
+.error span {
+	font-weight: bold;
+}
