@@ -4,6 +4,23 @@ html, body, iframe {
 	padding: 0px;
 }
 
+@media (prefers-color-scheme: dark) {
+	body {
+		color: white;
+		background: black;
+		font-weight: 350;
+	}
+	.error span {
+		font-weight: 650;
+	}
+	a {
+		color: lightblue;
+	}
+	a:visited {
+		opacity: lightskyblue;
+	}
+}
+
 iframe {
 	border: none;
 	overflow: scroll;
