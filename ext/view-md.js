@@ -18,10 +18,14 @@ const file = parseURI();
 
 function display(allowedUrl, displayUrl) {
 	return fetch(allowedUrl).then(r => r.text()).then(text => {
-		renderInIframe(document, text, {
-			inserter: rendered => document.body.appendChild(rendered),
-			url: allowedUrl.toString(), displayUrl
-		});
+		const inserter = rendered => document.body.appendChild(rendered);
+		webext.storage.sync.get('iframe_embed').then(({ iframe_embed: embed = true }) => {
+			if (embed) {
+				renderInIframe(document, text, { inserter, url: allowedUrl.toString(), displayUrl });
+			} else {
+				renderInDocument(document, text, { inserter, url: allowedUrl.toString(), displayUrl });
+			}
+		})
 	}).catch(() => {
 		const error = document.body.appendChild(document.createElement('p'));
 		error.classList.add('error');
@@ -71,8 +75,8 @@ if (file === null || file.protocol === 'file:') {
 
 	msg.appendChild(document.createElement('br'));
 	msg.appendChild(document.createElement('label')).appendChild(
-		document.createTextNode('Select markdown file (or drag it onto this area): '
-	));
+		document.createTextNode('Select markdown file (or drag it onto this area): ')
+	);
 
 	const input = msg.lastChild.appendChild(document.createElement('input'));
 	input.type = 'file';

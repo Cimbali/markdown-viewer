@@ -8,6 +8,10 @@ h3 {
 p {
 	margin: 0;
 }
+p.comment {
+	font-size: small;
+	opacity: .9;
+}
 #origins {
 	list-style-type: none;
 	margin: 0;
@@ -32,10 +36,10 @@ textarea {
   overflow-wrap: normal;
   overflow-x: scroll;
 }
-label.plugins {
+label {
 	display: block;
 }
-label.plugins input {
+label input {
 	display: inline-block;
 	margin: 0 1em;
 }
