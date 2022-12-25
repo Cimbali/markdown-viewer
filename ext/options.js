@@ -14,7 +14,7 @@ function clearSavedMessage() {
 }
 
 // Load custom CSS and save it when changed by user
-webext.storage.sync.get({ custom_css: '' }, ({custom_css: data}) => {
+webext.storage.sync.get({ custom_css: '' }).then(({custom_css: data}) => {
 	textarea.value = data;
 
 	textarea.onchange = () => {
@@ -28,7 +28,7 @@ webext.storage.sync.get({ custom_css: '' }, ({custom_css: data}) => {
 
 
 const menuVisibility = document.getElementById('menu_visibility');
-webext.storage.sync.get('display_menu', (storage) => {
+webext.storage.sync.get('display_menu').then(storage => {
 	if ('display_menu' in storage) { menuVisibility.value = storage.display_menu; }
 
 	menuVisibility.onchange = () => {
@@ -37,7 +37,17 @@ webext.storage.sync.get('display_menu', (storage) => {
 });
 
 
-webext.storage.sync.get('plugins', (storage) => {
+const embeddingMode = document.getElementById('iframe_embed');
+webext.storage.sync.get('iframe_embed').then(storage => {
+	if ('iframe_embed' in storage) { embeddingMode.checked = storage.iframe_embed; }
+
+	embeddingMode.onchange = () => {
+		webext.storage.sync.set({iframe_embed: embeddingMode.checked})
+	};
+});
+
+
+webext.storage.sync.get('plugins').then(storage => {
 	const pluginPrefs = storage.plugins || {};
 
 	Object.keys(pluginPrefs).forEach(plugin => {

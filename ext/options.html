@@ -23,7 +23,7 @@
 		<option value="hidden">Disabled</option>
 	</select>
 	</p>
-	<p>A fixed menu will stay at the same position when you scroll the page, but hide text underneath.
+	<p class="comment">A fixed menu will stay at the same position when you scroll the page, but hide text underneath.
 	A floating menu will reflow that page's text around it, but will scroll with the page.</p>
 
 	<h3>Markdown-it plugins</h3>
@@ -86,8 +86,16 @@
   }
 }
 	</pre>
-	<p>Note the media queries (<code>screen</code> and <code>prefers-color-scheme</code>) which allow to not modify the print view or the wrong color scheme.
+	<p class="comment">Note the media queries (<code>screen</code> and <code>prefers-color-scheme</code>) which allow to not modify the print view or the wrong color scheme.
 	Use <code>@media print { … }</code> to modify the print view.</p>
+
+	<h3>Safe embedding mode</h3>
+	<p>
+	<label><input type="checkbox" name="iframe_embed" checked="checked" id="iframe_embed">
+	Use a sandboxed iframe to insert generated HTML in the page.
+	</label>
+	</p>
+	<p class="comment">Unticking restores the legacy behaviour, which inserts into the page directly.  Use with care.</p>
 
 	<script src="options.js"></script>
 </body>
