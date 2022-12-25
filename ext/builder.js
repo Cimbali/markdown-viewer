@@ -88,12 +88,17 @@ function createHTMLSourceBlob(doc) {
 	if (a === null) {
 		return
 	}
+
+	if (a.href) {
+		URL.releaseObjectURL(a.href);
+	}
+
+	// Hide the download button, so it does not appear in the downloaded html.
 	a.style.display = 'none';
 
 	const html = `<html>${doc.head.outerHTML}${doc.body.outerHTML}</html>`;
 	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
 
-	// Once we're done display the download button, so it does not appear in the downloaded html.
 	a.style.display = 'inline-block';
 }
 
@@ -429,6 +434,18 @@ function renderInIframe(parentDoc, text, { inserter, url }) {
 		render(doc, text, n => doc.body.appendChild(n)).then(() => {
 			parentDoc.title = doc.title;
 			setupEvents(parentDoc, iframe.contentWindow, url);
+
+			// Can’t access the blobs from an iframe, so forward the same click
+			// to an identical link outside the iframe
+			buildDownloadButton(parentDoc).then(node => {
+				node.display = 'hidden';
+				const button = doc.getElementById('__markdown-viewer__download');
+				const a = node.firstChild;
+				button.addEventListener('click', e => {
+					a.href = button.href;
+					a.click(e);
+				}, false);
+			});
 		});
 
 		window.addEventListener('hashchange', (e) => {
