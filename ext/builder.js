@@ -102,45 +102,6 @@ function createHTMLSourceBlob(doc) {
 	a.style.display = 'inline-block';
 }
 
-function highlightCodeBlock(str, lang) {
-	// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
-	if (lang && hljs.getLanguage(lang)) {
-		try {
-			return hljs.highlight(str, {language: lang}).value;
-		} catch (e) {}
-	}
-
-	try {
-		return hljs.highlightAuto(str).value;
-	} catch (e) {}
-	return ''; // use external default escaping
-}
-
-function getRenderer(plugins) {
-	const md = markdownit({
-		html: true,
-		linkify: true,
-		...plugins.hljs ? {highlight: highlightCodeBlock} : {},
-	})
-	//markdown-it plugins:
-	if (plugins.checkbox) {md.use(window.markdownitCheckbox);}
-	if (plugins.emojis) {md.use(window.markdownitEmoji);}
-	if (plugins.footnotes) {md.use(window.markdownitFootnote);}
-	if (plugins.texmath) {
-		const tm = texmath.use(katex);
-		md.use(tm, {
-			engine: katex,
-			delimiters:'dollars',
-			katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
-		})
-	}
-	if (plugins['fancy-lists']) {
-		md.block.ruler.at('list', fancyList, { alt: [ 'paragraph', 'reference', 'blockquote' ] });
-	}
-
-	return md;
-}
-
 function makeDocHeader(doc, markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
@@ -180,9 +141,8 @@ function makeDocHeader(doc, markdownRoot, title) {
 	return styleSheetsDone;
 }
 
-function processMarkdown(textContent, plugins) {
+function processRenderedMarkdown(html) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
-	const html = getRenderer(plugins).render(textContent);
 	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
 	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
 
@@ -217,7 +177,7 @@ function processMarkdown(textContent, plugins) {
 		}
 	}
 
-	return [markdownRoot, title];
+	return { DOM: markdownRoot, title };
 }
 
 function buildStyleOptions(doc) {
@@ -383,8 +343,9 @@ function restoreDisclosures(doc, state) {
 
 function render(doc, text, inserter) {
 	return webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
-		.then(pluginPrefs => processMarkdown(text, pluginPrefs))
-		.then(([renderedDOM, title]) => {
+		.then(pluginPrefs => new Renderer(pluginPrefs).render(text))
+		.then(({ html }) => processRenderedMarkdown(html))
+		.then(({ DOM: renderedDOM, title }) => {
 			makeDocHeader(doc, renderedDOM, title);
 			inserter(renderedDOM);
 		})
