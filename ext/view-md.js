@@ -20,7 +20,7 @@ function display(allowedUrl, displayUrl) {
 	return fetch(allowedUrl).then(r => r.text()).then(text => {
 		renderInIframe(document, text, {
 			inserter: rendered => document.body.appendChild(rendered),
-			url: allowedUrl.toString(),
+			url: allowedUrl.toString(), displayUrl
 		});
 	}).catch(() => {
 		const error = document.body.appendChild(document.createElement('p'));
@@ -32,7 +32,7 @@ function display(allowedUrl, displayUrl) {
 		const link = span.appendChild(document.createElement('a'));
 		link.href = displayUrl;
 		link.innerText = displayUrl;
-	}).catch(console.error)
+	})
 }
 
 function stopEvent(e) {

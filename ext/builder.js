@@ -209,7 +209,7 @@ function makeDocTitle(markdownRoot, title) {
 	return title;
 }
 
-function processRenderedMarkdown(html) {
+function processRenderedMarkdown(html, pageUrl) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
 	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
 	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
@@ -219,28 +219,41 @@ function processRenderedMarkdown(html) {
 	const documentAnchors = [];
 	const jsLink = /^\s*javascript:/iu;
 	const allElements = doc.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
-	let eachElement;
-	while ((eachElement = allElements.nextNode())) {
-		const tagName = eachElement.tagName.toUpperCase();
+	for (let node = allElements.nextNode(); node; node = allElements.nextNode()) {
+		const tagName = node.tagName.toUpperCase();
 
 		// Make anchor for headers; use first header text as page title.
 		if (headerTags.includes(tagName)) {
-			const anchor = makeAnchor(eachElement, documentAnchors);
-			documentAnchors.push(eachElement.id = anchor);
-			if (!title) { title = eachElement.textContent.trim(); }
+			const anchor = makeAnchor(node, documentAnchors);
+			documentAnchors.push(node.id = anchor);
+			if (!title) {
+				title = node.textContent.trim();
+			}
 		}
+
+		if (tagName === 'A' && !node.href.startsWith('#')) {
+			node.target = '_top';
+			if (pageUrl) {
+				node.href = new URL(node.getAttribute('href'), pageUrl);
+			}
+		}
+		if (tagName === 'IMG' && pageUrl) {
+			node.src = new URL(node.getAttribute('src'), pageUrl);
+		}
+
+
 		// Crush scripts.
 		if (tagName === 'SCRIPT') {
-			eachElement.remove();
+			node.remove();
 		}
 		// Trample JavaScript hrefs.
-		if (eachElement.getAttribute("href") && jsLink.test(eachElement.href)) {
-			eachElement.removeAttribute("href");
+		if (node.getAttribute("href") && jsLink.test(node.href)) {
+			node.removeAttribute("href");
 		}
 		// Remove event handlers.
-		for (const attr of eachElement.attributes) {
+		for (const attr of node.attributes) {
 			if (attr.name.toLowerCase().startsWith('on')) {
-				eachElement.removeAttribute(attr.name);
+				node.removeAttribute(attr.name);
 			}
 		}
 	}
@@ -432,18 +445,19 @@ function restoreDisclosures(doc, state) {
 	})
 }
 
-function render(doc, text, { inserter, url, skipHeader=false }) {
+function render(doc, text, { inserter, url, displayUrl, skipHeader=false }) {
+	const baseUrl = displayUrl || url || doc.defaultView.location.href;
 	return webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
 		.then(pluginPrefs => new Renderer(pluginPrefs).render(text))
-		.then(({ html }) => processRenderedMarkdown(html))
+		.then(({ html }) => processRenderedMarkdown(html, baseUrl))
 		.then(({ DOM: renderedDOM, title }) => {
 			if (!skipHeader) {
 				makeDocHeader(doc);
 			}
 			doc.title = makeDocTitle(renderedDOM, title);
-			inserter(renderedDOM);
+			(inserter || doc.appendChild)(renderedDOM);
 		})
-		.then(() => addMarkdownViewerMenu(doc, url))
+		.then(() => addMarkdownViewerMenu(doc, baseUrl))
 		.then(() => createHTMLSourceBlob(doc))
 		.catch(console.error);
 }
@@ -475,48 +489,50 @@ function replaceMarkdownDOM(doc) {
 	}
 }
 
-function setupEvents(doc, url, win) {
-	win.addEventListener('keydown', e => {
-		if (!preventRefresh(e)) {
-			return;
-		}
+function setupEvents(doc, win, { url, displayUrl }) {
+	if (url) {
+		win.addEventListener('keydown', e => {
+			if (!preventRefresh(e)) {
+				return;
+			}
 
-		fetch(url).then(r => r.text()).then(text => {
-			render(doc, text, replaceMarkdownDOM(doc), url, true);
-		})
-	})
+			fetch(url).then(r => r.text()).then(text => {
+				render(doc, text, { inserter: replaceMarkdownDOM(doc), url, displayUrl, skipHeader: true });
+			});
+		});
+	}
 
 	const disclosures = [];
 	win.addEventListener('beforeprint', () => revealDisclosures(doc, disclosures));
 	win.addEventListener('afterprint', () => restoreDisclosures(doc, disclosures));
 }
 
-function renderInDocument(doc, text, inserter, url) {
-	render(doc, text, inserter, url).then(() => {
-		setupEvents(doc, url, window);
+function renderInDocument(doc, text, opts) {
+	render(doc, text, opts).then(() => {
+		setupEvents(doc, window, opts);
 	});
 }
 
-function renderInIframe(parentDoc, text, { inserter, url }) {
+function renderInIframe(parentDoc, text, { inserter, ...opts }) {
 	const iframe = parentDoc.createElement("iframe");
 	iframe.sandbox = "allow-same-origin allow-top-navigation-by-user-activation";
 	iframe.referrerpolicy = "no-referrer";
 	iframe.name = "sandbox";
 
-	// An iframe cannot be fully initialized befor it is embedded into the doc.
+	// An iframe cannot be fully initialized before it is embedded into the doc.
 	inserter(iframe);
 
 	return new Promise(resolve => {
 		iframe.addEventListener("load", () => resolve(iframe.contentDocument));
-		iframe.src = webext.extension.getURL('/ext/frame.html');
+		iframe.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>';
 	}).then(doc => {
 		// Render the document with an inserter that adds the markdown inside the iframe
-		render(doc, text, { inserter: n => doc.body.appendChild(n), url }).then(() => {
+		render(doc, text, { inserter: n => doc.body.appendChild(n), ...opts }).then(() => {
 			parentDoc.title = doc.title;
-			setupEvents(doc, url, iframe.contentWindow);
+			setupEvents(doc, iframe.contentWindow, opts);
 
 			// Listen for refresh keys and print events on parent window too
-			setupEvents(doc, url, window);
+			setupEvents(doc, window, opts);
 
 			// Can’t access the blobs from an iframe, so forward the same click
 			// to an identical link outside the iframe
