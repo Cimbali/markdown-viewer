@@ -102,6 +102,7 @@ input#__markdown-viewer__show-tools:checked ~ .toggleable {
   max-height: 2000px;
   overflow-y: auto;
   transition-timing-function:ease-in;
+  min-width: 15em;
 }
 
 input#__markdown-viewer__show-tools:not(:checked) ~ .toggleable {

@@ -97,8 +97,39 @@ function makeAnchor(node, usedHeaders) {
 	return anchor;
 }
 
-function createHTMLSourceBlob(doc) {
+async function convertLinkToStylesheet(doc, node) {
+	const style = doc.createElement('style');
+	const url = new URL(node.href);
+	if (node.getAttribute('id') === '__markdown-viewer__custom_css') {
+		const { custom_css: css } = await webext.storage.sync.get({'custom_css': ''});
+		style.textContent = css;
+	} else if (node.getAttribute('id') === '__markdown-viewer__hljs_css' && url.protocol === 'blob:') {
+		const autoStyle = node.getAttribute('data-style-auto');
+		const styleSheets = {
+			dark: `/lib/highlightjs/build/styles/${autoStyle.slice(0, -4)}dark.min.css`,
+			light: `/lib/highlightjs/build/styles/${autoStyle.slice(0, -4)}light.min.css`,
+		}
+
+		for (const [colorScheme, loc] of Object.entries(styleSheets)) {
+			const content = await fetch(webext.extension.getURL(loc)).then(r => r.text());
+			style.textContent += `@media (prefers-color-scheme: ${colorScheme}) { ${content} }\n`
+		}
+	} else if (url.href === webext.extension.getURL(url.pathname)) {
+		style.textContent = await fetch(node.href).then(r => r.text());
+	} else {
+		throw new Error('Untrusted stylesheet');
+	}
+
+	if (node.hasAttribute('media')) {
+		style.setAttribute('media', node.getAttribute('media'));
+	}
+
+	return style;
+}
+
+async function createHTMLSourceBlob(doc) {
 	const a = doc.getElementById('__markdown-viewer__download');
+	const opt = doc.getElementById('__markdown-viewer__styleselect');
 	if (a === null) {
 		return
 	}
@@ -107,13 +138,34 @@ function createHTMLSourceBlob(doc) {
 		URL.revokeObjectURL(a.href);
 	}
 
-	// Hide the download button, so it does not appear in the downloaded html.
-	a.style.display = 'none';
+	// create a string containing the html headers, but inline all the <link rel="stylesheet" /> tags
+	const head = [];
+	for (const node of doc.head.children) {
+		if (node.tagName === 'LINK' && node.hasAttribute('rel') && node.getAttribute('rel').includes('stylesheet')) {
+			if (!node.hasAttribute('href') || new URL(node.href).protocol === 'resource:') {
+				continue;
+			}
 
-	const html = `<html>${doc.head.outerHTML}${doc.body.outerHTML}</html>`;
+			try {
+				head.push(await convertLinkToStylesheet(doc, node))
+			} catch (e) {
+				// Ignore bad URLs, fetch errors, untrusted sheets
+				continue;
+			}
+		} else if (node.tagName !== 'SCRIPT') {
+			head.push(node.outerHTML);
+		}
+	}
+
+	// Hide the download button and style options, so they do not appear in the downloaded html.
+	a.style.display = 'none';
+	opt.style.display = 'none';
+
+	const html = `<html><head>${head.join('\n')}</head>${doc.body.outerHTML}</html>`;
 	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
 
 	a.style.display = 'inline-block';
+	opt.style.display = 'block';
 }
 
 function makeDocHeader(doc, markdownRoot, title) {
@@ -195,6 +247,7 @@ function buildStyleOptions(doc) {
 	p.appendChild(doc.createTextNode('Pick a markdown and code style:'));
 	p.appendChild(doc.createElement('br'));
 	p.className = 'toggleable';
+	p.id = '__markdown-viewer__styleselect';
 
 	const mdselect = p.appendChild(doc.createElement('select'));
 	mdselect.id = '__markdown-viewer__mdselect';
