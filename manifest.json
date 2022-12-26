@@ -46,18 +46,6 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"*://*/*.markdown",
-				"*://*/*.MARKDOWN",
-				"*://*/*.md",
-				"*://*/*.MD",
-				"*://*/*.mdown",
-				"*://*/*.MDOWN",
-				"*://*/*.mdwn",
-				"*://*/*.MDWN",
-				"*://*/*.mkd",
-				"*://*/*.MKD",
-				"*://*/*.mkdn",
-				"*://*/*.MKDN",
 				"file://*/*.markdown",
 				"file://*/*.MARKDOWN",
 				"file://*/*.md",
@@ -84,6 +72,26 @@
 				"ext/builder.js",
 				"ext/inject.js"
 			]
+		},
+		{
+			"matches": [
+				"*://*/*.markdown",
+				"*://*/*.MARKDOWN",
+				"*://*/*.md",
+				"*://*/*.MD",
+				"*://*/*.mdown",
+				"*://*/*.MDOWN",
+				"*://*/*.mdwn",
+				"*://*/*.MDWN",
+				"*://*/*.mkd",
+				"*://*/*.MKD",
+				"*://*/*.mkdn",
+				"*://*/*.MKDN"
+			],
+			"js": [
+				"ext/redirect.js"
+			],
+			"run_at": "document_end"
 		}
 	],
 

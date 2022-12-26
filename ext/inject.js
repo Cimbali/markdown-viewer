@@ -19,5 +19,3 @@ if (body.childNodes.length === 1 &&
 		}
 	});
 }
-
-webext.runtime.sendMessage('content script running');
