@@ -13,7 +13,8 @@
 	},
 
 	"background": {
-		"scripts": ["ext/background.js"]
+		"scripts": ["ext/background.js"],
+		"persistent": false
 	},
 
 	"icons": {
@@ -117,5 +118,17 @@
 			"*://*/*.mkdn",
 			"*://*/*.MKDN"
 		]
+	},
+
+	"browser_action": {
+		"browser_style": true,
+		"default_icon": "ext/markdown-mark.svg",
+		"default_title": "Open local markdown file"
+	},
+
+	"commands": {
+		"_execute_browser_action": {
+			"description": "Open local markdown file picker"
+		}
 	}
 }
