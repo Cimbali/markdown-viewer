@@ -168,7 +168,7 @@ async function createHTMLSourceBlob(doc) {
 	opt.style.display = 'block';
 }
 
-function makeDocHeader(doc, markdownRoot, title) {
+function makeDocHeader(doc) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
 		addExtensionStylesheet(doc, '/lib/sss/sss.css', {media: 'screen', id: '__markdown-viewer__md_css'}),
@@ -188,6 +188,10 @@ function makeDocHeader(doc, markdownRoot, title) {
 	viewport.content = 'width=device-width, initial-scale=1';
 	doc.head.appendChild(viewport);
 
+	return styleSheetsDone;
+}
+
+function makeDocTitle(markdownRoot, title) {
 	// Set the page title.
 	if (!title) {
 		// Get first line if no header.
@@ -198,9 +202,7 @@ function makeDocHeader(doc, markdownRoot, title) {
 		title = `${title.substr(0, 125)  }...`;
 	}
 
-	doc.title = title;
-
-	return styleSheetsDone;
+	return title;
 }
 
 function processRenderedMarkdown(html) {
@@ -283,6 +285,7 @@ function buildStyleOptions(doc) {
 			const light = `${hlselect.value.slice(0, -4)}light`;
 			setExtensionStylesheetAuto(`/lib/highlightjs/build/styles/${dark}.min.css`,
 									   `/lib/highlightjs/build/styles/${light}.min.css`, sheet);
+			sheet.setAttribute('data-style-auto', hlselect.value)
 		} else {
 			setExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, sheet);
 		}
@@ -312,6 +315,21 @@ function buildDownloadButton(doc) {
 	a.download = 'markdown.html';
 	a.innerText = 'Download as HTML';
 	a.style.display = 'none';
+
+	return Promise.resolve(a.parentNode);
+}
+
+function buildSourceLink(doc, url) {
+	if (new URL(url).protocol === 'blob:') {
+		return Promise.resolve(null);
+	}
+
+	const a = doc.createElement('p').appendChild(doc.createElement('a'));
+	a.parentNode.className = 'toggleable'
+	a.target = '_top';
+	a.href = `view-source:${url}`;
+	a.id = '__markdown-viewer__source';
+	a.innerText = 'View Source';
 
 	return Promise.resolve(a.parentNode);
 }
@@ -361,7 +379,7 @@ function buildTableOfContents(doc) {
 	}
 }
 
-function addMarkdownViewerMenu(doc) {
+function addMarkdownViewerMenu(doc, url) {
 	const toolsdiv = doc.createElement('div');
 	toolsdiv.id = '__markdown-viewer__tools';
 	toolsdiv.className = 'hidden';
@@ -373,8 +391,13 @@ function addMarkdownViewerMenu(doc) {
 	input.id = '__markdown-viewer__show-tools';
 	label.setAttribute('for', input.id);
 
-	const p = [getMenuDisplay, buildTableOfContents(doc), buildStyleOptions(doc), buildDownloadButton(doc)];
-	return Promise.all(p).then(([{display_menu: menuDisplay}, ...nodes]) => {
+	return Promise.all([
+		getMenuDisplay,
+		buildTableOfContents(doc),
+		buildStyleOptions(doc),
+		buildDownloadButton(doc),
+		buildSourceLink(doc, url),
+	]).then(([{display_menu: menuDisplay}, ...nodes]) => {
 		toolsdiv.className = menuDisplay;
 		for (const node of nodes) {
 			if (node) {
@@ -404,41 +427,66 @@ function restoreDisclosures(doc, state) {
 	})
 }
 
-function render(doc, text, inserter) {
+function render(doc, text, { inserter, url, skipHeader=false }) {
 	return webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
 		.then(pluginPrefs => new Renderer(pluginPrefs).render(text))
 		.then(({ html }) => processRenderedMarkdown(html))
 		.then(({ DOM: renderedDOM, title }) => {
-			makeDocHeader(doc, renderedDOM, title);
+			if (!skipHeader) {
+				makeDocHeader(doc);
+			}
+			doc.title = makeDocTitle(renderedDOM, title);
 			inserter(renderedDOM);
 		})
-		.then(() => addMarkdownViewerMenu(doc))
+		.then(() => addMarkdownViewerMenu(doc, url))
 		.then(() => createHTMLSourceBlob(doc))
 		.catch(console.error);
 }
 
-function setupEvents(doc, win, url) {
-	const hash = url.lastIndexOf('#');
-	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
-	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
+function preventRefresh(evt) {
+	if (evt.altKey || evt.metaKey || evt.shiftKey || evt.repeat) {
+		return false;
+	}
 
-	try {
-		win.scrollTo(...JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
-	} catch(err) {}
+	if (evt.key === 'F5' && !evt.ctrlKey || evt.key === 'r' && evt.ctrlKey) {
+		evt.stopPropagation();
+		evt.preventDefault();
 
-	win.addEventListener("unload", () => {
-		sessionStorage[scrollPosKey] = JSON.stringify([win.scrollX, win.scrollY]);
-	});
+		return true;
+	}
+
+	return false;
+}
+
+function replaceMarkdownDOM(doc) {
+	return function replaceWith(node) {
+		while (doc.body.children.length) {
+			doc.body.removeChild(doc.body.firstChild);
+		}
+
+		doc.body.appendChild(node);
+	}
+}
+
+function setupEvents(doc, url, win) {
+	win.addEventListener('keydown', e => {
+		if (!preventRefresh(e)) {
+			return;
+		}
+
+		fetch(url).then(r => r.text()).then(text => {
+			render(doc, text, replaceMarkdownDOM(doc), url, true);
+		})
+	})
 
 	const disclosures = [];
 	win.addEventListener('beforeprint', () => revealDisclosures(doc, disclosures));
 	win.addEventListener('afterprint', () => restoreDisclosures(doc, disclosures));
 }
 
-
-function renderInDocument(doc, text, { inserter, url }) {
-	render(doc, text, inserter).then(() => {
-		setupEvents(doc, window, url);
+function renderInDocument(doc, text, inserter, url) {
+	render(doc, text, inserter, url).then(() => {
+		setupEvents(doc, url, window);
 	});
 }
 
@@ -455,9 +503,13 @@ function renderInIframe(parentDoc, text, { inserter, url }) {
 		iframe.addEventListener("load", () => resolve(iframe.contentDocument));
 		iframe.src = webext.extension.getURL('/ext/frame.html');
 	}).then(doc => {
-		render(doc, text, n => doc.body.appendChild(n)).then(() => {
+		// Render the document with an inserter that adds the markdown inside the iframe
+		render(doc, text, { inserter: n => doc.body.appendChild(n), url }).then(() => {
 			parentDoc.title = doc.title;
-			setupEvents(parentDoc, iframe.contentWindow, url);
+			setupEvents(doc, url, iframe.contentWindow);
+
+			// Listen for refresh keys and print events on parent window too
+			setupEvents(doc, url, window);
 
 			// Can’t access the blobs from an iframe, so forward the same click
 			// to an identical link outside the iframe
