@@ -26,6 +26,10 @@ const hlcss = [
 	'tomorrow-night-bright', 'tomorrow-night-eighties', 'vs', 'vs2015', 'xcode', 'xt256', 'zenburn',
 ]
 
+// Global flag to remember whether menu is opened on refresh
+let showMenu = false;
+
+
 function addStylesheet(doc, href, attributes) {
 	const link = doc.createElement('link');
 	link.rel = 'stylesheet';
@@ -389,6 +393,7 @@ function addMarkdownViewerMenu(doc, url) {
 	const label = toolsdiv.appendChild(doc.createElement('label'));
 	input.type = 'checkbox';
 	input.id = '__markdown-viewer__show-tools';
+	input.checked = showMenu;
 	label.setAttribute('for', input.id);
 
 	return Promise.all([
@@ -460,6 +465,8 @@ function preventRefresh(evt) {
 
 function replaceMarkdownDOM(doc) {
 	return function replaceWith(node) {
+		showMenu = doc.getElementById('__markdown-viewer__show-tools').checked;
+
 		while (doc.body.children.length) {
 			doc.body.removeChild(doc.body.firstChild);
 		}
