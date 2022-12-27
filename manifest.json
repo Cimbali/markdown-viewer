@@ -129,6 +129,9 @@
 	"commands": {
 		"_execute_browser_action": {
 			"description": "Open local markdown file picker"
+		},
+		"_execute_page_action": {
+			"description": "Force rendering markdown in page"
 		}
 	}
 }
