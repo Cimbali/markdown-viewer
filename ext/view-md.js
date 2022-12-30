@@ -47,9 +47,25 @@ function stopEvent(e) {
 function accessGranted(e) {
 	stopEvent(e);
 	const [fileObj] = (e.target.tagName === 'INPUT' ? e.target : e.dataTransfer).files;
+
+	let url, displayUrl;
+	if (typeof fileObj !== 'undefined') {
+		url = URL.createObjectURL(fileObj);
+		displayUrl = file || `file:///C:/fakepath/${fileObj.name}`;
+	}
+	else if (e.dataTransfer) {
+		// Someone dropped an URL here instead of a file
+		try {
+			url = new URL(e.dataTransfer.getData('text/plain'));
+			displayUrl = url.toString()
+		} catch {
+			return
+		}
+	}
+
 	const msg = document.body.querySelector('p.request-local-access');
 
-	display(URL.createObjectURL(fileObj), file || `file:///C:/fakepath/${fileObj.name}`).then(() => {
+	display(url, displayUrl).then(() => {
 		document.body.removeChild(msg);
 	});
 }
