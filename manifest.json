@@ -1,7 +1,8 @@
 {
 	"manifest_version": 2,
 	"name": "Markdown Viewer Webext",
-	"version": "1.8.1",
+	"short_name": "Markdown Viewer",
+	"version": "2.0.0b",
 	"author": "Keith L Robertson, Cimbali",
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
 	"description": "Displays Markdown documents beautified in your browser.",
