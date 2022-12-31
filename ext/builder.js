@@ -542,7 +542,8 @@ function renderInIframe(parentDoc, text, { inserter, ...opts }) {
 				const a = node.firstChild;
 				button.addEventListener('click', e => {
 					a.href = button.href;
-					a.click(e);
+					a.click();
+					e.preventDefault();
 				}, false);
 			});
 		});
