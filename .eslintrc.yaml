@@ -1,18 +1,10 @@
 parserOptions:
-    ecmaVersion: 2018
-    sourceType: script
+  ecmaVersion: 2022
+  sourceType: script
 
 env:
   es6: true
   browser: true
-  webextensions: true
-
-globals:
-  markdownit: readonly
-  fancyList: readonly
-  texmath: readonly
-  katex: readonly
-  hljs: readonly
 
 plugins:
   - no-unsanitized
@@ -74,7 +66,7 @@ rules:
   no-unsafe-finally: error
   no-unsafe-negation: error
   no-unused-labels: error
-  no-unused-vars: [error, {ignoreRestSiblings: true}]
+  no-unused-vars: warn
   no-useless-catch: error
   no-useless-escape: error
   no-with: error
@@ -105,7 +97,9 @@ rules:
   curly: error
   eqeqeq: error
   dot-notation: error
-  dot-location: error
+  dot-location:
+    - error
+    - property
   no-caller: error
   no-constructor-return: error
   no-empty-function: error
