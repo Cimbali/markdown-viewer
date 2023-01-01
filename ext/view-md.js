@@ -9,7 +9,7 @@ function parseURI() {
 		} else {
 			return url;
 		}
-	} catch {
+	} catch (e) {
 		return null;
 	}
 }
@@ -58,7 +58,7 @@ function accessGranted(e) {
 		try {
 			url = new URL(e.dataTransfer.getData('text/plain'));
 			displayUrl = url.toString()
-		} catch {
+		} catch (e) {
 			return
 		}
 	}

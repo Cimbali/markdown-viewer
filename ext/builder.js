@@ -72,13 +72,6 @@ function addCustomStylesheet(doc, attributes) {
 	});
 }
 
-function setCustomStylesheet(sheet) {
-	return webext.storage.sync.get({'custom_css': ''}).then(({custom_css: data}) => {
-		const url = URL.createObjectURL(new Blob([data], {type: "text/css"}));
-		setExtensionStylesheet(url, sheet);
-	});
-}
-
 function makeAnchor(node, usedHeaders) {
 	// From @ChenYingChou https://gist.github.com/asabaylus/3071099#gistcomment-1479328
 	let anchor = node.textContent.trim().toLowerCase()
@@ -507,12 +500,14 @@ function setupEvents(doc, win, { url, displayUrl }) {
 	win.addEventListener('afterprint', () => restoreDisclosures(doc, disclosures));
 }
 
+/* exported renderInDocument */
 function renderInDocument(doc, text, opts) {
 	render(doc, text, opts).then(() => {
 		setupEvents(doc, window, opts);
 	});
 }
 
+/* exported renderInIframe */
 function renderInIframe(parentDoc, text, { inserter, ...opts }) {
 	const iframe = parentDoc.createElement("iframe");
 	iframe.sandbox = "allow-same-origin allow-top-navigation-by-user-activation";

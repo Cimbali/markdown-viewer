@@ -1,5 +1,6 @@
 'use strict';
 
+/* exported Renderer */
 class Renderer {
 	constructor(plugins) {
 		this.plugins = plugins;
