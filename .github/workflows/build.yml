@@ -35,16 +35,21 @@ jobs:
 
     - name: Build extension
       run: |
-        bash -e build.sh
+        make build
+
+    - name: Make unsigned release available
+      uses: actions/upload-artifact@v3
+      with:
+        path: web-ext-artifacts/*.zip
 
     - name: Sign extension with optional uploading
       run: |
         [ "${{ github.event_name }}" = "release" ] && chan=listed || chan=unlisted
         echo "Signing v`jq -r .version staging/manifest.json` for $chan channel"
 
-        web-ext sign --source-dir staging/ --channel $chan ${{ secrets.AMO_API_CREDS }} 2>&1 | grep -vE '^(Sign|Download|Validat)ing'
+        make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }}" 2>&1 | grep -vE '^(Sign|Download|Validat)ing'
 
-    - name: Make beta release available
+    - name: Make signed release available
       uses: actions/upload-artifact@v3
       if: github.event_name != 'release'
       with:
