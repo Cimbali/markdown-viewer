@@ -174,9 +174,9 @@ function makeDocHeader(markdownRoot, title) {
 	return styleSheetsDone;
 }
 
-function processMarkdown(element, plugins) {
+function processMarkdown(textContent, plugins) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
-	const html = getRenderer(plugins).render(element.textContent);
+	const html = getRenderer(plugins).render(textContent);
 	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
 	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
 
@@ -375,22 +375,16 @@ function restoreDisclosures(state) {
 	})
 }
 
-// Process only if document is unprocessed text.
-const {body} = document;
-if (body.childNodes.length === 1 &&
-	body.children.length === 1 &&
-	body.children[0].nodeName.toUpperCase() === 'PRE')
-{
-	let url = window.location.href;
+function renderDocument(text, inserter, url) {
 	const hash = url.lastIndexOf('#');
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
 	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
-		.then(pluginPrefs => processMarkdown(body.firstChild, pluginPrefs))
+		.then(pluginPrefs => processMarkdown(text, pluginPrefs))
 		.then(([renderedDOM, title]) => {
 			makeDocHeader(renderedDOM, title);
-			body.replaceChild(renderedDOM, body.firstChild);
+			inserter(renderedDOM)
 		})
 		.then(() => addMarkdownViewerMenu())
 		.then(() => createHTMLSourceBlob());
