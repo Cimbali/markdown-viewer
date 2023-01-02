@@ -1,0 +1,13 @@
+html, body, iframe {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+}
+
+iframe {
+	border: none;
+	overflow: scroll;
+	width: 100vw;
+	height: 100vh;
+	resize: both;
+}
