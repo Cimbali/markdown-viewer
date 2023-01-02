@@ -29,6 +29,17 @@ iframe {
 	resize: both;
 }
 
+.request-local-access {
+	text-align: center;
+	display: block;
+	margin: 20vh auto 0;
+	padding: 20vh 15px;
+	background-color: #8080FF80;
+	border-radius: 10px;
+	max-width: 75vw;
+	line-height: 200%;
+}
+
 .error {
 	text-align: center;
 	display: block;

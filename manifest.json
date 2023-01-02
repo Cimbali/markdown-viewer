@@ -32,7 +32,7 @@
 		"tabs"
 	],
 
-	"content_security_policy": "default-src: 'self'; object-src 'none'; frame-src 'self'; script-src 'self'; img-src blob: https: filesystem:; media-src blob: https: filesystem:; connect-src blob: https: filesystem:; style-src: 'self' 'unsafe-inline'; upgrade-insecure-requests;",
+	"content_security_policy": "default-src: 'self'; object-src 'none'; frame-src 'self'; script-src 'self'; img-src blob: https: filesystem:; media-src blob: https: filesystem:; connect-src blob: https: filesystem:; style-src: 'self' blob:; upgrade-insecure-requests;",
 
 	"protocol_handlers": [
 		{
@@ -90,6 +90,14 @@
 		"page": "ext/options.html",
 		"browser_style": true
 	},
+
+	"web_accessible_resources": [
+		"lib/sss/*.css",
+		"lib/highlightjs/build/styles/*.min.css",
+		"lib/markdown-it-texmath/css/texmath.css",
+		"lib/katex/dist/katex.min.css",
+		"ext/menu.css"
+	],
 
 	"page_action": {
 		"browser_style": true,

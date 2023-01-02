@@ -11,7 +11,7 @@ if (body.childNodes.length === 1 &&
 {
 	const inserter = renderedDOM => body.replaceChild(renderedDOM, body.firstChild);
 	renderInIframe(document, body.firstChild.textContent, { inserter, url: window.location.href })
-	setExtensionStylesheet('/ext/view-md.css', addStylesheet(document, {}));
+	addExtensionStylesheet(document, '/ext/view-md.css', {});
 }
 
 webext.runtime.sendMessage('content script running');

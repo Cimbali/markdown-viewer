@@ -26,38 +26,52 @@ const hlcss = [
 	'tomorrow-night-bright', 'tomorrow-night-eighties', 'vs', 'vs2015', 'xcode', 'xt256', 'zenburn',
 ]
 
-function addStylesheet(doc, attributes) {
-	const style = doc.createElement('style');
+function addStylesheet(doc, href, attributes) {
+	const link = doc.createElement('link');
+	link.rel = 'stylesheet';
+	link.type = 'text/css';
+	link.href = href;
 	for (const [attr, val] of Object.entries(attributes || {})) {
-		style.setAttribute(attr, val);
+		link.setAttribute(attr, val);
 	}
-	doc.head.appendChild(style);
-	return style
+	doc.head.appendChild(link);
+	return link
+}
+
+function addExtensionStylesheet(doc, href, attributes) {
+	// If injecting (?), need full path to stylesheet
+	addStylesheet(doc, new URL(href, webext.extension.getURL('/')).href, attributes);
 }
 
 function setExtensionStylesheet(href, sheet) {
-	return fetch(webext.extension.getURL(href)).then(response => response.text()).then(data => {
-		sheet.textContent = data;
-		return sheet;
-	}).catch(() => console.error(`Failed fetching or setting stylesheet ${href}`))
+	// If injecting (?), need full path to stylesheet
+	const prevURL = new URL(sheet.href);
+	if (prevURL.protocol === 'blob:') {
+		URL.revokeObjectURL(prevURL.href);
+	}
+	sheet.href = new URL(href, webext.extension.getURL('/')).href;
 }
 
 function setExtensionStylesheetAuto(hrefDark, hrefLight, sheet) {
-	return Promise.all([
-		fetch(webext.extension.getURL(hrefDark)).then(response => response.text()),
-		fetch(webext.extension.getURL(hrefLight)).then(response => response.text()),
-	]).then(([dataDark, dataLight]) => {
-		sheet.textContent = `
-@media (prefers-color-scheme: light) { ${dataLight} }
+	const sheetContent = `
+	@import url("${webext.extension.getURL(hrefLight)}") (prefers-color-scheme: light);
+	@import url("${webext.extension.getURL(hrefDark)}") (prefers-color-scheme: dark);
+	`
+	const url = URL.createObjectURL(new Blob([sheetContent], {type: "text/css"}));
+	setExtensionStylesheet(url, sheet);
+}
 
-@media (prefers-color-scheme: dark) { ${dataDark} }`;
-		return sheet;
-	}).catch(() => console.error(`Failed fetching or setting hljs stylesheet(s) ${hrefDark} and/or ${hrefLight}`))
+function addCustomStylesheet(doc, attributes) {
+	return webext.storage.sync.get({'custom_css': ''}).then(({custom_css: data}) => {
+		const url = URL.createObjectURL(new Blob([data], {type: "text/css"}));
+		addStylesheet(doc, url, attributes);
+	});
 }
 
 function setCustomStylesheet(sheet) {
 	return webext.storage.sync.get({'custom_css': ''}).then(({custom_css: data}) => {
-		sheet.textContent = data;
+		const url = URL.createObjectURL(new Blob([data], {type: "text/css"}));
+		setExtensionStylesheet(url, sheet);
 	});
 }
 
@@ -90,7 +104,7 @@ function createHTMLSourceBlob(doc) {
 	}
 
 	if (a.href) {
-		URL.releaseObjectURL(a.href);
+		URL.revokeObjectURL(a.href);
 	}
 
 	// Hide the download button, so it does not appear in the downloaded html.
@@ -105,19 +119,15 @@ function createHTMLSourceBlob(doc) {
 function makeDocHeader(doc, markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
-		setExtensionStylesheet('/lib/sss/sss.css',
-							   addStylesheet(doc, {media: 'screen', id: '__markdown-viewer__md_css'})),
-		setExtensionStylesheet('/lib/sss/print.css',
-							   addStylesheet(doc, {media: 'print', id: '__markdown-viewer__md_print_css'})),
-		setExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css',
-							   addStylesheet(doc, {id: '__markdown-viewer__hljs_css'})),
-		setExtensionStylesheet('/lib/katex/dist/katex.min.css',
-							   addStylesheet(doc, {id: '__markdown-viewer__katex_css'})),
-		setExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css',
-							   addStylesheet(doc, {id: '__markdown-viewer__texmath_css'})),
-		setExtensionStylesheet('/ext/menu.css', addStylesheet(doc, {id: '__markdown-viewer__menu_css'})),
+		addExtensionStylesheet(doc, '/lib/sss/sss.css', {media: 'screen', id: '__markdown-viewer__md_css'}),
+		addExtensionStylesheet(doc, '/lib/sss/print.css', {media: 'print', id: '__markdown-viewer__md_print_css'}),
+		addExtensionStylesheet(doc, '/lib/highlightjs/build/styles/default.min.css',
+							   {id: '__markdown-viewer__hljs_css'}),
+		addExtensionStylesheet(doc, '/lib/katex/dist/katex.min.css', {id: '__markdown-viewer__katex_css'}),
+		addExtensionStylesheet(doc, '/lib/markdown-it-texmath/css/texmath.css', {id: '__markdown-viewer__texmath_css'}),
+		addExtensionStylesheet(doc, '/ext/menu.css', {id: '__markdown-viewer__menu_css'}),
 		// User-defined stylesheet.
-		setCustomStylesheet(addStylesheet(doc, {id: '__markdown-viewer__custom_css'})),
+		addCustomStylesheet(doc, {id: '__markdown-viewer__custom_css'}),
 	])
 
 	// This is considered a good practice for mobiles.
