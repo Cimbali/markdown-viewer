@@ -376,30 +376,68 @@ function restoreDisclosures(doc, state) {
 	})
 }
 
-function renderDocument(doc, text, { inserter, url }) {
-	const hash = url.lastIndexOf('#');
-	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
-	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
-
-	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
+function render(doc, text, inserter) {
+	return webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
 		.then(pluginPrefs => processMarkdown(text, pluginPrefs))
 		.then(([renderedDOM, title]) => {
 			makeDocHeader(doc, renderedDOM, title);
-			inserter(renderedDOM)
+			inserter(renderedDOM);
 		})
 		.then(() => addMarkdownViewerMenu(doc))
 		.then(() => createHTMLSourceBlob(doc))
 		.catch(console.error);
+}
+
+function setupEvents(doc, win, url) {
+	const hash = url.lastIndexOf('#');
+	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
+	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
 
 	try {
-		window.scrollTo(...JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
+		win.scrollTo(...JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
 	} catch(err) {}
 
-	window.addEventListener("unload", () => {
-		sessionStorage[scrollPosKey] = JSON.stringify([window.scrollX, window.scrollY]);
+	win.addEventListener("unload", () => {
+		sessionStorage[scrollPosKey] = JSON.stringify([win.scrollX, win.scrollY]);
 	});
 
 	const disclosures = [];
-	window.addEventListener('beforeprint', () => revealDisclosures(doc, disclosures));
-	window.addEventListener('afterprint', () => restoreDisclosures(doc, disclosures));
+	win.addEventListener('beforeprint', () => revealDisclosures(doc, disclosures));
+	win.addEventListener('afterprint', () => restoreDisclosures(doc, disclosures));
+}
+
+
+function renderInDocument(doc, text, { inserter, url }) {
+	render(doc, text, inserter).then(() => {
+		setupEvents(doc, window, url);
+	});
+}
+
+function renderInIframe(parentDoc, text, { inserter, url }) {
+	const iframe = parentDoc.createElement("iframe");
+	iframe.sandbox = "allow-same-origin allow-top-navigation-by-user-activation";
+	iframe.referrerpolicy = "no-referrer";
+	iframe.name = "sandbox";
+
+	// An iframe cannot be fully initialized befor it is embedded into the doc.
+	inserter(iframe);
+
+	return new Promise(resolve => {
+		iframe.addEventListener("load", () => resolve(iframe.contentDocument));
+		iframe.src = URL.createObjectURL(new Blob([
+			'<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>'
+		], {type: "text/html"}));
+	}).then(doc => {
+		render(doc, text, n => doc.body.appendChild(n)).then(() => {
+			parentDoc.title = doc.title;
+			setupEvents(parentDoc, iframe.contentWindow, url);
+		});
+
+		window.addEventListener('hashchange', (e) => {
+			iframe.contentWindow.location.hash = window.location.hash;
+		});
+		iframe.contentWindow.addEventListener('hashchange', () => {
+			window.location.hash = iframe.contentWindow.location.hash;
+		});
+	});
 }
