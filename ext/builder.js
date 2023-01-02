@@ -26,12 +26,12 @@ const hlcss = [
 	'tomorrow-night-bright', 'tomorrow-night-eighties', 'vs', 'vs2015', 'xcode', 'xt256', 'zenburn',
 ]
 
-function addStylesheet(attributes) {
-	const style = document.createElement('style');
+function addStylesheet(doc, attributes) {
+	const style = doc.createElement('style');
 	for (const [attr, val] of Object.entries(attributes || {})) {
 		style.setAttribute(attr, val);
 	}
-	document.head.appendChild(style);
+	doc.head.appendChild(style);
 	return style
 }
 
@@ -83,22 +83,21 @@ function makeAnchor(node, usedHeaders) {
 	return anchor;
 }
 
-function createHTMLSourceBlob() {
-	const a = document.getElementById('__markdown-viewer__download');
+function createHTMLSourceBlob(doc) {
+	const a = doc.getElementById('__markdown-viewer__download');
 	if (a === null) {
 		return
 	}
 	a.style.display = 'none';
 
-	const html = `<html>${document.head.outerHTML}${document.body.outerHTML}</html>`;
+	const html = `<html>${doc.head.outerHTML}${doc.body.outerHTML}</html>`;
 	a.href = URL.createObjectURL(new Blob([html], {type: "text/html"}));
 
 	// Once we're done display the download button, so it does not appear in the downloaded html.
 	a.style.display = 'inline-block';
 }
 
-function highlightCodeBlock(str, lang)
-{
+function highlightCodeBlock(str, lang) {
 	// Shameless copypasta https://github.com/markdown-it/markdown-it#syntax-highlighting
 	if (lang && hljs.getLanguage(lang)) {
 		try {
@@ -137,27 +136,29 @@ function getRenderer(plugins) {
 	return md;
 }
 
-function makeDocHeader(markdownRoot, title) {
+function makeDocHeader(doc, markdownRoot, title) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
-		setExtensionStylesheet('/lib/sss/sss.css', addStylesheet({media: 'screen', id: '__markdown-viewer__md_css'})),
-		setExtensionStylesheet('/lib/sss/print.css', addStylesheet({media: 'print',
-																	id: '__markdown-viewer__md_print_css'})),
+		setExtensionStylesheet('/lib/sss/sss.css',
+							   addStylesheet(doc, {media: 'screen', id: '__markdown-viewer__md_css'})),
+		setExtensionStylesheet('/lib/sss/print.css',
+							   addStylesheet(doc, {media: 'print', id: '__markdown-viewer__md_print_css'})),
 		setExtensionStylesheet('/lib/highlightjs/build/styles/default.min.css',
-							   addStylesheet({id: '__markdown-viewer__hljs_css'})),
-		setExtensionStylesheet('/lib/katex/dist/katex.min.css', addStylesheet({id: '__markdown-viewer__katex_css'})),
+							   addStylesheet(doc, {id: '__markdown-viewer__hljs_css'})),
+		setExtensionStylesheet('/lib/katex/dist/katex.min.css',
+							   addStylesheet(doc, {id: '__markdown-viewer__katex_css'})),
 		setExtensionStylesheet('/lib/markdown-it-texmath/css/texmath.css',
-							   addStylesheet({id: '__markdown-viewer__texmath_css'})),
-		setExtensionStylesheet('/ext/menu.css', addStylesheet({id: '__markdown-viewer__menu_css'})),
+							   addStylesheet(doc, {id: '__markdown-viewer__texmath_css'})),
+		setExtensionStylesheet('/ext/menu.css', addStylesheet(doc, {id: '__markdown-viewer__menu_css'})),
 		// User-defined stylesheet.
-		setCustomStylesheet(addStylesheet({id: '__markdown-viewer__custom_css'})),
+		setCustomStylesheet(addStylesheet(doc, {id: '__markdown-viewer__custom_css'})),
 	])
 
 	// This is considered a good practice for mobiles.
-	const viewport = document.createElement('meta');
+	const viewport = doc.createElement('meta');
 	viewport.name = 'viewport';
 	viewport.content = 'width=device-width, initial-scale=1';
-	document.head.appendChild(viewport);
+	doc.head.appendChild(viewport);
 
 	// Set the page title.
 	if (!title) {
@@ -169,7 +170,7 @@ function makeDocHeader(markdownRoot, title) {
 		title = `${title.substr(0, 125)  }...`;
 	}
 
-	document.title = title;
+	doc.title = title;
 
 	return styleSheetsDone;
 }
@@ -184,7 +185,7 @@ function processMarkdown(textContent, plugins) {
 	let title = null;
 	const documentAnchors = [];
 	const jsLink = /^\s*javascript:/iu;
-	const allElements = document.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
+	const allElements = doc.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
 	let eachElement;
 	while ((eachElement = allElements.nextNode())) {
 		const tagName = eachElement.tagName.toUpperCase();
@@ -214,16 +215,16 @@ function processMarkdown(textContent, plugins) {
 	return [markdownRoot, title];
 }
 
-function buildStyleOptions() {
-	const p = document.createElement('p');
-	p.appendChild(document.createTextNode('Pick a markdown and code style:'));
-	p.appendChild(document.createElement('br'));
+function buildStyleOptions(doc) {
+	const p = doc.createElement('p');
+	p.appendChild(doc.createTextNode('Pick a markdown and code style:'));
+	p.appendChild(doc.createElement('br'));
 	p.className = 'toggleable';
 
-	const mdselect = p.appendChild(document.createElement('select'));
+	const mdselect = p.appendChild(doc.createElement('select'));
 	mdselect.id = '__markdown-viewer__mdselect';
 	for (const [key, val] of Object.entries(mdcss)) {
-		const opt = mdselect.appendChild(document.createElement('option'));
+		const opt = mdselect.appendChild(doc.createElement('option'));
 		opt.textContent = key;
 		opt.value = val;
 		opt.selected = key === 'default';
@@ -233,22 +234,22 @@ function buildStyleOptions() {
 		const mdchosen = mdselect.value;
 
 		setExtensionStylesheet(`/lib/sss/${mdchosen}.css`,
-								document.getElementById('__markdown-viewer__md_css'));
+								doc.getElementById('__markdown-viewer__md_css'));
 
 		webext.storage.sync.set({ chosen_md_style: mdselect.value });
-		createHTMLSourceBlob();
+		createHTMLSourceBlob(doc);
 	})
 
-	const hlselect = p.appendChild(document.createElement('select'));
+	const hlselect = p.appendChild(doc.createElement('select'));
 	hlselect.id = '__markdown-viewer__hlselect';
 	for (const hlopt of hlcss) {
-		const opt = hlselect.appendChild(document.createElement('option'));
+		const opt = hlselect.appendChild(doc.createElement('option'));
 		opt.value = opt.textContent = hlopt;
 		opt.selected = hlopt === 'default';
 	}
 
 	hlselect.addEventListener('change', () => {
-		const sheet = document.getElementById('__markdown-viewer__hljs_css');
+		const sheet = doc.getElementById('__markdown-viewer__hljs_css');
 		if (hlselect.value.endsWith('auto')) {
 			const dark = `${hlselect.value.slice(0, -4)}dark`;
 			const light = `${hlselect.value.slice(0, -4)}light`;
@@ -258,7 +259,7 @@ function buildStyleOptions() {
 			setExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, sheet);
 		}
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
-		createHTMLSourceBlob();
+		createHTMLSourceBlob(doc);
 	})
 
 	return webext.storage.sync.get(['chosen_md_style', 'chosen_hl_style']).then((storage) => {
@@ -276,8 +277,8 @@ function buildStyleOptions() {
 	});
 }
 
-function buildDownloadButton() {
-	const a = document.createElement('p').appendChild(document.createElement('a'));
+function buildDownloadButton(doc) {
+	const a = doc.createElement('p').appendChild(doc.createElement('a'));
 	a.parentNode.className = 'toggleable'
 	a.id = '__markdown-viewer__download';
 	a.download = 'markdown.html';
@@ -287,30 +288,30 @@ function buildDownloadButton() {
 	return Promise.resolve(a.parentNode);
 }
 
-function buildTableOfContents() {
-	const allHeaders = document.querySelectorAll(headerTags.join(','));
+function buildTableOfContents(doc) {
+	const allHeaders = doc.querySelectorAll(headerTags.join(','));
 	if (allHeaders.length) {
-		const tocdiv = document.createElement('div');
+		const tocdiv = doc.createElement('div');
 		let level = 0;
-		let list = tocdiv.appendChild(document.createElement('ul'));
+		let list = tocdiv.appendChild(doc.createElement('ul'));
 		for (const header of allHeaders) {
 			/* Open/close the right amount of nested lists to fit tag level */
 			const headerLevel = headerTags.indexOf(header.tagName);
 			for (; level < headerLevel; level++) {
 				if (list.lastChild === null || list.lastChild.tagName !== 'LI') {
-					list.appendChild(document.createElement('li'))
+					list.appendChild(doc.createElement('li'))
 				}
-				list = list.lastChild.appendChild(document.createElement('ul'));
+				list = list.lastChild.appendChild(doc.createElement('ul'));
 			}
 			for (; level > headerLevel; level--) {
 				list = list.parentNode.parentNode;
 			}
 
 			/* Make a list item with a link to the heading */
-			const link = document.createElement('a');
+			const link = doc.createElement('a');
 			link.textContent = header.textContent;
 			link.href = `#${header.id}`;
-			list.appendChild(document.createElement('li')).appendChild(link);
+			list.appendChild(doc.createElement('li')).appendChild(link);
 		}
 
 		/* Squash empty levels by moving its children to the parent list */
@@ -332,19 +333,19 @@ function buildTableOfContents() {
 	}
 }
 
-function addMarkdownViewerMenu() {
-	const toolsdiv = document.createElement('div');
+function addMarkdownViewerMenu(doc) {
+	const toolsdiv = doc.createElement('div');
 	toolsdiv.id = '__markdown-viewer__tools';
 	toolsdiv.className = 'hidden';
 	const getMenuDisplay = webext.storage.sync.get({'display_menu': 'floating'});
 
-	const input = toolsdiv.appendChild(document.createElement('input'));
-	const label = toolsdiv.appendChild(document.createElement('label'));
+	const input = toolsdiv.appendChild(doc.createElement('input'));
+	const label = toolsdiv.appendChild(doc.createElement('label'));
 	input.type = 'checkbox';
 	input.id = '__markdown-viewer__show-tools';
 	label.setAttribute('for', input.id);
 
-	const p = [getMenuDisplay, buildTableOfContents(), buildStyleOptions(), buildDownloadButton()];
+	const p = [getMenuDisplay, buildTableOfContents(doc), buildStyleOptions(doc), buildDownloadButton(doc)];
 	return Promise.all(p).then(([{display_menu: menuDisplay}, ...nodes]) => {
 		toolsdiv.className = menuDisplay;
 		for (const node of nodes) {
@@ -352,21 +353,21 @@ function addMarkdownViewerMenu() {
 				toolsdiv.appendChild(node);
 			}
 		}
-		document.body.prepend(toolsdiv);
+		doc.body.prepend(toolsdiv);
 	});
 }
 
-function revealDisclosures(state) {
+function revealDisclosures(doc, state) {
 	state.splice(0, state.length);
-	state.push(...Array.from(document.getElementsByTagName('details')).map(tag => {
+	state.push(...Array.from(doc.getElementsByTagName('details')).map(tag => {
 		const wasOpen = tag.getAttribute('open');
 		tag.setAttribute('open', true)
 		return wasOpen;
 	}))
 }
 
-function restoreDisclosures(state) {
-	Array.from(document.getElementsByTagName('details')).forEach((tag, idx) => {
+function restoreDisclosures(doc, state) {
+	Array.from(doc.getElementsByTagName('details')).forEach((tag, idx) => {
 		if (state[idx] === null) {
 			tag.removeAttribute('open')
 		} else {
@@ -375,7 +376,7 @@ function restoreDisclosures(state) {
 	})
 }
 
-function renderDocument(text, inserter, url) {
+function renderDocument(doc, text, { inserter, url }) {
 	const hash = url.lastIndexOf('#');
 	if (hash > 0) {url = url.substr(0, hash);}	// Exclude fragment id from key.
 	const scrollPosKey = `${encodeURIComponent(url)}.scrollPosition`;
@@ -383,11 +384,12 @@ function renderDocument(text, inserter, url) {
 	webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
 		.then(pluginPrefs => processMarkdown(text, pluginPrefs))
 		.then(([renderedDOM, title]) => {
-			makeDocHeader(renderedDOM, title);
+			makeDocHeader(doc, renderedDOM, title);
 			inserter(renderedDOM)
 		})
-		.then(() => addMarkdownViewerMenu())
-		.then(() => createHTMLSourceBlob());
+		.then(() => addMarkdownViewerMenu(doc))
+		.then(() => createHTMLSourceBlob(doc))
+		.catch(console.error);
 
 	try {
 		window.scrollTo(...JSON.parse(sessionStorage[scrollPosKey] || '[0,0]'));
@@ -398,6 +400,6 @@ function renderDocument(text, inserter, url) {
 	});
 
 	const disclosures = [];
-	window.addEventListener('beforeprint', () => revealDisclosures(disclosures));
-	window.addEventListener('afterprint', () => restoreDisclosures(disclosures));
+	window.addEventListener('beforeprint', () => revealDisclosures(doc, disclosures));
+	window.addEventListener('afterprint', () => restoreDisclosures(doc, disclosures));
 }

@@ -10,5 +10,5 @@ if (body.childNodes.length === 1 &&
 	body.children[0].nodeName.toUpperCase() === 'PRE')
 {
 	const inserter = renderedDOM => body.replaceChild(renderedDOM, body.firstChild);
-	renderDocument(body.firstChild.textContent, inserter, window.location.href)
+	renderDocument(document, body.firstChild.textContent, { inserter, url: window.location.href })
 }
