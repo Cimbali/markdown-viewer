@@ -19,6 +19,19 @@ html, body, iframe {
 	a:visited {
 		opacity: lightskyblue;
 	}
+
+	span.copy {
+		border-color: white;
+	}
+	span.copy:after {
+		filter: invert(100%);
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	span.copy {
+		border-color: black;
+	}
 }
 
 iframe {
@@ -53,4 +66,50 @@ iframe {
 
 .error span {
 	font-weight: bold;
+}
+
+span.copy {
+	position: relative;
+	border-style: inset;
+	border-width: 1px;
+	border-radius: 3px;
+	padding: 3px;
+	cursor: pointer;
+	font-family: monospace;
+}
+
+span.copy:after {
+	content: ' ';
+	background: url('./copy.svg') no-repeat right;
+	background-size: .9em;
+	width: 1.2em;
+	height: .8em;
+	display: inline-block;
+	vertical-align: baseline;
+}
+
+span.copy span.feedback {
+	display: none;
+	position: absolute;
+	right: 0;
+	bottom: 2em;
+	line-height: 100%;
+	padding: 9px;
+	border-radius: 6px;
+
+	background: #000;
+	color: white;
+}
+
+span.copy span.feedback::after {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 0;
+	top: 100%;
+	right: 12px;
+	border: 6px solid transparent;
+	border-bottom: none;
+
+	border-top-color: #000;
 }
