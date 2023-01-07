@@ -74,22 +74,36 @@ function accessGranted(e) {
 if (file === null || file.protocol === 'file:') {
 	const msg = document.body.appendChild(document.createElement('p'));
 	msg.classList.add('request-local-access');
-
-	if (file) {
-		msg.appendChild(document.createTextNode(`The requested file is ${file}`));
-		msg.appendChild(document.createElement('br'));
-	}
-
 	msg.appendChild(document.createTextNode(
 		'For your security, Firefox requires you to select local markdown file explicitely '
 		+ 'before markdown-viewer can open it.'
 	));
+	msg.appendChild(document.createElement('br'));
+
+	if (file) {
+		msg.appendChild(document.createTextNode(`The requested file is `));
+		const copy = msg.appendChild(document.createElement('span'));
+		msg.appendChild(document.createElement('br'));
+
+		copy.appendChild(document.createTextNode(file));
+		copy.classList.add('copy');
+		copy.title = 'Click to copy';
+
+		const feedback = copy.appendChild(document.createElement('span'));
+		feedback.classList.add('feedback');
+		feedback.appendChild(document.createTextNode('Copied to clipboard!'));
+
+		copy.addEventListener('click', () => {
+			navigator.clipboard.writeText(file);
+			feedback.style.display = 'block';
+			setTimeout(() => { feedback.style.display = 'none'; }, 700)
+		});
+	}
 
 	msg.addEventListener('dragenter', stopEvent, false);
 	msg.addEventListener('dragover', stopEvent, false);
 	msg.addEventListener('drop', accessGranted, false);
 
-	msg.appendChild(document.createElement('br'));
 	msg.appendChild(document.createElement('label')).appendChild(
 		document.createTextNode('Select markdown file (or drag it onto this area): ')
 	);
