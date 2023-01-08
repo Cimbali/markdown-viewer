@@ -202,13 +202,12 @@ function makeDocTitle(markdownRoot, title) {
 	return title;
 }
 
-function processRenderedMarkdown(html, pageUrl) {
+function processRenderedMarkdown(html, title, pageUrl) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
 	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
 	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
 
 	// Perform some cleanup and extract headers
-	let title = null;
 	const documentAnchors = [];
 	const jsLink = /^\s*javascript:/iu;
 	const allElements = doc.createNodeIterator(markdownRoot, NodeFilter.SHOW_ELEMENT);
@@ -442,7 +441,7 @@ function render(doc, text, { inserter, url, displayUrl, skipHeader=false }) {
 	const baseUrl = displayUrl || url || doc.defaultView.location.href;
 	return webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
 		.then(pluginPrefs => new Renderer(pluginPrefs).render(text))
-		.then(({ html }) => processRenderedMarkdown(html, baseUrl))
+		.then(({ html, title }) => processRenderedMarkdown(html, title, baseUrl))
 		.then(({ DOM: renderedDOM, title }) => {
 			if (!skipHeader) {
 				makeDocHeader(doc);

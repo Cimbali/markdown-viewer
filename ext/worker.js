@@ -9,6 +9,7 @@ importScripts('../lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js')
 importScripts('../lib/highlightjs/build/highlight.min.js')
 importScripts('../lib/katex/dist/katex.min.js')
 importScripts('../lib/markdown-it-texmath/texmath.js')
+importScripts('./frontmatter.js')
 importScripts('./renderer.js')
 
 onmessage = function(e) {

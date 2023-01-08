@@ -41,13 +41,18 @@ class Renderer {
 		if (plugins['fancy-lists']) {
 			md.block.ruler.at('list', fancyList, { alt: [ 'paragraph', 'reference', 'blockquote' ] });
 		}
+		if (plugins.frontmatter) {
+			md.block.ruler.before('table', 'frontmatter', frontmatter(yaml => {
+				this.title = yamltitle(yaml)
+			}));
+		}
 
 		return md;
 	}
 
 	work(text) {
 		const html = this.getRenderer(this.plugins).render(text);
-		return Promise.resolve({ html });
+		return Promise.resolve({ html, title: this.title });
 	}
 
 	offload(text) {
