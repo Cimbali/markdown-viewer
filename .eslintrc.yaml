@@ -156,4 +156,6 @@ rules:
     - 120
   max-depth: warn
   max-nested-callbacks: warn
-  max-params: warn
+  max-params:
+    - warn
+    - 4
