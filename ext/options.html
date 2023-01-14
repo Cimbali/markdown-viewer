@@ -101,6 +101,26 @@
 	</p>
 	<p class="comment">Unticking restores the legacy behaviour, which inserts into the page directly.  Use with care.</p>
 
+	<p>
+	<label><input type="checkbox" name="redirect_local" checked="" id="redirect_local">
+	Use the extension page to render local markdown files (<code>file://</code> URLs).
+	</label>
+	</p>
+	<p class="comment">
+	As opposed to injecting javascript into an existing page.<br />Main advantages of the extension page:
+	</p>
+	<ul class="comment">
+	<li>Safer operation</li>
+	<li>Rendering done in a <em>Worker</em> (less laggy on large files)</li>
+	<li>Avoids mime-type issues on Linux and macOS causing <span class="browser_name">Firefox</span> to download the markdown files instead of displaying them</li>
+	</ul>
+	<p class="comment">Main disadvantages (for <code>file://</code> URLs only):</p>
+	<ul class="comment">
+	<li>Requires a one-time manual confirmation of file access</li>
+	<li>Built-in “view source” shortcut and menu “View Source” link are unavailable</li>
+	<li>Local file images are not displayed</li>
+	</ul>
+
 	<script src="options.js"></script>
 </body>
 </html>

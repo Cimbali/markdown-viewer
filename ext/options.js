@@ -26,7 +26,7 @@ webext.storage.sync.get({ custom_css: '' }).then(({custom_css: data}) => {
 	};
 });
 
-document.querySelectorAll('input, select').forEach(function setupPrefElement(elt) {
+document.querySelectorAll('input, select').forEach(elt => {
 	// Each setting key in sync storage matches the name attribute of its element,
 	// and plugins are grouped together under the ”plugins” key.
 	const prefName = elt.getAttribute('name');
@@ -34,9 +34,9 @@ document.querySelectorAll('input, select').forEach(function setupPrefElement(elt
 		return;
 	}
 
-	const isBoolPref = (elt.tagName === 'INPUT' && elt.type === 'checkbox');
-	const setter = isBoolPref ? (val => { elt.checked = val; }) : (val => { elt.value = val; });
-	const getter = isBoolPref ? (() => elt.checked) : (() => elt.value );
+	const isBoolPref = elt.tagName === 'INPUT' && elt.type === 'checkbox';
+	const setter = isBoolPref ? val => { elt.checked = val; } : val => { elt.value = val; };
+	const getter = isBoolPref ? () => elt.checked : () => elt.value ;
 
 	if (elt.parentNode.classList.contains('plugins')) {
 		webext.storage.sync.get({ plugins: {} }).then(({ plugins }) => {
