@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="onboarding.css" />
+	<link rel="icon" href="/ext/markdown-mark.svg">
+	<title>Markdown Viewer Tour</title>
+</head>
+<body>
+	<h2 id="top">Welcome to Markdown Viewer</h2>
+
+	<p><span class="update">In version 2, </span>Markdown Viewer renders pages in an <em>extension page</em>, which:
+	<ul>
+		<li>allows rendering more safely,</li>
+		<li>requires fewer permissions,</li>
+		<li>overrides website blocks,</li>
+		<li>avoids slowing down the browser on huge files,</li>
+		<li>supports a <code>ext+view-markdown:</code> protocol,</li>
+		<li>and improves out-of-the-box local file support</li>
+	</ul></p>
+
+	<p>Below are a few settings − that you can always change later from the addon’s preferences page later.</p>
+
+	<div class="features">
+		<div class="card">
+			<h4>Automatic rendering</h4>
+			<p>Markdown Viewer <span class="update">now </span>allows the possibility to render pages manually through a button in the address bar.</p>
+			<p><img src="page_action.png" alt="Image of page action button in address bar" /></p>
+			<p>If you prefer pages being rendered automatically, Markdown Viewer will need access to <em>all pages that match markdown file names</em> to check they are renderable.</p>
+			<p><label class="permissions"><input type="checkbox" name="host-permissions" checked="" id="local-host-permissions" />Automatically render markdown pages</label></p>
+			<p>For pages that prevent checking whether the they contain renderable markdown, through e.g. security policies, the address bar button remains available.</p>
+		</div>
+
+		<div class="card unchanged">
+			<h4>Markdown Viewer extras</h4>
+			<img src="menu.png" alt="Image of markdown-viewer menu" class="float" />
+			<p>The add-on can display a menu on the rendered page, with:<ul><li>a table of contents</li><li>style selection,</li><li>an HTML download link,</li><li>and a link to view the page source.</li></ul></p>
+			<p>Markdown Viewer also includes a number of markdown-it plugins to extend the markdown standard, that can be enabled or disabled in the settings page.</p>
+			<p>You can also specify custom CSS to apply on every page.</p>
+			<p class="center"><button id="to-settings">Take me to settings</button></p>
+		</div>
+
+		<div class="card">
+			<h4>Linking rendered pages</h4>
+			<p>You can link to any page to render it as markdown, by prefixing with <code>ext+view-markdown:</code>, e.g.:<br />
+			<a href="ext+view-markdown:https://raw.githubusercontent.com/KeithLRobertson/markdown-viewer/master/README.md" target="_blank">
+				<code><strong>ext+view-markdown:</strong>https://raw.githubusercontent.com/KeithLRobertson/markdown-viewer/master/README.md</code>
+			</a></p>
+		</div>
+
+		<div class="card">
+			<h4>Page prompt</h4>
+			<p>Markdown Viewer can also prompt for a local file or URL. For that, use the toolbar (or overflow-menu) button, or go to
+			<a href="ext+view-markdown:" target="_blank"><code>ext+view-markdown:</code></a> .
+			<br />This prompt is now also a necessary step to grant Markdown Viewer access to local files, and avoids Firefox attempting to download markdown files instead of opening them.</p>
+		</div>
+
+		<div class="card">
+			<h4>Legacy behaviour</h4>
+			<p>Some functionality can not be quite replicated <em>for local files</em>, i.e. <code>file://</code> URLs:
+			<ul>
+				<li>Opening a file requires a one-time prompt</li>
+				<li>Links to page source are not available</li>
+				<li>Local images are not displayed</li>
+			</ul>
+			Therefore, you can revert to injecting scripts into the local markdown page. This reverts all of the benefits listed above.
+			<br />If you want to automatically render markdown pages with legacy behaviour, Markdown Viewer will nedd <em>host permissions</em> for all local markdown files.</p>
+			<p><label><input type="checkbox" name="inject_local" checked="" id="inject_local" />
+				Inject javascript directly in local markdown files</label>
+		</div>
+	</div>
+
+	<script src="options.js"></script>
+	<script src="onboarding.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+body {
+	min-width: 200px;
+	max-width: 980px;
+	margin: 0 auto;
+	padding: 45px;
+}
+
+.features {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#top::before {
+	content: '';
+	background: no-repeat url('/ext/markdown-mark.png');
+	background-size: 80%;
+	background-position: center;
+	width: 50px;
+	height: 50px;
+	display: inline-block;
+	vertical-align: -40%;
+}
+
+.card {
+	max-width: 20em;
+	border-radius: 10px;
+	padding: 0 10px 10px;
+	margin: 10px;
+	border: black thin solid;
+}
+
+.card ul {
+	padding-left: 2em;
+}
+
+.card img.float {
+	max-width: 35%;
+	float: right;
+}
+.card .center {
+	text-align: center;
+}

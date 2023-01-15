@@ -15,6 +15,10 @@ function clearSavedMessage() {
 
 // Load custom CSS and save it when changed by user
 webext.storage.sync.get({ custom_css: '' }).then(({custom_css: data}) => {
+	if (!textarea) {
+		return;
+	}
+
 	textarea.value = data;
 
 	textarea.onchange = () => {

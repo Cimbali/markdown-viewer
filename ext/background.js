@@ -73,3 +73,17 @@ browser.tabs.onUpdated.addListener((tabId, { 'status': update }, { url = '' }) =
 		tabUpdated(tabId, new URL(url));
 	}
 }, { urls, properties: ['status'] });
+
+
+browser.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
+	const url = browser.runtime.getURL('/ext/onboarding.html');
+	if (reason === 'update') {
+		const prevMajor = parseInt(previousVersion.split('.')[0], 10);
+		if (prevMajor === 1) {
+			browser.tabs.create({ url: new URL(`?update=${previousVersion}`, url) });
+		}
+	}
+	else if (reason === 'install') {
+		browser.tabs.create({ url });
+	}
+});
