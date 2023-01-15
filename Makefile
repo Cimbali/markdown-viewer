@@ -7,6 +7,7 @@ lint-worker: ENV=worker
 lint-worker: GLOBALS=Renderer
 lint-renderer: GLOBALS=markdownit fancyList texmath katex hljs markdownitCheckbox markdownitEmoji markdownitFootnote frontmatter yamltitle
 lint-builder: GLOBALS=Renderer
+lint-onboarding: GLOBALS=webext
 lint-inject lint-view-md: GLOBALS=webext renderInIframe renderInDocument addExtensionStylesheet
 
 TARGETS:=$(patsubst ext/%.js,lint-%,$(wildcard ext/*.js))
