@@ -2,7 +2,7 @@
 
 const webext = typeof browser === 'undefined' ? chrome : browser;
 if (webext === chrome) {
-	document.getElementById('browser_name').innerText = "Google";
+	document.querySelectorAll('.browser_name').forEach(span => { span.innerText = "Google" });
 }
 
 let timer = null;
@@ -26,38 +26,41 @@ webext.storage.sync.get({ custom_css: '' }).then(({custom_css: data}) => {
 	};
 });
 
+document.querySelectorAll('input, select').forEach(function setupPrefElement(elt) {
+	// Each setting key in sync storage matches the name attribute of its element,
+	// and plugins are grouped together under the ”plugins” key.
+	const prefName = elt.getAttribute('name');
+	if (!prefName) {
+		return;
+	}
 
-const menuVisibility = document.getElementById('menu_visibility');
-webext.storage.sync.get('display_menu').then(storage => {
-	if ('display_menu' in storage) { menuVisibility.value = storage.display_menu; }
+	const isBoolPref = (elt.tagName === 'INPUT' && elt.type === 'checkbox');
+	const setter = isBoolPref ? (val => { elt.checked = val; }) : (val => { elt.value = val; });
+	const getter = isBoolPref ? (() => elt.checked) : (() => elt.value );
 
-	menuVisibility.onchange = () => {
-		webext.storage.sync.set({display_menu: menuVisibility.value})
-	};
-});
+	if (elt.parentNode.classList.contains('plugins')) {
+		webext.storage.sync.get({ plugins: {} }).then(({ plugins }) => {
+			if (prefName in plugins) {
+				setter(plugins[prefName]);
+			}
+		});
 
+		elt.onchange = () => {
+			webext.storage.sync.get({ plugins: {} }).then(({ plugins }) =>
+				Object.assign(plugins, {[prefName]: getter()})
+			).then(plugins => {
+				webext.storage.sync.set({ plugins })
+			});
+		};
+	} else {
+		webext.storage.sync.get(prefName).then(storage => {
+			if (prefName in storage) {
+				setter(storage[prefName]);
+			}
+		});
 
-const embeddingMode = document.getElementById('iframe_embed');
-webext.storage.sync.get('iframe_embed').then(storage => {
-	if ('iframe_embed' in storage) { embeddingMode.checked = storage.iframe_embed; }
-
-	embeddingMode.onchange = () => {
-		webext.storage.sync.set({iframe_embed: embeddingMode.checked})
-	};
-});
-
-
-webext.storage.sync.get('plugins').then(storage => {
-	const pluginPrefs = storage.plugins || {};
-
-	Object.keys(pluginPrefs).forEach(plugin => {
-		document.querySelector(`input[name="${  plugin  }"]`).checked = pluginPrefs[plugin];
-	});
-
-	document.querySelectorAll('.plugins input').forEach(checkbox => {
-		checkbox.onchange = () => {
-			pluginPrefs[checkbox.getAttribute('name')] = checkbox.checked;
-			webext.storage.sync.set({plugins: pluginPrefs});
-		}
-	});
+		elt.onchange = () => {
+			webext.storage.sync.set({[prefName]: getter()})
+		};
+	}
 });
