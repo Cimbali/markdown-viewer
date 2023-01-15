@@ -31,7 +31,12 @@
 		"*://*/*.mdwn",
 		"*://*/*.mkd",
 		"*://*/*.mkdn",
-		"tabs"
+		"file://*/*.markdown",
+		"file://*/*.md",
+		"file://*/*.mdown",
+		"file://*/*.mdwn",
+		"file://*/*.mkd",
+		"file://*/*.mkdn"
 	],
 
 	"content_security_policy": "default-src: 'self'; object-src 'none'; frame-src 'self'; script-src 'self'; img-src blob: https: filesystem:; media-src blob: https: filesystem:; connect-src blob: https: filesystem:; style-src: 'self' blob:; upgrade-insecure-requests;",
@@ -41,59 +46,6 @@
 			"protocol": "ext+view-markdown",
 			"name": "Markdown Viewer",
 			"uriTemplate": "/ext/view-md.html?file=%s"
-		}
-	],
-
-	"content_scripts": [
-		{
-			"matches": [
-				"file://*/*.markdown",
-				"file://*/*.MARKDOWN",
-				"file://*/*.md",
-				"file://*/*.MD",
-				"file://*/*.mdown",
-				"file://*/*.MDOWN",
-				"file://*/*.mdwn",
-				"file://*/*.MDWN",
-				"file://*/*.mkd",
-				"file://*/*.MKD",
-				"file://*/*.mkdn",
-				"file://*/*.MKDN"
-			],
-			"js": [
-				"lib/markdown-it/dist/markdown-it.min.js",
-				"lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js",
-				"lib/markdown-it-emoji/dist/markdown-it-emoji.min.js",
-				"lib/markdown-it-footnote/dist/markdown-it-footnote.min.js",
-				"lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js",
-				"lib/highlightjs/build/highlight.min.js",
-				"lib/katex/dist/katex.min.js",
-				"lib/markdown-it-texmath/texmath.js",
-				"ext/frontmatter.js",
-				"ext/renderer.js",
-				"ext/builder.js",
-				"ext/inject.js"
-			]
-		},
-		{
-			"matches": [
-				"*://*/*.markdown",
-				"*://*/*.MARKDOWN",
-				"*://*/*.md",
-				"*://*/*.MD",
-				"*://*/*.mdown",
-				"*://*/*.MDOWN",
-				"*://*/*.mdwn",
-				"*://*/*.MDWN",
-				"*://*/*.mkd",
-				"*://*/*.MKD",
-				"*://*/*.mkdn",
-				"*://*/*.MKDN"
-			],
-			"js": [
-				"ext/redirect.js"
-			],
-			"run_at": "document_end"
 		}
 	],
 
@@ -126,7 +78,19 @@
 			"*://*/*.mkd",
 			"*://*/*.MKD",
 			"*://*/*.mkdn",
-			"*://*/*.MKDN"
+			"*://*/*.MKDN",
+			"file://*/*.markdown",
+			"file://*/*.MARKDOWN",
+			"file://*/*.md",
+			"file://*/*.MD",
+			"file://*/*.mdown",
+			"file://*/*.MDOWN",
+			"file://*/*.mdwn",
+			"file://*/*.MDWN",
+			"file://*/*.mkd",
+			"file://*/*.MKD",
+			"file://*/*.mkdn",
+			"file://*/*.MKDN"
 		]
 	},
 

@@ -102,12 +102,13 @@
 	<p class="comment">Unticking restores the legacy behaviour, which inserts into the page directly.  Use with care.</p>
 
 	<p>
-	<label><input type="checkbox" name="redirect_local" checked="" id="redirect_local">
-	Use the extension page to render local markdown files (<code>file://</code> URLs).
+	<label><input type="checkbox" name="inject_local" checked="" id="inject_local">
+	Do not use the extension page to render local markdown files
 	</label>
 	</p>
 	<p class="comment">
-	As opposed to injecting javascript into an existing page.<br />Main advantages of the extension page:
+	Instead, inject javascript directly into existing <code>file://</code> pages.
+	<br />Main advantages of the extension page:
 	</p>
 	<ul class="comment">
 	<li>Safer operation</li>
