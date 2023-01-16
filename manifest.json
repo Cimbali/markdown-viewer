@@ -25,18 +25,34 @@
 
 	"permissions": [
 		"storage",
+		"activeTab"
+	],
+
+	"optional_permissions": [
 		"*://*/*.markdown",
+		"*://*/*.MARKDOWN",
 		"*://*/*.md",
+		"*://*/*.MD",
 		"*://*/*.mdown",
+		"*://*/*.MDOWN",
 		"*://*/*.mdwn",
+		"*://*/*.MDWN",
 		"*://*/*.mkd",
+		"*://*/*.MKD",
 		"*://*/*.mkdn",
+		"*://*/*.MKDN",
 		"file://*/*.markdown",
+		"file://*/*.MARKDOWN",
 		"file://*/*.md",
+		"file://*/*.MD",
 		"file://*/*.mdown",
+		"file://*/*.MDOWN",
 		"file://*/*.mdwn",
+		"file://*/*.MDWN",
 		"file://*/*.mkd",
-		"file://*/*.mkdn"
+		"file://*/*.MKD",
+		"file://*/*.mkdn",
+		"file://*/*.MKDN"
 	],
 
 	"content_security_policy": "default-src: 'self'; object-src 'none'; frame-src 'self'; script-src 'self'; img-src blob: https: filesystem:; media-src blob: https: filesystem:; connect-src blob: https: filesystem:; style-src: 'self' blob:; upgrade-insecure-requests;",

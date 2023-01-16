@@ -3,8 +3,7 @@
 const webext = typeof browser === 'undefined' ? chrome : browser;
 
 // Watch the updates of URLs we requested in the manifest
-const { permissions } = browser.runtime.getManifest();
-const urls = permissions.filter(perm => perm.includes('://'));
+const urls = browser.runtime.getManifest().page_action.show_matches;
 
 // The list (and order) of scripts to render a page with injection
 const scripts = [
@@ -54,7 +53,8 @@ async function tabUpdated(tabId, url, fallback=false) {
 		return;
 	}
 
-	const { inject_local: inject = true } = await webext.storage.sync.get('inject_local');
+	const { inject_local: inject = false } = await webext.storage.sync.get('inject_local');
+
 	if (url.protocol === 'file:' && inject) {
 		for (const path of scripts) {
 			await webext.tabs.executeScript(tabId, { file: `/${path}` });
@@ -68,8 +68,8 @@ async function tabUpdated(tabId, url, fallback=false) {
 
 webext.pageAction.onClicked.addListener(tab => tabUpdated(tab.id, new URL(tab.url), true));
 
-browser.tabs.onUpdated.addListener((tabId, { 'status': update }, { url }) => {
-	if (update === 'complete') {
+browser.tabs.onUpdated.addListener((tabId, { 'status': update }, { url = '' }) => {
+	if (update === 'complete' && url) {
 		tabUpdated(tabId, new URL(url));
 	}
 }, { urls, properties: ['status'] });
