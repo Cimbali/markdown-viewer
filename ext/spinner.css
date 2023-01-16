@@ -1,0 +1,41 @@
+/* from loading.io */
+#spinner {
+	display: block;
+	width: 80px;
+	height: 80px;
+	margin: 40vh auto 0;
+}
+
+#spinner:after {
+	content: ' ';
+	display: block;
+	width: 64px;
+	height: 64px;
+	margin: 8px;
+	border-width: 6px;
+	border-style: solid;
+	border-radius: 50%;
+	animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	#spinner:after {
+		border-color: #fff transparent #fff transparent;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	#spinner:after {
+		border-color: #000 transparent #000 transparent;
+	}
+}
+

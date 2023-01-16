@@ -501,7 +501,7 @@ function setupEvents(doc, win, { url, displayUrl }) {
 
 /* exported renderInDocument */
 function renderInDocument(doc, text, opts) {
-	render(doc, text, opts).then(() => {
+	return render(doc, text, opts).then(() => {
 		setupEvents(doc, window, opts);
 	});
 }
@@ -518,10 +518,14 @@ function renderInIframe(parentDoc, text, { inserter, ...opts }) {
 
 	return new Promise(resolve => {
 		iframe.addEventListener("load", () => resolve(iframe.contentDocument));
-		iframe.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>';
+		iframe.srcdoc = `<!DOCTYPE html><html>
+			<head><meta charset="utf-8"><link rel="stylesheet" type="text/css" href="/ext/spinner.css" /></head>
+			<body><div id="spinner"></div></body>
+		</html>`;
 	}).then(doc => {
+		const spinner = doc.getElementById('spinner');
 		// Render the document with an inserter that adds the markdown inside the iframe
-		render(doc, text, { inserter: n => doc.body.appendChild(n), ...opts }).then(() => {
+		render(doc, text, { inserter: n => doc.body.replaceChild(n, spinner), ...opts }).then(() => {
 			parentDoc.title = doc.title;
 			setupEvents(doc, iframe.contentWindow, opts);
 

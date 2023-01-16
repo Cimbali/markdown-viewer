@@ -17,8 +17,11 @@ function parseURI() {
 const file = parseURI();
 
 function display(allowedUrl, displayUrl) {
+	const spinner = document.body.appendChild(document.createElement('div'));
+	spinner.id = 'spinner';
+
 	return fetch(allowedUrl).then(r => r.text()).then(text => {
-		const inserter = rendered => document.body.appendChild(rendered);
+		const inserter = rendered => document.body.replaceChild(rendered, spinner);
 		webext.storage.sync.get('iframe_embed').then(({ iframe_embed: embed = true }) => {
 			if (embed) {
 				renderInIframe(document, text, { inserter, url: allowedUrl.toString(), displayUrl });
@@ -36,6 +39,8 @@ function display(allowedUrl, displayUrl) {
 		const link = span.appendChild(document.createElement('a'));
 		link.href = displayUrl;
 		link.innerText = displayUrl;
+
+		document.body.removeChild(spinner);
 	})
 }
 
