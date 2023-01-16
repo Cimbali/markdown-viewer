@@ -38,7 +38,22 @@ document.querySelectorAll('input, select').forEach(elt => {
 	const setter = isBoolPref ? val => { elt.checked = val; } : val => { elt.value = val; };
 	const getter = isBoolPref ? () => elt.checked : () => elt.value ;
 
-	if (elt.parentNode.classList.contains('plugins')) {
+	if (elt.parentNode.classList.contains('permissions')) {
+		const { optional_permissions: origins } = browser.runtime.getManifest();
+		const permissions = prefName === 'host-permissions' ? { origins } : {
+			permissions: prefName.split(',').filter(perm => !perm.includes('://')),
+			origins: prefName.split(',').filter(perm => perm.includes('://')),
+		};
+
+		webext.permissions.contains(permissions).then(setter);
+		elt.onchange = () => {
+			if (getter()) {
+				webext.permissions.request(permissions).then(granted => setter(granted));
+			} else {
+				webext.permissions.remove(permissions).then(removed => setter(!removed));
+			}
+		}
+	} else if (elt.parentNode.classList.contains('plugins')) {
 		webext.storage.sync.get({ plugins: {} }).then(({ plugins }) => {
 			if (prefName in plugins) {
 				setter(plugins[prefName]);

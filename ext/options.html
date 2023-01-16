@@ -93,27 +93,29 @@
 	<p class="comment">Note the media queries (<code>screen</code> and <code>prefers-color-scheme</code>) which allow to not modify the print view or the wrong color scheme.
 	Use <code>@media print { … }</code> to modify the print view.</p>
 
-	<h3>Safe embedding mode</h3>
+	<h3>Advanced Options</h3>
 	<p>
-	<label><input type="checkbox" name="iframe_embed" checked="checked" id="iframe_embed">
-	Use a sandboxed iframe to insert generated HTML in the page.
+	<label class="permissions"><input type="checkbox" checked="" id="local-host-permissions" name="host-permissions" />
+	Automatically render markdown
 	</label>
 	</p>
-	<p class="comment">Unticking restores the legacy behaviour, which inserts into the page directly.  Use with care.</p>
+	<p class="comment">Requires <em>host</em> permissions for all URLs that match markdown files.
+	Alternately, you can use the button in the address bar for manual rendition.</p>
 
 	<p>
 	<label><input type="checkbox" name="inject_local" checked="" id="inject_local">
-	Do not use the extension page to render local markdown files
+	Inject javascript directly in local markdown files
 	</label>
 	</p>
 	<p class="comment">
-	Instead, inject javascript directly into existing <code>file://</code> pages.
+	Instead of using an extension page to render <code>file://</code> pages.
 	<br />Main advantages of the extension page:
 	</p>
 	<ul class="comment">
 	<li>Safer operation</li>
 	<li>Rendering done in a <em>Worker</em> (less laggy on large files)</li>
-	<li>Avoids mime-type issues on Linux and macOS causing <span class="browser_name">Firefox</span> to download the markdown files instead of displaying them</li>
+	<li>Fewer permissions needed</li>
+	<li>Avoids mime-type issues on Linux and macOS, causing <span class="browser_name">Firefox</span> to download the markdown files instead of displaying them</li>
 	</ul>
 	<p class="comment">Main disadvantages (for <code>file://</code> URLs only):</p>
 	<ul class="comment">
@@ -121,6 +123,13 @@
 	<li>Built-in “view source” shortcut and menu “View Source” link are unavailable</li>
 	<li>Local file images are not displayed</li>
 	</ul>
+
+	<p>
+	<label><input type="checkbox" name="iframe_embed" checked="checked" id="iframe_embed">
+	Use a sandboxed iframe to insert generated HTML in the page
+	</label>
+	</p>
+	<p class="comment">Unticking restores the legacy behaviour, which inserts into the page directly.  Use with care.</p>
 
 	<script src="options.js"></script>
 </body>
