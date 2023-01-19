@@ -5,9 +5,9 @@
 	"version": "2.0.0b2",
 	"author": "Keith L Robertson, Cimbali",
 	"homepage_url": "https://github.com/KeithLRobertson/markdown-viewer",
-	"description": "Displays Markdown documents beautified in your browser.",
+	"description": "Displays markdown documents beautified in your browser, both on the web and local files (file:// URLs).",
 
-	"applications": {
+	"browser_specific_settings": {
 		"gecko": {
 			"id": "{943b8007-a895-44af-a672-4f4ea548c95f}"
 		}

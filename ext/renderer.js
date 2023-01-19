@@ -26,6 +26,7 @@ class Renderer {
 			linkify: true,
 			...plugins.hljs ? {highlight: this.highlightCodeBlock} : {},
 		})
+		hljs.configure({ throwUnescapedHTML: true });
 		//markdown-it plugins:
 		if (plugins.checkbox) {md.use(markdownitCheckbox);}
 		if (plugins.emojis) {md.use(markdownitEmoji);}
