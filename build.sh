@@ -1,7 +1,9 @@
 #!/bin/sh
 (cd lib/katex && yarn install && USE_TTF=false USE_WOFF=false USE_WOFF2=false yarn build)
-rm -r staging 2>/dev/null
-rm -r web-ext-artifacts 2>/dev/null
+
+rm -rf staging 2>/dev/null
+rm -rf web-ext-artifacts 2>/dev/null
+
 for f in LICENSE \
 	manifest.json \
 	ext/* \

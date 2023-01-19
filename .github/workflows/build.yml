@@ -1,0 +1,51 @@
+name: 'Build signed addon on release or beta'
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        # We need tags and (some) history for describe
+        fetch-depth: 0
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install dependencies
+      run: |
+        npm i -g web-ext
+        echo "`npm config get prefix`/bin" >> $GITHUB_PATH
+
+    - name: Update version number for beta
+      if: github.event_name != 'release'
+      run: |
+        # NB. we are limited to a 4-number format and we use semantic versioning: major.minor.patch
+        # so include the commits since last patch release as 4th number
+        git describe --tags --long | (IFS=- read version commits hash && printf '%s.%d' "$version" "$commits" > beta-version)
+        cp manifest.json original-manifest.json
+        jq --rawfile ver beta-version '.version=$ver' original-manifest.json > manifest.json
+
+    - name: Build extension
+      run: |
+        bash -e build.sh
+
+    - name: Sign extension with optional uploading
+      run: |
+        [ "${{ github.event_name }}" = "release" ] && chan=listed || chan=unlisted
+        echo "Signing v`jq -r .version staging/manifest.json` for $chan channel"
+
+        web-ext sign --source-dir staging/ --channel $chan ${{ secrets.AMO_API_CREDS }} 2>&1 | grep -vE '^(Sign|Download|Validat)ing'
+
+    - name: Make beta release available
+      uses: actions/upload-artifact@v3
+      if: github.event_name != 'release'
+      with:
+        path: web-ext-artifacts/*.xpi
