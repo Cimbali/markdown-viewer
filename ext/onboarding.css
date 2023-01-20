@@ -12,7 +12,7 @@ body {
 
 #top::before {
 	content: '';
-	background: no-repeat url('/ext/markdown-mark.png');
+	background: no-repeat url('/ext/markdown-mark.svg');
 	background-size: 80%;
 	background-position: center;
 	width: 50px;
