@@ -1,12 +1,14 @@
 ﻿# markdown-viewer
 
-Markdown (.md file) Viewer [WebExtension](https://developer.mozilla.org/en-US/Add-ons/WebExtensions).
+Markdown (.md file) Viewer extension.
 Displays markdown documents beautified in your browser.
 
 Markdown is a lightweight markup language which uses plain text to describe formatting information, such as `# Heading`, `1. numbered lists`, `**bold**`, etc.
 This add-on identifies markdown documents by the extension in the URL (one of .markdown, .md, .mdown, .mdwn, .mkd, .mkdn).
 When you navigate to a markdown document, if the content is plain text, not already styled (by GitHub for example), this add-on formats
 it into HTML (with headings, ordered lists, bold text, etc.) using markup from the document and displays it directly in your browser.
+
+This add-on was initially a XUL/XPCOM addon by [@Thiht](https://github.com/Thiht/markdown-viewer), ported to the [WebExtensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) by [@KeithLRobertson](https://github.com/KeithLRobertson).
 
 ## Unicode Characters
 
@@ -79,16 +81,18 @@ This is an open-source project with the most liberal usage and change license th
 Please feel free to modify it to meet your needs, and to contribute your improvement back to the community.
 
 Think only experts can do that?
-Although I am a programmer, I can only just make my way around JavaScript, and I'm a total beginner with the WebExtension browser plugin API.
-I needed a markdown viewer, and the plugin API which the existing add-on had used was deprecated and removed, so I adapted that add-on to the new technology.
+Although [Keith](https://github.com/KeithLRobertson) is a programmer, he could only just make his way around JavaScript, and was a total beginner with the WebExtension browser plugin API.
+But Keith needed a markdown viewer, and the plugin API which the existing add-on had used was deprecated and removed, so he adapted that add-on to the new technology.
 
-I expect the feature set to grow, not from a single author, but by the contributions of users like you who need some additional capabilities.
+The feature set is expected to grow, not from a single author, but by the contributions of users like you who need some additional capabilities.
 Several features have been added by community contributors who needed them, which include:
 
-* checkbox support
+* checkbox support, by [@RaffaeleMorganti](https://github.com/RaffaeleMorganti)
+* overriding CSP headers (and secure rendering) by [@KOLANICH](https://github.com/KOLANICH)
 * anchored headers
 * reload maintaining scroll location
 * custom CSS
+* many documentation fixes by various authors
 
 Many thanks to them and to our future contributors. Pull requests are welcomed.
 
@@ -155,5 +159,5 @@ Create this file if it does not exist, otherwise edit it, and add the following 
 
 Then restart firefox.
 
-**Important note:** On some systems, e.g. Ubuntu 21.10 or newer, firefox may be installed with a system like [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core), which prevents it from reading files from your disk such as `~/.mime.types`, see [#86](https://github.com/KeithLRobertson/markdown-viewer/issues/86).
+**Important note:** On some systems, e.g. Ubuntu 21.10 or newer, firefox may be installed with a system like [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core), which prevents it from reading files from your disk such as `~/.mime.types`, see [#86](https://github.com/Cimbali/markdown-viewer/issues/86).
 In that case you need to use a path accessible to firefox, and expand the `~` to the full path of your home, e.g. use as filename and config value: `/home/me/snap/firefox/common/mime.types` − where `me` is your username. A suitable directory is likely the parent of `.mozilla` in your profile path, which you can find in `about:profiles`.
