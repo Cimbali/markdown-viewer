@@ -34,18 +34,18 @@ Go to about:config, search for `intl.charset.fallback.utf8_for_file`, and set it
 To keep it simple, the extension does not support on and off states.
 If the document has one of the supported extensions, it should convert.
 Some web sites however, like raw.githubusercontent.com, return CORS headers, in which case Firefox will not inject this extension's content scripts, so it cannot convert the document.
-On those pages, the extension will display a button in your address bar, and when clicked, take you to a page that can render the document.
 
 If you're viewing pretty markdown and you want to see the original source text, right-click and select "View Page Source".
-On the extension rendering page, you can instead open the drop-down menu on the page and click “View Source”.
 (Make sure you don't have any text selected to see that option.)
 Of course, you can also (Ctrl-S) save the document to a file and open it in any text editor.
 
 ## Saving Converted Markdown
 
 If you would like to save the HTML-converted text, it is possible to do so in the desktop versions of Firefox.
-* Open the drop-down menu on the page
-* Select “Download HTML”
+* Open developer tools with F12.
+* In the Inspector tab, select the `<html>` root element.
+* Right-click > Copy > Outer HTML.
+* Paste the text into your favorite text editor and save.
 
 ## Custom Appearance
 
@@ -124,13 +124,9 @@ USE_TTF=false USE_WOFF=false USE_WOFF2=false npm run build
 
 ## Support for local files on Linux
 
-Firefox on Linux may not know how to handle markdown files by default (see #2), and if opening them it may suggest to download them instead. There are a number of possible workarounds for this (see [this SuperUser question](https://superuser.com/questions/696361/how-to-get-the-markdown-viewer-addon-of-firefox-to-work-on-linux/1175837) for example). Here are the 3 options that work the best:
+Firefox on Linux may not know how to handle markdown files by default (see #2). There are a number of possible workarounds for this (see [this SuperUser question](https://superuser.com/questions/696361/how-to-get-the-markdown-viewer-addon-of-firefox-to-work-on-linux/1175837) for example). Here are the 2 options that work the best:
 
-1) Open the page via the extension’s rendering page. You can open this page by navigating to `ext+view-markdown:` in your address bar, or clicking the “Open local markdown file” button in your toolbar or overflow menu. From there, you can select the file to render by drag & drop or through a file picker.
-
-  (Note that to open an online file this way, you can navigate to `ext+view-markdown:https://url.to/file.md`)
-
-2) One workaround is to add a new MIME type for markdown file extensions. Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
+1) One workaround is to add a new MIME type for markdown file extensions. Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
 ```XML
 <?xml version="1.0"?>
 <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
@@ -150,7 +146,7 @@ Then run
 $ update-mime-database ~/.local/share/mime
 ```
 
-3) Another workaround (which might cover other OSs as well), is to edit Firefox’s private mime types.
+2) Another workaround (which might cover other OSs as well), is to edit Firefox’s private mime types.
 
 These mime types are stored in a file indicated by `helpers.private_mime_types_file`, by default it is `~/.mime.types`.
 Create this file if it does not exist, otherwise edit it, and add the following line:
