@@ -1,11 +1,19 @@
 body {
+	padding: 45px;
 	min-width: 200px;
+}
+
+.foreword {
 	max-width: 980px;
 	margin: 0 auto;
-	padding: 45px;
+}
+
+.foreword h2 {
+	text-align: center;
 }
 
 .features {
+	text-align: center;
 	display: flex;
 	flex-wrap: wrap;
 }
@@ -22,11 +30,16 @@ body {
 }
 
 .card {
+	text-align: left;
 	max-width: 20em;
 	border-radius: 10px;
 	padding: 0 10px 10px;
 	margin: 10px;
 	border: black thin solid;
+}
+
+.card h4 {
+	text-align: center;
 }
 
 .card ul {
@@ -37,6 +50,15 @@ body {
 	max-width: 35%;
 	float: right;
 }
+
 .card .center {
 	text-align: center;
+}
+
+.card a.scheme {
+	line-break: anywhere;
+}
+
+.card a.scheme strong {
+	white-space: nowrap;
 }
