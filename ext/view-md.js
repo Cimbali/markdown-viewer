@@ -2,15 +2,19 @@
 
 function parseURI() {
 	const params = new URLSearchParams(window.location.search);
+	let file = params.get("file");
+	if (file.startsWith('ext+view-markdown:')) {
+		file = file.slice('ext+view-markdown:'.length);
+	}
 	try {
-		const url = new URL(params.get("file"));
-		if (url.protocol === 'ext+view-markdown:') {
-			return new URL(url.href.slice(url.protocol.length));
-		} else {
-			return url;
-		}
+		return new URL(file);
 	} catch (e) {
-		return null;
+		try {
+			// Just a path?
+			return new URL(`file://${params.get("file")}`);
+		} catch (e) {
+			return null;
+		}
 	}
 }
 
