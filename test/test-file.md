@@ -1,5 +1,6 @@
 ﻿---
 title: Test document
+demo: this triple-dash separated block is a YAML front matter and should not be rendered
 ---
 # Heading 1
 ## Heading 2
