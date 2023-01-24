@@ -8,7 +8,7 @@ This add-on identifies markdown documents by the extension in the URL (one of .m
 When you navigate to a markdown document, if the content is plain text, not already styled (by GitHub for example), this add-on formats
 it into HTML (with headings, ordered lists, bold text, etc.) using markup from the document and displays it directly in your browser.
 
-This add-on was initially a XUL/XPCOM addon by [@Thiht](https://github.com/Thiht/markdown-viewer), ported to the [WebExtensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) by [@KeithLRobertson](https://github.com/KeithLRobertson).
+This add-on was initially a XUL/XPCOM addon by [@Thiht](https://github.com/Thiht/markdown-viewer), rewritten for the [WebExtensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) by [@KeithLRobertson](https://github.com/KeithLRobertson).
 
 ## Unicode Characters
 
@@ -34,18 +34,18 @@ Go to about:config, search for `intl.charset.fallback.utf8_for_file`, and set it
 To keep it simple, the extension does not support on and off states.
 If the document has one of the supported extensions, it should convert.
 Some web sites however, like raw.githubusercontent.com, return CORS headers, in which case Firefox will not inject this extension's content scripts, so it cannot convert the document.
+On those pages, the extension will display a button in your address bar, and when clicked, take you to a page that can render the document.
 
 If you're viewing pretty markdown and you want to see the original source text, right-click and select "View Page Source".
+On the extension rendering page, you can instead open the drop-down menu on the page and click “View Source”.
 (Make sure you don't have any text selected to see that option.)
 Of course, you can also (Ctrl-S) save the document to a file and open it in any text editor.
 
 ## Saving Converted Markdown
 
 If you would like to save the HTML-converted text, it is possible to do so in the desktop versions of Firefox.
-* Open developer tools with F12.
-* In the Inspector tab, select the `<html>` root element.
-* Right-click > Copy > Outer HTML.
-* Paste the text into your favorite text editor and save.
+* Open the drop-down menu on the page
+* Select “Download HTML”
 
 ## Custom Appearance
 
@@ -137,38 +137,64 @@ Before that you’ll need to build katex from source (see [above](#to-build-the-
   * Click "Load Temporary Add-on"
   * Navigate to the project root folder and open the `manifest.json` file.
 
-## Support for local files on Linux
+## Support for local files on Linux and macOS
 
-Firefox on Linux may not know how to handle markdown files by default (see #2). There are a number of possible workarounds for this (see [this SuperUser question](https://superuser.com/questions/696361/how-to-get-the-markdown-viewer-addon-of-firefox-to-work-on-linux/1175837) for example). Here are the 2 options that work the best:
+Firefox may not know how to handle markdown files by default (see #2), and if opening them it may suggest to download them instead, so that you may be unable to either automatically render them or access the address bar (“page action”) button. Until Firefox [implements mime-type handling for extensions](https://bugzilla.mozilla.org/show_bug.cgi?id=1457500), there are a number of possible workarounds for this. Here are the 3 options that work the best:
 
-1) One workaround is to add a new MIME type for markdown file extensions. Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
-```XML
-<?xml version="1.0"?>
-<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
-  <mime-type type="text/plain">
-    <glob pattern="*.md"/>
-    <glob pattern="*.mkd"/>
-    <glob pattern="*.mkdn"/>
-    <glob pattern="*.mdwn"/>
-    <glob pattern="*.mdown"/>
-    <glob pattern="*.markdown"/>
-  </mime-type>
-</mime-info>
-```
+1) Open the page via the extension’s rendering page (since v2):
 
-Then run
-```bash
-$ update-mime-database ~/.local/share/mime
-```
+   The best way to do this is to go to `ext+view-markdown:file:///path/to/file.md`. (Note that you can do this also for online pages.)
+   Firefox then requires us to have you confirm file access, through a file picker or drag-and-drop.
 
-2) Another workaround (which might cover other OSs as well), is to edit Firefox’s private mime types.
+   Opening a file this way allows to both:
+   - have a 1-click copy of the file path, that you can quickly copy directly into the file picker,
+   - have Markdown Viewer remember the file path, e.g. when closing and reopening the tab, so you can see the same prompt again.
 
-These mime types are stored in a file indicated by `helpers.private_mime_types_file`, by default it is `~/.mime.types`.
-Create this file if it does not exist, otherwise edit it, and add the following line:
+   Alternately, you can open the file prompt without providing the path, by clicking the “*Open local markdown file*” button in your toolbar or overflow menu or navigating to `ext+view-markdown:` in your address bar. Markdown Viewer will now never be aware of the actual path to the file.
 
-    type=text/plain exts=md,mkd,mkdn,mdwn,mdown,markdown, desc="Markdown document"
+2) Edit Firefox’s private mime types.
 
-Then restart firefox.
+   These mime types are stored in a file indicated by `helpers.private_mime_types_file`, by default it is `~/.mime.types`.
+   Create this file if it does not exist, otherwise edit it, and add the following line:
 
-**Important note:** On some systems, e.g. Ubuntu 21.10 or newer, firefox may be installed with a system like [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core), which prevents it from reading files from your disk such as `~/.mime.types`, see [#86](https://github.com/Cimbali/markdown-viewer/issues/86).
-In that case you need to use a path accessible to firefox, and expand the `~` to the full path of your home, e.g. use as filename and config value: `/home/me/snap/firefox/common/mime.types` − where `me` is your username. A suitable directory is likely the parent of `.mozilla` in your profile path, which you can find in `about:profiles`.
+   ```
+   type=text/plain exts=md,mkd,mkdn,mdwn,mdown,markdown, desc="Markdown document"
+   ```
+
+   Then restart firefox.
+
+   ---
+   **Important note:** On some systems, e.g. Ubuntu 21.10 or newer, firefox may be installed with a system like [snap](https://ubuntu.com/core/docs/snaps-in-ubuntu-core), which prevents it from reading files from your disk such as `~/.mime.types`, see [#86](https://github.com/Cimbali/markdown-viewer/issues/86).
+
+   In that case you need to:
+   - use a directory accessible to firefox, and
+   - expand the `~` to the full path of your home
+
+   E.g. use as filename and config value: `/home/<me>/snap/firefox/common/mime.types` − where `<me>` is your username.
+   A suitable directory is likely the parent of `.mozilla` in your profile path, which you can find in `about:profiles`.
+
+   ---
+
+3) On Linux only, a workaround is to define the MIME type of markdown file extensions as `text/plain`.
+
+   Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
+   ```XML
+   <?xml version="1.0"?>
+   <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+     <mime-type type="text/plain">
+       <glob pattern="*.md"/>
+       <glob pattern="*.mkd"/>
+       <glob pattern="*.mkdn"/>
+       <glob pattern="*.mdwn"/>
+       <glob pattern="*.mdown"/>
+       <glob pattern="*.markdown"/>
+     </mime-type>
+   </mime-info>
+   ```
+
+   Then run
+   ```bash
+   $ update-mime-database ~/.local/share/mime
+   ```
+
+   See [this SuperUser question](https://superuser.com/questions/696361/how-to-get-the-markdown-viewer-addon-of-firefox-to-work-on-linux) for further reading on the topic.
