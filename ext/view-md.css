@@ -83,7 +83,7 @@ span.copy:after {
 	background: url('./copy.svg') no-repeat right;
 	background-size: .9em;
 	width: 1.2em;
-	height: .8em;
+	height: .9em;
 	display: inline-block;
 	vertical-align: baseline;
 }
