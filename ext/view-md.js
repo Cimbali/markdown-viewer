@@ -6,16 +6,26 @@ function parseURI() {
 	if (file.startsWith('ext+view-markdown:')) {
 		file = file.slice('ext+view-markdown:'.length);
 	}
+
 	try {
-		return new URL(file);
-	} catch (e) {
-		try {
-			// Just a path?
-			return new URL(`file://${params.get("file")}`);
-		} catch (e) {
-			return null;
+		const url = new URL(file);
+		if (url.protocol) {
+			return url;
 		}
+	} catch (e) {}
+
+	// Try to handle URLs without schemes. Does it look like a local file path?
+	if (file.startsWith('/') || file.match(/^[A-Z]:/u)) {
+		try {
+			return new URL(`file://${file}`);
+		} catch (e) {}
+	} else {
+		try {
+			return new URL(`http://${file}`);
+		} catch (e) {}
 	}
+
+	return null;
 }
 
 const file = parseURI();
