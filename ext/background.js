@@ -32,27 +32,8 @@ webext.browserAction.onClicked.addListener(() => {
 	webext.tabs.create({ url: webext.runtime.getURL('/ext/view-md.html') });
 });
 
-function redirect(tabId, url) {
-	const dest = new URL(webext.runtime.getURL('/ext/view-md.html?file=') + encodeURIComponent(url));
-	webext.tabs.update(tabId, {url: dest.href}).catch(console.error);
-}
 
-async function tabUpdated(tabId, url, fallback=false) {
-	try {
-		const [isText] = await webext.tabs.executeScript(tabId, { code: checks });
-
-		if (!isText) {
-			return;
-		}
-	} catch (e) {
-		// Host permissions are likely not enabled
-		console.error(e);
-		if (fallback) {
-			redirect(tabId, url);
-		}
-		return;
-	}
-
+async function renderTab(tabId, url, loadReplace) {
 	const { inject_local: inject = false } = await webext.storage.sync.get('inject_local');
 
 	if (url.protocol === 'file:' && inject) {
@@ -62,11 +43,26 @@ async function tabUpdated(tabId, url, fallback=false) {
 		webext.pageAction.hide(tabId);
 	} else {
 		// Default is to redirect to our page
-		redirect(tabId, url);
+		const dest = new URL(webext.runtime.getURL('/ext/view-md.html?file=') + encodeURIComponent(url));
+		webext.tabs.update(tabId, {url: dest.href, loadReplace }).catch(console.error);
 	}
 }
 
-webext.pageAction.onClicked.addListener(tab => tabUpdated(tab.id, new URL(tab.url), true));
+async function tabUpdated(tabId, url) {
+	try {
+		const [isText] = await webext.tabs.executeScript(tabId, { code: checks });
+
+		if (isText) {
+			renderTab(tabId, url, true);
+		}
+	} catch (e) {
+		// Host permissions are likely not enabled
+		console.error(e);
+		return;
+	}
+}
+
+webext.pageAction.onClicked.addListener(tab => renderTab(tab.id, new URL(tab.url), false));
 
 browser.tabs.onUpdated.addListener((tabId, { 'status': update }, { url = '' }) => {
 	if (update === 'complete' && url) {
