@@ -48,6 +48,7 @@ jobs:
         echo "Signing v`jq -r .version staging/manifest.json` for $chan channel"
 
         make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }}" 2>&1 | grep -vE '^(Sign|Download|Validat)ing'
+      shell: bash
 
     - name: Make signed release available
       uses: actions/upload-artifact@v3
