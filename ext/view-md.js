@@ -3,6 +3,9 @@
 function parseURI() {
 	const params = new URLSearchParams(window.location.search);
 	let file = params.get("file");
+	if (!file) {
+		return null;
+	}
 	if (file.startsWith('ext+view-markdown:')) {
 		file = file.slice('ext+view-markdown:'.length);
 	}
