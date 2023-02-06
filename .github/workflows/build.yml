@@ -47,11 +47,8 @@ jobs:
         [ "${{ github.event_name }}" = "release" ] && chan=listed || chan=unlisted
         echo "Signing v`jq -r .version staging/manifest.json` for $chan channel"
 
-        make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }}" 2>&1 | grep -vE '^(Sign|Download|Validat)ing'
-      shell: bash
-
-    - name: Make signed release available
-      uses: actions/upload-artifact@v3
-      if: github.event_name != 'release'
-      with:
-        path: web-ext-artifacts/*.xpi
+        tmp=`mktemp`
+        make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }}" | tee "$tmp"
+        # Ignore error that is not an error
+        error=${PIPESTATUS[0]}
+        grep -qxF 'Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on.' "$tmp" || exit $error
