@@ -10,22 +10,12 @@
 	<div class="foreword">
 	<h2 id="top">Welcome to Markdown Viewer</h2>
 
-	<p><span class="update">In version 2, </span>Markdown Viewer renders pages in an <em>extension page</em>, which:
-	<ul>
-		<li>allows rendering more safely,</li>
-		<li>requires fewer permissions,</li>
-		<li>overrides website blocks,</li>
-		<li>avoids slowing down the browser on huge files,</li>
-		<li>supports a <code>ext+view-markdown:</code> protocol,</li>
-		<li>and improves out-of-the-box local file support</li>
-	</ul></p>
-
 	<p>Below are a few features and settings, <strong>you can always change later from the addon’s preferences page later</strong>.</p>
 	</div>
 
 	<div class="features">
 		<div class="card">
-			<h4>Automatic rendering</h4>
+			<h4>Manual or automatic rendering</h4>
 			<p>Markdown Viewer <span class="update">now </span>allows the possibility to render pages manually through a button in the address bar.</p>
 			<p><img src="page_action.png" alt="Image of page action button in address bar" /></p>
 			<p>If you prefer pages being rendered automatically, Markdown Viewer will need <strong>access to all pages that match markdown file names</strong> to check they are renderable.</p>
@@ -37,40 +27,57 @@
 			<h4>Markdown Viewer extras</h4>
 			<img src="menu.png" alt="Image of markdown-viewer menu" class="float" />
 			<p>The add-on can display a menu on the rendered page, with:<ul><li>a table of contents</li><li>style selection,</li><li>an HTML download link,</li><li>and a link to view the page source.</li></ul></p>
-			<p>Markdown Viewer also includes a number of markdown-it plugins to extend the markdown standard, that can be enabled or disabled in the settings page.</p>
+			<p>Markdown Viewer also includes a number of <strong>markdown-it plugins</strong> to extend the markdown standard, that can be enabled or disabled in the settings page (mermaid diagrams, emojis, footnotes, and more!).</p>
 			<p>You can also specify custom CSS to apply on every page.</p>
 			<p class="center"><button id="to-settings">Take me to settings</button></p>
 		</div>
 
-		<div class="card">
-			<h4>Linking rendered pages</h4>
-			<p>You can link to any page to render it as markdown, by prefixing with <code>ext+view-markdown:</code>, e.g.:<br />
-			<a class="scheme" href="ext+view-markdown:https://raw.githubusercontent.com/Cimbali/markdown-viewer/master/README.md" target="_blank">
-				<code><strong>ext+view-markdown:</strong>https://raw.githubusercontent.com/Cimbali/markdown-viewer/master/README.md</code>
-			</a></p>
+		<div class="card update">
+			<h4>Markdown Viewer plugins</h4>
+			<p>In addition to previous features (menu, table of contents, style selection) and plug-ins (footnotes, front matters, etc.), markdown-viewer can now render <a href="https://mermaid.js.org/syntax/examples.html">mermaid diagrams</a></p>
+			<img src="mermaid.png" alt="Image of markdown-viewer menu" />
+			<p class="center"><button id="to-settings">Take me to settings</button></p>
 		</div>
 
 		<div class="card">
-			<h4>Page prompt</h4>
-			<p>Markdown Viewer can also prompt for a local file or URL. For that, use the toolbar (or overflow-menu) button, or go to
-			<a href="ext+view-markdown:" target="_blank"><code>ext+view-markdown:</code></a> .
-			<br />This prompt is now also a necessary step to grant Markdown Viewer access to local files, and avoids Firefox attempting to download markdown files instead of opening them.</p>
+			<h4>Extension page</h4>
+			<p><span class="update">In version 2, </span>Markdown Viewer can render local markdown files* in an <em>extension page</em>, which:
+				<ul>
+					<li>improves out-of-the-box local file support,</li>
+					<li>avoids slowing down the browser on large files by using worker threads,</li>
+					<li>supports a <code>ext+view-markdown:</code> protocol</li>
+				</ul>
+
+				* <em>local markdown files</em> are files stored on your computer and accessed with <code>file://</code> URLs. Unfortunately, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">cross-origin</a> permissions prevent accessing many markdown files on the web from the extension page.
+			</p>
+			<p>Unfortunately due to limitations of add-on permissions, the extension page can not access markdown pages on the web with cross-origin headers, even when the access is manually triggered by a user.</p>
+
 		</div>
 
 		<div class="card">
-			<h4>Legacy behaviour</h4>
-			<p>Some functionality can not be quite replicated <em>for local files</em>, i.e. <code>file://</code> URLs:</p>
+			<h4>Local file preference</h4>
+			<p>Some functionalities are slightly reduced with the extension page:
 			<ul>
-				<li>Opening a file requires a one-time prompt</li>
-				<li>Links to page source are not available</li>
+				<li>Opening a file requires granting access with a file picker</li>
+				<li>Linking to page source is not possible</li>
 				<li>Local images are not displayed</li>
 			</ul>
-			<p>Therefore, you can revert to injecting scripts into the local markdown page. This reverts the benefits listed at the top of this page.</p>
-			<p>To use this legacy mode, Markdown Viewer will need Firefox to consider markdown files as text
+			<p>Therefore, you can prefer injecting scripts into local markdown pages by default, without using the extension page.</p>
+			<p>For this, <strong>Markdown Viewer will need Firefox to consider markdown files as text</strong>
 			(or Firefox will <a href="https://github.com/Cimbali/markdown-viewer#support-for-local-files-on-linux-and-macos">attempt to download these files instead of displaying them</a>).</p>
 			<p><label><input type="checkbox" name="inject_local" checked="" id="inject_local" />
-				Inject javascript directly in local markdown files</label>
+				Inject javascript directly in local markdown files, instead of defaulting to extension page rendering</label>
 		</div>
+
+		<div class="card">
+			<h4>Manual access to extension page</h4>
+			<p>The extension page is always accessible! To have Markdown Viewer prompt for a local file, use the toolbar (or overflow-menu) button, or go to
+			<a href="ext+view-markdown:" target="_blank"><code>ext+view-markdown:</code></a>.</p>
+			<p><img src="toolbar.png" alt="Image of extension button in tool bar" /></p>
+			<p>You can also go directly specify which page to open by providing the path, e.g.:<br /><code>ext+view-markdown:file://C:/path/to/file.md</code></p>
+			<p>This is quite useful to link to local markdown pages when the path is known, but linking to actual local files is not allowed.</p>
+		</div>
+
 	</div>
 
 	<script src="options.js"></script>

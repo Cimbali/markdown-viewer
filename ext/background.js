@@ -36,13 +36,13 @@ webext.browserAction.onClicked.addListener(() => {
 async function renderTab(tabId, url, loadReplace) {
 	const { inject_local: inject = false } = await webext.storage.sync.get('inject_local');
 
-	if (url.protocol === 'file:' && inject) {
+	if (url.protocol !== 'file:' || inject) {
 		for (const path of scripts) {
 			await webext.tabs.executeScript(tabId, { file: `/${path}` });
 		}
 		webext.pageAction.hide(tabId);
 	} else {
-		// Default is to redirect to our page
+		// Default for local files is to redirect to our page
 		const dest = new URL(webext.runtime.getURL('/ext/view-md.html?file=') + encodeURIComponent(url));
 		webext.tabs.update(tabId, {url: dest.href, loadReplace }).catch(console.error);
 	}

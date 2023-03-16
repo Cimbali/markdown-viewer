@@ -6,9 +6,6 @@ body {
 .foreword {
 	max-width: 980px;
 	margin: 0 auto;
-}
-
-.foreword h2 {
 	text-align: center;
 }
 
@@ -44,6 +41,11 @@ body {
 
 .card ul {
 	padding-left: 2em;
+}
+
+.card img {
+	max-width: 90%;
+	padding-left: 5%;
 }
 
 .card img.float {
