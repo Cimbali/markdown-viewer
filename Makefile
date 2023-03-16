@@ -53,6 +53,18 @@ ${BUILDDIR}/%: %
 
 build: ${TARGET}
 sign: ${SIGNED}
+release: ${SIGNED}
+
+# make sign -> private, make release -> public
+CHANNEL:=unlisted
+release: CHANNEL=listed
+
+# if running web-ext sign without credentials set, prompt
+ifneq ($(filter release sign ${SIGNED},$(MAKECMDGOALS)),)
+ifndef WEBEXT_SIGN_ARGS
+WEBEXT_SIGN_ARGS=$(shell kwallet-query -r 'API credentials for addons.mozilla.org' kdewallet) --channel ${CHANNEL}
+endif
+endif
 
 ${OUTDIR}/%.zip: ${STAGED_FILES} | ${BUILDDIR}
 	@web-ext build -s "${BUILDDIR}" -a "${OUTDIR}" -o
@@ -63,5 +75,5 @@ ${OUTDIR}/%.xpi: ${STAGED_FILES} | ${BUILDDIR}
 clean:
 	@rm -rf ${BUILDDIR} ${OUTDIR}
 
-.PHONY: lint prep build clean stage sign
+.PHONY: lint prep build clean stage sign release
 .INTERMEDIATE: ${STAGED_FILES}
