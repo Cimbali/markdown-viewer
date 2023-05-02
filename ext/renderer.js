@@ -47,6 +47,16 @@ class Renderer {
 				this.title = yamltitle(yaml)
 			}));
 		}
+		if (plugins.mermaid) {
+			const origFenceRules = md.renderer.rules.fence.bind(md.renderer.rules);
+			md.renderer.rules.fence = (tokens, idx, options, env, slf) => {
+				const token = tokens[idx]
+				if (token.info === 'mermaid') {
+					return `<pre class="mermaid">${token.content.trim()}</pre>`
+				}
+				return origFenceRules(tokens, idx, options, env, slf)
+			}
+		}
 
 		return md;
 	}

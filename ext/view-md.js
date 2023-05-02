@@ -39,7 +39,11 @@ function display(allowedUrl, displayUrl) {
 
 	return fetch(allowedUrl).then(r => r.text()).then(text => {
 		const inserter = rendered => document.body.replaceChild(rendered, spinner);
-		webext.storage.sync.get('iframe_embed').then(({ iframe_embed: embed = true }) => {
+		webext.storage.sync.get(['iframe_embed', 'plugins']).then(({ iframe_embed: embed = true, plugins: prefs }) => {
+			const { mermaid: useMermaid = pluginDefaults.mermaid } = prefs;
+			if (useMermaid) {
+				mermaid.initialize();
+			}
 			if (embed) {
 				renderInIframe(document, text, { inserter, url: allowedUrl.toString(), displayUrl });
 			} else {

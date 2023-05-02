@@ -5,10 +5,10 @@ ENV=webextensions
 lint-worker: ENV=worker
 
 lint-worker: GLOBALS=Renderer
-lint-renderer: GLOBALS=markdownit fancyList texmath katex hljs markdownitCheckbox markdownitEmoji markdownitFootnote frontmatter yamltitle
-lint-builder: GLOBALS=Renderer
+lint-renderer: GLOBALS=markdownit fancyList texmath katex mermaid hljs markdownitCheckbox markdownitEmoji markdownitFootnote frontmatter yamltitle
+lint-builder: GLOBALS=Renderer mermaid
 lint-onboarding: GLOBALS=webext
-lint-inject lint-view-md: GLOBALS=webext renderInIframe renderInDocument addExtensionStylesheet
+lint-inject lint-view-md: GLOBALS=webext renderInIframe renderInDocument addExtensionStylesheet pluginDefaults mermaid
 
 TARGETS:=$(patsubst ext/%.js,lint-%,$(wildcard ext/*.js))
 lint: ${TARGETS}
@@ -35,6 +35,7 @@ FILES:=manifest.json \
   lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js \
   lib/markdown-it-texmath/texmath.js \
   lib/markdown-it-texmath/css/texmath.css \
+  lib/mermaid/dist/mermaid.min.js \
   srclib/katex/dist/katex.min.js \
   srclib/katex/dist/katex.min.css \
   ext/sss/sss.css \

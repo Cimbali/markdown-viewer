@@ -158,4 +158,4 @@ rules:
   max-nested-callbacks: warn
   max-params:
     - warn
-    - 4
+    - 5

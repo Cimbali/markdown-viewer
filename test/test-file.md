@@ -103,3 +103,19 @@ LaTeX rendering: $\sqrt 5$
 
 ## A test with à é ñ
 * a test with à é ñ
+
+## A mermaid diagram copied fom the mermaid docs
+
+```mermaid
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Healthcheck
+        John->>John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts prevail!
+    John-->>Alice: Great!
+    John->>Bob: How about you?
+    Bob-->>John: Jolly good!
+```

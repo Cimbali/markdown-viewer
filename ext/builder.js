@@ -3,7 +3,7 @@
 const webext = typeof browser === 'undefined' ? chrome : browser;
 const headerTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
 const pluginDefaults = {'hljs': true, 'checkbox': true, 'emojis': true, 'footnotes': false, 'fancy-lists': false,
-						'texmath': false};
+						'texmath': false, 'mermaid': false};
 
 const mdcss = {'default': 'sss', 'github': 'github'}
 const hlcss = [
@@ -66,6 +66,8 @@ const hlcss = [
 	'stackoverflow-dark', 'stackoverflow-light', 'stackoverflow-auto', 'sunburst', 'tokyo-night-dark', 'xt256',
 	'tokyo-night-light', 'tokyo-night-auto', 'tomorrow-night-blue', 'tomorrow-night-bright', 'vs2015', 'vs', 'xcode',
 ]
+
+const parser = new DOMParser();
 
 // Global flag to remember whether menu is opened on refresh
 let showMenu = false;
@@ -245,7 +247,7 @@ function makeDocTitle(markdownRoot, title) {
 
 function processRenderedMarkdown(html, title, pageUrl) {
 	// Parse the element’s content Markdown to HTML, inside a div.markdownRoot
-	const doc = new DOMParser().parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
+	const doc = parser.parseFromString(`<div class="markdownRoot">${html}</div>`, "text/html");
 	const markdownRoot = doc.body.removeChild(doc.body.firstChild);
 
 	// Perform some cleanup and extract headers
@@ -483,17 +485,33 @@ function restoreDisclosures(doc, state) {
 function render(doc, text, { inserter, url, displayUrl, skipHeader=false }) {
 	const baseUrl = displayUrl || url || doc.defaultView.location.href;
 	return webext.storage.sync.get({'plugins': {}}).then(storage => ({...pluginDefaults, ...storage.plugins}))
-		.then(pluginPrefs => new Renderer(pluginPrefs).render(text))
-		.then(({ html, title }) => processRenderedMarkdown(html, title, baseUrl))
-		.then(({ DOM: renderedDOM, title }) => {
-			if (!skipHeader) {
-				makeDocHeader(doc);
-			}
-			doc.title = makeDocTitle(renderedDOM, title);
-			(inserter || doc.appendChild)(renderedDOM);
+		.then(pluginPrefs => {
+			return new Renderer(pluginPrefs).render(text)
+				.then(({ html, title }) => processRenderedMarkdown(html, title, baseUrl))
+				.then(({ DOM: renderedDOM, title }) => {
+					if (!skipHeader) {
+						makeDocHeader(doc);
+					}
+					doc.title = makeDocTitle(renderedDOM, title);
+					(inserter || doc.appendChild)(renderedDOM);
+
+					if (pluginPrefs.mermaid) {
+						for (const pre of doc.getElementsByClassName('mermaid')) {
+							if (pre.tagName !== 'PRE') {
+								continue;
+							}
+							// Mermaid rendering asychronously
+							Promise.resolve().then(() => {
+								const svg = mermaid.mermaidAPI.render('mermaid', pre.innerText);
+								const img = parser.parseFromString(svg, 'image/svg+xml')
+								pre.parentNode.replaceChild(img.firstChild, pre);
+							}).catch(console.error)
+						}
+					}
+				})
+				.then(() => addMarkdownViewerMenu(doc, baseUrl))
+				.then(() => createHTMLSourceBlob(doc))
 		})
-		.then(() => addMarkdownViewerMenu(doc, baseUrl))
-		.then(() => createHTMLSourceBlob(doc))
 		.catch(console.error);
 }
 
