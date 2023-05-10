@@ -27,6 +27,7 @@ FILES:=manifest.json \
   $(wildcard ext/*) \
   lib/highlightjs/build/highlight.min.js \
   $(wildcard lib/highlightjs/build/styles/*.min.css) \
+  $(wildcard lib/highlightjs/build/styles/base16/*.min.css) \
   lib/markdown-it/dist/markdown-it.min.js \
   lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
   lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \
