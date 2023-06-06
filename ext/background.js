@@ -15,6 +15,7 @@ const scripts = [
 	"lib/@highlightjs/cdn-assets/highlight.min.js",
 	"srclib/katex/dist/katex.min.js",
 	"lib/markdown-it-texmath/texmath.js",
+	"lib/mermaid/dist/mermaid.min.js",
 	"ext/frontmatter.js",
 	"ext/renderer.js",
 	"ext/builder.js",
