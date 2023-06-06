@@ -37,9 +37,9 @@ FILES:=manifest.json \
   lib/markdown-it-texmath/css/texmath.css \
   lib/katex/dist/katex.min.js \
   lib/katex/dist/katex.min.css \
-  lib/sss/sss.css \
-  lib/sss/print.css \
-  lib/sss/github.css
+  ext/sss/sss.css \
+  ext/sss/print.css \
+  ext/sss/github.css
 
 STAGED_FILES:=$(addprefix ${BUILDDIR}/,${FILES})
 

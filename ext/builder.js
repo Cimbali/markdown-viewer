@@ -209,8 +209,8 @@ async function createHTMLSourceBlob(doc) {
 function makeDocHeader(doc) {
 	const styleSheetsDone = Promise.all([
 		// Style the page and code highlights.
-		addExtensionStylesheet(doc, '/lib/sss/sss.css', {media: 'screen', id: '__markdown-viewer__md_css'}),
-		addExtensionStylesheet(doc, '/lib/sss/print.css', {media: 'print', id: '__markdown-viewer__md_print_css'}),
+		addExtensionStylesheet(doc, '/ext/sss/sss.css', {media: 'screen', id: '__markdown-viewer__md_css'}),
+		addExtensionStylesheet(doc, '/ext/sss/print.css', {media: 'print', id: '__markdown-viewer__md_print_css'}),
 		addExtensionStylesheet(doc, '/lib/highlightjs/build/styles/default.min.css',
 							   {id: '__markdown-viewer__hljs_css'}),
 		addExtensionStylesheet(doc, '/lib/katex/dist/katex.min.css', {id: '__markdown-viewer__katex_css'}),
@@ -313,7 +313,7 @@ function buildStyleOptions(doc) {
 	mdselect.addEventListener('change', () => {
 		const mdchosen = mdselect.value;
 
-		setExtensionStylesheet(`/lib/sss/${mdchosen}.css`,
+		setExtensionStylesheet(`/ext/sss/${mdchosen}.css`,
 								doc.getElementById('__markdown-viewer__md_css'));
 
 		webext.storage.sync.set({ chosen_md_style: mdselect.value });
