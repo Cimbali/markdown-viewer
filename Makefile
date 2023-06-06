@@ -1,4 +1,4 @@
-ESLINT:=node ./node_modules/eslint/bin/eslint.js
+ESLINT:=eslint --resolve-plugins-relative-to ~/.node_modules/lib/
 FORMAT:=unix
 
 ENV=webextensions
