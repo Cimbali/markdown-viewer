@@ -99,21 +99,36 @@ Many thanks to them and to our future contributors. Pull requests are welcomed.
 ## To Build The Extension
 
 * Required:
-	* [nodejs](https://nodejs.org/) with npm
+	* [nodejs](https://nodejs.org/) with npm or preferably yarn
 	* [web-ext](https://github.com/mozilla/web-ext/) (npm install -g web-ext)
-* Run `build.bat` (Windows) or `build.sh` (Linux)
+* Clone the repo:
+	```sh
+	git clone https://github.com/Cimbali/markdown-viewer.git
+	cd markdown-viewer
+	```
+* Get all pre-built javascript dependencies:
+	```sh
+	yarn install
+	```
+* Build katex from source (to avoid issues with fonts)
+	```sh
+	git submodule update --init
+	cd srclib/katex
+	yarn install
+
+	export USE_TTF=false
+	export USE_WOFF=false
+	export USE_WOFF2=false
+	yarn build
+	cd ../..
+	```
 
 ## To Test The Extension
 
 Firefox won't install the generated `.zip` file permanently until it's signed by Mozilla.
 You can test any changes using the cloned project files.
 
-Before that you’ll need to have generated `katex` dist files with:
-```sh
-cd lib/katex
-npm install
-USE_TTF=false USE_WOFF=false USE_WOFF2=false npm run build
-```
+Before that you’ll need to build katex from source (see [above](#to-build-the-extension)).
 
 * In a command prompt, navigate to the project root folder (containing the `manifest.json`) and run `web-ext run`.
 * Or to install the extension [temporarily in Firefox](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Temporary_Installation_in_Firefox):

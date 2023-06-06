@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@highlightjs/cdn-assets": "^11.8.0",
+    "markdown-it": "^13.0.1",
+    "markdown-it-checkbox": "^1.1.0",
+    "markdown-it-emoji": "^2.0.2",
+    "markdown-it-fancy-lists": "https://github.com/mminer237/markdown-it-fancy-lists",
+    "markdown-it-footnote": "^3.0.3",
+    "markdown-it-texmath": "^1.0.0"
+  }
+}

@@ -144,8 +144,8 @@ async function convertLinkToStylesheet(doc, node) {
 	} else if (node.getAttribute('id') === '__markdown-viewer__hljs_css' && url.protocol === 'blob:') {
 		const autoStyle = node.getAttribute('data-style-auto');
 		const styleSheets = {
-			dark: `/lib/highlightjs/build/styles/${autoStyle.slice(0, -4)}dark.min.css`,
-			light: `/lib/highlightjs/build/styles/${autoStyle.slice(0, -4)}light.min.css`,
+			dark: `/lib/@highlightjs/cdn-assets/styles/${autoStyle.slice(0, -4)}dark.min.css`,
+			light: `/lib/@highlightjs/cdn-assets/styles/${autoStyle.slice(0, -4)}light.min.css`,
 		}
 
 		for (const [colorScheme, loc] of Object.entries(styleSheets)) {
@@ -211,9 +211,9 @@ function makeDocHeader(doc) {
 		// Style the page and code highlights.
 		addExtensionStylesheet(doc, '/ext/sss/sss.css', {media: 'screen', id: '__markdown-viewer__md_css'}),
 		addExtensionStylesheet(doc, '/ext/sss/print.css', {media: 'print', id: '__markdown-viewer__md_print_css'}),
-		addExtensionStylesheet(doc, '/lib/highlightjs/build/styles/default.min.css',
+		addExtensionStylesheet(doc, '/lib/@highlightjs/cdn-assets/styles/default.min.css',
 							   {id: '__markdown-viewer__hljs_css'}),
-		addExtensionStylesheet(doc, '/lib/katex/dist/katex.min.css', {id: '__markdown-viewer__katex_css'}),
+		addExtensionStylesheet(doc, '/srclib/katex/dist/katex.min.css', {id: '__markdown-viewer__katex_css'}),
 		addExtensionStylesheet(doc, '/lib/markdown-it-texmath/css/texmath.css', {id: '__markdown-viewer__texmath_css'}),
 		addExtensionStylesheet(doc, '/ext/menu.css', {id: '__markdown-viewer__menu_css'}),
 		// User-defined stylesheet.
@@ -335,11 +335,11 @@ function buildStyleOptions(doc) {
 			const base = hlselect.value.slice(0, -5);
 			const dark = hlcss.includes(`${base}-dark`) ? `${base}-dark` : base;
 			const light = `${base}-light`;
-			setExtensionStylesheetAuto(`/lib/highlightjs/build/styles/${dark}.min.css`,
-									   `/lib/highlightjs/build/styles/${light}.min.css`, sheet);
+			setExtensionStylesheetAuto(`/lib/@highlightjs/cdn-assets/styles/${dark}.min.css`,
+									   `/lib/@highlightjs/cdn-assets/styles/${light}.min.css`, sheet);
 			sheet.setAttribute('data-style-auto', hlselect.value)
 		} else {
-			setExtensionStylesheet(`/lib/highlightjs/build/styles/${hlselect.value}.min.css`, sheet);
+			setExtensionStylesheet(`/lib/@highlightjs/cdn-assets/styles/${hlselect.value}.min.css`, sheet);
 		}
 		webext.storage.sync.set({chosen_hl_style: hlselect.value});
 		createHTMLSourceBlob(doc);

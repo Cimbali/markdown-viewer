@@ -25,9 +25,9 @@ SIGNED:=${OUTDIR}/markdown_viewer_webext-${VERSION}.xpi
 
 FILES:=manifest.json \
   $(wildcard ext/*) \
-  lib/highlightjs/build/highlight.min.js \
-  $(wildcard lib/highlightjs/build/styles/*.min.css) \
-  $(wildcard lib/highlightjs/build/styles/base16/*.min.css) \
+  lib/@highlightjs/cdn-assets/highlight.min.js \
+  $(wildcard lib/@highlightjs/cdn-assets/styles/*.min.css) \
+  $(wildcard lib/@highlightjs/cdn-assets/styles/base16/*.min.css) \
   lib/markdown-it/dist/markdown-it.min.js \
   lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
   lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \
@@ -35,8 +35,8 @@ FILES:=manifest.json \
   lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js \
   lib/markdown-it-texmath/texmath.js \
   lib/markdown-it-texmath/css/texmath.css \
-  lib/katex/dist/katex.min.js \
-  lib/katex/dist/katex.min.css \
+  srclib/katex/dist/katex.min.js \
+  srclib/katex/dist/katex.min.css \
   ext/sss/sss.css \
   ext/sss/print.css \
   ext/sss/github.css
@@ -46,8 +46,8 @@ STAGED_FILES:=$(addprefix ${BUILDDIR}/,${FILES})
 ${BUILDDIR}:
 	@mkdir -p ${BUILDDIR}
 
-lib/katex/dist/katex.min.%:
-	@cd lib/katex && yarn install && USE_TTF=false USE_WOFF=false USE_WOFF2=false yarn build
+srclib/katex/dist/katex.min.%:
+	@cd srclib/katex && yarn install && USE_TTF=false USE_WOFF=false USE_WOFF2=false yarn build
 
 ${BUILDDIR}/%: %
 	@mkdir -p "$(@D)" && cp "$<" "$@"

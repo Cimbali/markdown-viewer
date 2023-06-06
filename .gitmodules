@@ -1,25 +1,3 @@
-[submodule "lib/highlightjs"]
-	path = lib/highlightjs
-	url = https://github.com/highlightjs/cdn-release/
-[submodule "lib/markdown-it"]
-	path = lib/markdown-it
-	url = https://github.com/markdown-it/markdown-it.git
-[submodule "lib/markdown-it-checkbox"]
-	path = lib/markdown-it-checkbox
-	url = https://github.com/mcecot/markdown-it-checkbox.git
-[submodule "lib/markdown-it-emoji"]
-	path = lib/markdown-it-emoji
-	url = https://github.com/markdown-it/markdown-it-emoji.git
-	branch = master
-[submodule "lib/markdown-it-footnote"]
-	path = lib/markdown-it-footnote
-	url = https://github.com/markdown-it/markdown-it-footnote
-[submodule "lib/markdown-it-fancy-lists"]
-	path = lib/markdown-it-fancy-lists
-	url = https://github.com/mminer237/markdown-it-fancy-lists
-[submodule "lib/markdown-it-texmath"]
-	path = lib/markdown-it-texmath
-	url = https://github.com/goessner/markdown-it-texmath
-[submodule "lib/katex"]
-	path = lib/katex
-	url = https://github.com/KaTeX/KaTeX
+[submodule "srclib/katex"]
+	path = srclib/katex
+	url = https://github.com/katex/katex
