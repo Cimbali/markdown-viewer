@@ -164,7 +164,7 @@ async function convertLinkToStylesheet(doc, node) {
 		style.setAttribute('media', node.getAttribute('media'));
 	}
 
-	return style;
+	return style.outerHTML;
 }
 
 async function createHTMLSourceBlob(doc) {
