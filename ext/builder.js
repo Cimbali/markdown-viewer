@@ -409,6 +409,7 @@ function buildTableOfContents(doc) {
 
 			/* Make a list item with a link to the heading */
 			const link = doc.createElement('a');
+			link.target = '_top';
 			link.textContent = header.textContent;
 			link.href = `#${header.id}`;
 			list.appendChild(doc.createElement('li')).appendChild(link);
