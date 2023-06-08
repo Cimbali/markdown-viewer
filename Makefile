@@ -1,4 +1,4 @@
-ESLINT:=eslint --resolve-plugins-relative-to ~/.node_modules/lib/
+ESLINT:=eslint --resolve-plugins-relative-to "$(shell npm config get prefix)/lib"
 FORMAT:=unix
 
 ENV=webextensions
@@ -24,7 +24,7 @@ TARGET:=${OUTDIR}/markdown_viewer_webext-${VERSION}.zip
 SIGNED:=${OUTDIR}/markdown_viewer_webext-${VERSION}.xpi
 
 FILES:=manifest.json \
-  $(wildcard ext/*) \
+  $(filter-out ext/sss,$(wildcard ext/*)) \
   lib/@highlightjs/cdn-assets/highlight.min.js \
   $(wildcard lib/@highlightjs/cdn-assets/styles/*.min.css) \
   $(wildcard lib/@highlightjs/cdn-assets/styles/base16/*.min.css) \

@@ -9,20 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-        # We need tags and (some) history for describe
-        fetch-depth: 0
-
     - uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: current
 
     - name: Install dependencies
       run: |
         npm i -g web-ext yarn
         echo "`npm config get prefix`/bin" >> $GITHUB_PATH
+
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        # We need tags and (some) history for describe
+        fetch-depth: 0
 
     - name: Update version number for beta
       if: github.event_name != 'release'
