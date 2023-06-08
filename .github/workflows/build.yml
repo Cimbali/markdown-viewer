@@ -21,7 +21,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        npm i -g web-ext
+        npm i -g web-ext yarn
         echo "`npm config get prefix`/bin" >> $GITHUB_PATH
 
     - name: Update version number for beta
