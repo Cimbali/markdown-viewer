@@ -407,10 +407,9 @@ markdown-it-footnote@^3.0.3:
   resolved "https://registry.yarnpkg.com/markdown-it-footnote/-/markdown-it-footnote-3.0.3.tgz#e0e4c0d67390a4c5f0c75f73be605c7c190ca4d8"
   integrity sha512-YZMSuCGVZAjzKMn+xqIco9d1cLGxbELHZ9do/TSYVzraooV8ypsppKNmUJ0fVH5ljkCInQAtFpm8Rb3eXSrt5w==
 
-markdown-it-texmath@^1.0.0:
+"markdown-it-texmath@https://github.com/Cimbali/markdown-it-texmath":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/markdown-it-texmath/-/markdown-it-texmath-1.0.0.tgz#65703b235d07a8f96bc58cbf9d478af57154e5f0"
-  integrity sha512-4hhkiX8/gus+6e53PLCUmUrsa6ZWGgJW2XCW6O0ASvZUiezIK900ZicinTDtG3kAO2kon7oUA/ReWmpW2FByxg==
+  resolved "https://github.com/Cimbali/markdown-it-texmath#682bfcc1f2fa2f4df9aac34a4e5a4cdc29c0a648"
 
 markdown-it@^13.0.1:
   version "13.0.1"
