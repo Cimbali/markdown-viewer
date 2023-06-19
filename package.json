@@ -6,7 +6,7 @@
     "markdown-it-emoji": "^2.0.2",
     "markdown-it-fancy-lists": "https://github.com/mminer237/markdown-it-fancy-lists",
     "markdown-it-footnote": "^3.0.3",
-    "markdown-it-texmath": "https://github.com/Cimbali/markdown-it-texmath",
+    "markdown-it-texmath": "https://github.com/Cimbali/markdown-it-texmath#v1.0.1",
     "mermaid": "9"
   }
 }
