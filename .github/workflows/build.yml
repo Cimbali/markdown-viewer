@@ -45,10 +45,63 @@ jobs:
     - name: Sign extension with optional uploading
       run: |
         [ "${{ github.event_name }}" = "release" ] && chan=listed || chan=unlisted
-        echo "Signing v`jq -r .version staging/manifest.json` for $chan channel"
+        echo "Signing v`jq -r .version manifest.json` for $chan channel"
 
         tmp=`mktemp`
         make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }}" | tee "$tmp"
         # Ignore error that is not an error
         error=${PIPESTATUS[0]}
         grep -qxF 'Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on.' "$tmp" || exit $error
+
+    - name: Generate source zip
+      run: |
+        git ls-files '*.json' yarn.lock ext/ | xargs zip source.zip
+
+    - name: Generate source instructions
+      run: |
+        cat <<EOF
+        Instructions with yarn version `yarn --version`:
+        1. Unzip source to current directory
+        2. Build all libraries under lib/ with: \`yarn install --modules-folder lib\`
+            - Only most standard libraries (markdown-it, highlightjs, mermaid, katex) use minification. Please validate by checksum or diff.
+        3. Setup environment variables (adjust for your OS): \`export USE_TTF=false USE_WOFF=false USE_WOFF2=false\`
+        EOF | tee instructions.md
+
+        git submodule foreach --quiet 'echo $sm_path `git remote get-url origin` `git describe --tags`' | nl -v4 | while read num path url tag; do
+        cat <<EOF
+        ${num}. Rebuild ${path#srclib/} from source:
+           \`\`\`sh
+           git clone -b $tag $url $path
+           cd $path
+           yarn install
+           yarn build
+           \`\`\`
+        EOF | tee -a instructions.md
+        done
+
+    - name: Upload review sources and instructions
+      run: |
+        b64enc() {
+            cat "$@" | base64 -w0 | sed 'y|+/|-_|;s/=*$//'
+        }
+
+        token() {
+            read _ user _ secret < <(echo ${{ secrets.AMO_API_CREDS }})
+            payload=$(jq -nrc --arg user $user --arg uuid `uuidgen` --arg now `date +%s` \
+                '($now | tonumber) as $time | {iss: $user, jti: $uuid, iat: $time, exp: ($time + 300)}' \
+            )
+            data="$(printf '{"alg":"HS256","typ":"JWT"}' | b64enc).$(printf '%s' "$payload" | b64enc)"
+            sign=$(printf '%s' "$data" | openssl dgst -sha256 -hmac "$secret" -binary | b64enc)
+            echo "$data.$sign"
+        }
+
+        addon=markdown-viewer-webext
+        version=`jq -r .version manifest.json`
+
+        curl -L -H "Authorization: JWT `token`" -H "Content-type: application/json" \
+            -X PATCH "https://addons.mozilla.org/api/v5/addons/addon/$addon/versions/$version/" \
+            -d "$(jq -n '{approval_notes: $instr}' --rawfile instr instructions.md)" | jq .
+
+        curl -L -H "Authorization: JWT `token`" -H "Content-type: multipart/form-data" \
+            -X PATCH "https://addons.mozilla.org/api/v5/addons/addon/$addon/versions/$version/" \
+            -F "source=@source.zip" | jq .
