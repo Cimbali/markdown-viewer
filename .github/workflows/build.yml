@@ -29,7 +29,7 @@ jobs:
       run: |
         # NB. we are limited to a 4-number format and we use semantic versioning: major.minor.patch
         # so include the commits since last patch release as 4th number
-        git describe --tags --long | (IFS=- read version commits hash && printf '%s.%d' "$version" "$commits" > beta-version)
+        git describe --tags --long | (IFS=- read version commits hash && printf '%s.%d' "$version" "$commits" | tee beta-version)
         cp manifest.json original-manifest.json
         jq --rawfile ver beta-version '.version=$ver' original-manifest.json > manifest.json
 
@@ -49,7 +49,7 @@ jobs:
         echo "Signing v`jq -r .version manifest.json` for $chan channel"
 
         tmp=`mktemp`
-        make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }}" | tee "$tmp"
+        make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }} --timeout 3000" | tee "$tmp"
         # Ignore error that is not an error
         error=${PIPESTATUS[0]}
         grep -qxF 'Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on.' "$tmp" || exit $error
