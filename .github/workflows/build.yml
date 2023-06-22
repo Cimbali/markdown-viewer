@@ -63,16 +63,16 @@ jobs:
 
     - name: Generate source instructions
       run: |
-        cat <<EOF
+        tee instructions.md <<EOF
         Instructions with yarn version `yarn --version`:
         1. Unzip source to current directory
         2. Build all libraries under lib/ with: \`yarn install --modules-folder lib\`
             - Only most standard libraries (markdown-it, highlightjs, mermaid, katex) use minification. Please validate by checksum or diff.
         3. Setup environment variables (adjust for your OS): \`export USE_TTF=false USE_WOFF=false USE_WOFF2=false\`
-        EOF | tee instructions.md
+        EOF
 
         git submodule foreach --quiet 'echo $sm_path `git remote get-url origin` `git describe --tags`' | nl -v4 | while read num path url tag; do
-        cat <<EOF
+        tee -a instructions.md <<EOF
         ${num}. Rebuild ${path#srclib/} from source:
            \`\`\`sh
            git clone -b $tag $url $path
@@ -80,7 +80,7 @@ jobs:
            yarn install
            yarn build
            \`\`\`
-        EOF | tee -a instructions.md
+        EOF
         done
 
     - name: Upload review sources and instructions
