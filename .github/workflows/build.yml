@@ -52,7 +52,10 @@ jobs:
         make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }} --timeout 3000" | tee "$tmp"
         # Ignore error that is not an error
         error=${PIPESTATUS[0]}
-        grep -qxF 'Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on.' "$tmp" || exit $error
+        grep -qxF "$tmp" \
+                -e 'Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on.' \
+                -e 'WebExtError: Signing is still pending, you will receive an email once there is an update on the status of your submission. If you don’t see the email after 24 hours, please check your Spam folder.' \
+            || exit $error
 
     - name: Generate source zip
       run: |
