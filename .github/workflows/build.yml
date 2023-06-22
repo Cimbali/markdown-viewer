@@ -58,8 +58,7 @@ jobs:
             || exit $error
 
     - name: Generate source zip
-      run: |
-        git ls-files '*.json' yarn.lock ext/ | xargs zip source.zip
+      run: make SOURCE=source.zip source
 
     - name: Generate source instructions
       run: |

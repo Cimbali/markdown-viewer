@@ -20,6 +20,7 @@ lint-%: ext/%.js
 BUILDDIR:=staging
 OUTDIR:=web-ext-artifacts
 VERSION:=$(shell jq -r .version manifest.json)
+SOURCE:=${OUTDIR}/markdown_viewer_webext-${VERSION}-src.zip
 TARGET:=${OUTDIR}/markdown_viewer_webext-${VERSION}.zip
 SIGNED:=${OUTDIR}/markdown_viewer_webext-${VERSION}.xpi
 
@@ -54,19 +55,23 @@ ${BUILDDIR}/%: %
 	@mkdir -p "$(@D)" && cp "$<" "$@"
 
 build: ${TARGET}
-sign: ${SIGNED}
+beta: ${SIGNED}
 release: ${SIGNED}
+source: ${SOURCE}
 
-# make sign -> private, make release -> public
+# make beta -> private, make release -> public
 CHANNEL:=unlisted
 release: CHANNEL=listed
 
 # if running web-ext sign without credentials set, prompt
-ifneq ($(filter release sign ${SIGNED},$(MAKECMDGOALS)),)
+ifneq ($(filter release beta ${SIGNED},$(MAKECMDGOALS)),)
 ifndef WEBEXT_SIGN_ARGS
 WEBEXT_SIGN_ARGS=$(shell kwallet-query -r 'API credentials for addons.mozilla.org' kdewallet) --channel ${CHANNEL}
 endif
 endif
+
+${OUTDIR}/%-src.zip:
+	@git ls-files -z '*.json' yarn.lock ext/ | xargs -0 zip "$@"
 
 ${OUTDIR}/%.zip: ${STAGED_FILES} | ${BUILDDIR}
 	@web-ext build -s "${BUILDDIR}" -a "${OUTDIR}" -o
@@ -77,5 +82,5 @@ ${OUTDIR}/%.xpi: ${STAGED_FILES} | ${BUILDDIR}
 clean:
 	@rm -rf ${BUILDDIR} ${OUTDIR}
 
-.PHONY: lint prep build clean stage sign release
+.PHONY: lint prep build source clean stage sign release
 .INTERMEDIATE: ${STAGED_FILES}
