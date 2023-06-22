@@ -8,9 +8,9 @@ const urls = browser.runtime.getManifest().page_action.show_matches;
 // The list (and order) of scripts to render a page with injection
 const scripts = [
 	"lib/markdown-it/dist/markdown-it.min.js",
-	"lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js",
-	"lib/markdown-it-emoji/dist/markdown-it-emoji.min.js",
-	"lib/markdown-it-footnote/dist/markdown-it-footnote.min.js",
+	"lib/markdown-it-checkbox/dist/markdown-it-checkbox.js",
+	"lib/markdown-it-emoji/dist/markdown-it-emoji.js",
+	"lib/markdown-it-footnote/dist/markdown-it-footnote.js",
 	"lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js",
 	"lib/@highlightjs/cdn-assets/highlight.min.js",
 	"srclib/katex/dist/katex.min.js",

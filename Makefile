@@ -29,9 +29,9 @@ FILES:=manifest.json \
   $(wildcard lib/@highlightjs/cdn-assets/styles/*.min.css) \
   $(wildcard lib/@highlightjs/cdn-assets/styles/base16/*.min.css) \
   lib/markdown-it/dist/markdown-it.min.js \
-  lib/markdown-it-checkbox/dist/markdown-it-checkbox.min.js \
-  lib/markdown-it-emoji/dist/markdown-it-emoji.min.js \
-  lib/markdown-it-footnote/dist/markdown-it-footnote.min.js \
+  lib/markdown-it-checkbox/dist/markdown-it-checkbox.js \
+  lib/markdown-it-emoji/dist/markdown-it-emoji.js \
+  lib/markdown-it-footnote/dist/markdown-it-footnote.js \
   lib/markdown-it-fancy-lists/markdown-it-fancy-lists.js \
   lib/markdown-it-texmath/texmath.js \
   lib/markdown-it-texmath/css/texmath.css \
