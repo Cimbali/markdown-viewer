@@ -34,14 +34,12 @@ jobs:
         jq --rawfile ver beta-version '.version=$ver' original-manifest.json > manifest.json
 
     - name: Build extension
-      run: |
-        yarn install
-        make build
+      run: make build
 
     - name: Make unsigned release available
       uses: actions/upload-artifact@v3
       with:
-        path: web-ext-artifacts/*.zip
+        path: artifacts/*.zip
 
     - name: Sign extension with optional uploading
       run: |

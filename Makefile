@@ -18,7 +18,7 @@ lint-%: ext/%.js
 
 
 BUILDDIR:=staging
-OUTDIR:=web-ext-artifacts
+OUTDIR:=artifacts
 VERSION:=$(shell jq -r .version manifest.json)
 SOURCE:=${OUTDIR}/markdown_viewer_webext-${VERSION}-src.zip
 TARGET:=${OUTDIR}/markdown_viewer_webext-${VERSION}.zip
@@ -47,6 +47,9 @@ STAGED_FILES:=$(addprefix ${BUILDDIR}/,${FILES})
 
 ${BUILDDIR}:
 	@mkdir -p ${BUILDDIR}
+
+$(filter lib/%,${FILES}):
+	@yarn install --modules-folder lib/ --check-files
 
 srclib/katex/dist/katex.min.%:
 	@cd srclib/katex && yarn install && USE_TTF=false USE_WOFF=false USE_WOFF2=false yarn build
