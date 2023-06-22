@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Markdown Viewer Webext",
 	"short_name": "Markdown Viewer",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"author": "Cimbali, Keith L Robertson",
 	"homepage_url": "https://github.com/Cimbali/markdown-viewer",
 	"description": "Displays markdown documents beautified in your browser, both on the web and local files (file:// URLs).",
