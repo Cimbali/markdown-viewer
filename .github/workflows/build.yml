@@ -35,6 +35,7 @@ jobs:
 
     - name: Build extension
       run: |
+        yarn install
         make build
 
     - name: Make unsigned release available
