@@ -67,9 +67,12 @@ CHANNEL:=unlisted
 release: CHANNEL=listed
 
 # if running web-ext sign without credentials set, prompt
-ifneq ($(filter release beta ${SIGNED},$(MAKECMDGOALS)),)
+ifneq ($(filter release beta ${SIGNED} token,$(MAKECMDGOALS)),)
 ifndef WEBEXT_SIGN_ARGS
 WEBEXT_SIGN_ARGS=$(shell kwallet-query -r 'API credentials for addons.mozilla.org' kdewallet) --channel ${CHANNEL}
+ifeq ($(firstword ${WEBEXT_SIGN_ARGS}),--channel)
+$(error API credentials for addons.mozilla.org not provided)
+endif
 endif
 endif
 
@@ -84,6 +87,16 @@ ${OUTDIR}/%.xpi: ${STAGED_FILES} | ${BUILDDIR}
 
 clean:
 	@rm -rf ${BUILDDIR} ${OUTDIR}
+
+token:
+	@read _ user _ secret _ < <(echo ${WEBEXT_SIGN_ARGS}) ;\
+	b64enc() { base64 -w0 | sed 'y|+/|-_|;s/=*$$//' ; } ;\
+	head=$$(printf '{"alg":"HS256","typ":"JWT"}' | b64enc); \
+	data=$$(jq -nrc --arg user $$user --arg uuid "$(shell uuidgen)" --arg time "$(shell date +%s)" \
+		'($$time | tonumber) as $$time | {iss: $$user, jti: $$uuid, iat: $$time, exp: ($$time + 300)}' | b64enc) ; \
+	sign=$$(printf '%s.%s' "$$head" "$$data" | openssl dgst -sha256 -hmac "$$secret" -binary | b64enc) ;\
+	printf '%s.%s.%s' "$$head" "$$data" "$$sign"
+
 
 .PHONY: lint prep build source clean stage sign release
 .INTERMEDIATE: ${STAGED_FILES}
