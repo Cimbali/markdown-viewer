@@ -89,13 +89,13 @@ clean:
 	@rm -rf ${BUILDDIR} ${OUTDIR}
 
 token:
-	@read _ user _ secret _ < <(echo ${WEBEXT_SIGN_ARGS}) ;\
+	@echo ${WEBEXT_SIGN_ARGS} | (read _ user _ secret;\
 	b64enc() { base64 -w0 | sed 'y|+/|-_|;s/=*$$//' ; } ;\
-	head=$$(printf '{"alg":"HS256","typ":"JWT"}' | b64enc); \
-	data=$$(jq -nrc --arg user $$user --arg uuid "$(shell uuidgen)" --arg time "$(shell date +%s)" \
-		'($$time | tonumber) as $$time | {iss: $$user, jti: $$uuid, iat: $$time, exp: ($$time + 300)}' | b64enc) ; \
-	sign=$$(printf '%s.%s' "$$head" "$$data" | openssl dgst -sha256 -hmac "$$secret" -binary | b64enc) ;\
-	printf '%s.%s.%s' "$$head" "$$data" "$$sign"
+	head=`printf '{"alg":"HS256","typ":"JWT"}' | b64enc`; \
+	data=`jq -nrc --arg user $$user --arg uuid "$(shell uuidgen)" --arg time "$(shell date +%s)" \
+		'($$time | tonumber) as $$time | {iss: $$user, jti: $$uuid, iat: $$time, exp: ($$time + 300)}' | b64enc` ; \
+	sign=`printf '%s.%s' "$$head" "$$data" | openssl dgst -sha256 -hmac "$$secret" -binary | b64enc` ;\
+	printf '%s.%s.%s' "$$head" "$$data" "$$sign")
 
 
 .PHONY: lint prep build source clean stage sign release

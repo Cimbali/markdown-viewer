@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      listed:
+        description: 'Publish release on AMO'
+        required: false
+        type: boolean
 
 jobs:
   build:
@@ -26,12 +31,25 @@ jobs:
 
     - name: Update version number for beta
       if: github.event_name != 'release'
+      env:
+        WEBEXT_SIGN_ARGS: ${{ secrets.AMO_API_CREDS }}
       run: |
         # NB. we are limited to a 4-number format and we use semantic versioning: major.minor.patch
-        # so include the commits since last patch release as 4th number
-        git describe --tags --long | (IFS=- read version commits hash && printf '%s.%d' "$version" "$commits" | tee beta-version)
+        # so increment 4th number as release number
+        addon=markdown-viewer-webext
+        version=`jq -r .version manifest.json | sed -r 's/(([0-9]+\.){2}[0-9]+).*/\1/'`
+        curl -sL -X GET -H "Authorization: JWT `make token`" -o versions.json \
+             "https://addons.mozilla.org/api/v5/addons/addon/$addon/versions/?filter=all_with_unlisted"
+
+        # Get all releases in this version, get release number (fallback 0), and increment highest by 1
+        # If no releases are found, last returns null, and null+1 = 1
+        filter='[.[].results[].version | select(startswith($ver)) | (split(".")[3] // 0) | tonumber] | sort | last | .+1'
+        next_rel=`jq -r -s --arg ver "$version" "$filter" versions.json`
+        version=${version}.${next_rel}
+
+        echo "Updating manifest with version=${version}"
         cp manifest.json original-manifest.json
-        jq --rawfile ver beta-version '.version=$ver' original-manifest.json > manifest.json
+        jq --arg ver "$version" '.version=$ver' original-manifest.json > manifest.json
 
     - name: Build extension
       run: make build
@@ -41,22 +59,8 @@ jobs:
       with:
         path: artifacts/*.zip
 
-    - name: Sign extension with optional uploading
-      run: |
-        [ "${{ github.event_name }}" = "release" ] && chan=listed || chan=unlisted
-        echo "Signing v`jq -r .version manifest.json` for $chan channel"
-
-        tmp=`mktemp`
-        make sign WEBEXT_SIGN_ARGS="--channel $chan ${{ secrets.AMO_API_CREDS }} --timeout 3000" | tee "$tmp"
-        # Ignore error that is not an error
-        error=${PIPESTATUS[0]}
-        grep -qxF "$tmp" \
-                -e 'Your add-on has been submitted for review. It passed validation but could not be automatically signed because this is a listed add-on.' \
-                -e 'WebExtError: Signing is still pending, you will receive an email once there is an update on the status of your submission. If you don’t see the email after 24 hours, please check your Spam folder.' \
-            || exit $error
-
     - name: Generate source zip
-      run: make SOURCE=source.zip source
+      run: make source
 
     - name: Generate source instructions
       run: |
@@ -64,7 +68,7 @@ jobs:
         Instructions with yarn version `yarn --version`:
         1. Unzip source to current directory
         2. Build all libraries under lib/ with: \`yarn install --modules-folder lib\`
-            - Only most standard libraries (markdown-it, highlightjs, mermaid, katex) use minification. Please validate by checksum or diff.
+            - Only most standard libraries (markdown-it, highlightjs, mermaid) use minification. Please validate by checksum or diff.
         3. Setup environment variables (adjust for your OS): \`export USE_TTF=false USE_WOFF=false USE_WOFF2=false\`
         EOF
 
@@ -80,29 +84,84 @@ jobs:
         EOF
         done
 
-    - name: Upload review sources and instructions
-      run: |
-        b64enc() {
-            cat "$@" | base64 -w0 | sed 'y|+/|-_|;s/=*$//'
-        }
+        tee -a instructions.md <<EOF
 
-        token() {
-            read _ user _ secret < <(echo ${{ secrets.AMO_API_CREDS }})
-            payload=$(jq -nrc --arg user $user --arg uuid `uuidgen` --arg now `date +%s` \
-                '($now | tonumber) as $time | {iss: $user, jti: $uuid, iat: $time, exp: ($time + 300)}' \
-            )
-            data="$(printf '{"alg":"HS256","typ":"JWT"}' | b64enc).$(printf '%s' "$payload" | b64enc)"
-            sign=$(printf '%s' "$data" | openssl dgst -sha256 -hmac "$secret" -binary | b64enc)
-            echo "$data.$sign"
+        The files constituting the add-on are now available in the current directory,
+        at the same paths as they have in the add-on. You can copy them to a new directory:
+        \`\`\`sh
+        mkdir -v stage/
+        unzip -Z1 /path/to/markdown_viewer_webext-`jq -r .version manifest.json`.zip | while read f; do
+        do if [ "\${f:\${#f}-1}" = "/" ] ; then mkdir -v stage/\$f ; else cp -v \$f stage/\$f; fi
+        done
+        \`\`\`
+        (Unfortunately the full list of files can not be provided due to the instructions length limit.)
+
+        From here you could run e.g. \`web-ext -s stage/ build\` to re-create the add-on.
+        EOF
+
+    - name: Upload add-on, create release, and upload sources and instructions for review
+      env:
+        channel: ${{ (inputs.listed || github.event_name == 'release') && 'listed' || 'unlisted' }}
+        WEBEXT_SIGN_ARGS: ${{ secrets.AMO_API_CREDS }}
+      run: |
+        api() {
+            url=$1; shift
+            curl -sL -H "Authorization: JWT `make token`" "https://addons.mozilla.org/api/v5/addons/${url#/}" "$@"
         }
 
         addon=markdown-viewer-webext
         version=`jq -r .version manifest.json`
 
-        curl -L -H "Authorization: JWT `token`" -H "Content-type: application/json" \
-            -X PATCH "https://addons.mozilla.org/api/v5/addons/addon/$addon/versions/$version/" \
-            -d "$(jq -n '{approval_notes: $instr}' --rawfile instr instructions.md)" | jq .
+        api /upload/ -H "Content-type: multipart/form-data" -F "upload=@artifacts/${addon//-/_}-${version}.zip" -F channel=$channel -o upload.json
 
-        curl -L -H "Authorization: JWT `token`" -H "Content-type: multipart/form-data" \
-            -X PATCH "https://addons.mozilla.org/api/v5/addons/addon/$addon/versions/$version/" \
-            -F "source=@source.zip" | jq .
+        if [ "`jq -r 'has("uuid")' upload.json`" != "true" ]; then
+            echo Error uploading artifact
+            jq . upload.json
+            exit 1
+        fi
+
+        uuid=`jq -r .uuid upload.json`
+        echo -n "Add-on uploaded with uuid $uuid "
+
+        for (( i=0; i<60; i++ )); do # +10s, max 10min
+            echo -n .
+            sleep 10
+
+            api "/upload/$uuid/" -H "Content-type: application/json" -o status.json
+            processed=`jq -r '.processed?' status.json`
+
+            if [ "$processed" = "true" ]; then break;
+            elif [ "$processed" = "null" ]; then
+                echo -e "\nError while checking upload status"
+                jq . upload.json status.json
+                exit 1
+            fi
+        done
+        echo " and processed."
+
+        if [ "`jq -r '.valid?' status.json`" != true ]; then
+            echo Validation error of uploaded file
+            jq . upload.json status.json
+            exit 1
+        fi
+
+
+        version_info=$(jq -nc '{approval_notes: $instr, upload: $uuid, license: "MIT"}' --rawfile instr instructions.md --arg uuid "$uuid")
+        api "/addon/$addon/versions/" -X POST -H "Content-type: application/json" -d "$version_info" -o version.json
+
+        if [ "`jq -r 'has("id")' version.json`" != "true" ]; then
+            echo "Error creating new version"
+            jq . version.json
+            echo "$version_info" | jq .
+            exit 1
+        fi
+
+        api "/addon/$addon/versions/$version/" -X PATCH -H "Content-type: multipart/form-data" -F "source=@artifacts/${addon//-/_}-${version}-src.zip" -o source.json
+
+        if [ "`jq -r '.source?' source.json`" = "null" ]; then
+            echo "Error uploading source"
+            jq . source.json
+            exit 1
+        fi
+
+        api "/addon/$addon/versions/$version/" -H "Content-type: application/json" | jq .
