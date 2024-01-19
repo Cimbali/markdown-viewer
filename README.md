@@ -170,7 +170,7 @@ Firefox may not know how to handle markdown files by default (see #2), and if op
    - use a directory accessible to firefox, and
    - expand the `~` to the full path of your home
 
-   E.g. use as filename and config value: `/home/<me>/snap/firefox/common/mime.types` − where `<me>` is your username.
+   E.g. use as filename and config value: `/home/<me>/snap/firefox/common/.mime.types` − where `<me>` is your username.
    A suitable directory is likely the parent of `.mozilla` in your profile path, which you can find in `about:profiles`.
 
    ---
