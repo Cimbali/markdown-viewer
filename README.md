@@ -139,9 +139,17 @@ Before that you’ll need to build katex from source (see [above](#to-build-the-
 
 ## Support for local files on Linux and macOS
 
-Firefox may not know how to handle markdown files by default (see #2), and if opening them it may suggest to download them instead, so that you may be unable to either automatically render them or access the address bar (“page action”) button. Until Firefox [implements mime-type handling for extensions](https://bugzilla.mozilla.org/show_bug.cgi?id=1457500), there are a number of possible workarounds for this. Here are the 3 options that work the best:
+Firefox may not know how to handle markdown files by default (see #3). It may display them as text or offer a download. You may be unable to either automatically render them or access the address bar (“page action”) button. Until Firefox [implements mime-type handling for extensions](https://bugzilla.mozilla.org/show_bug.cgi?id=1457500), there are a number of possible workarounds for this. Here are some options that work the best:
 
-1) Open the page via the extension’s rendering page (since v2):
+1) Toggle the permission on.
+
+   On the extension's settings page:
+   1. click "Permissions and data"
+   2. toggle on the optional setting "Access local files on your computer"
+
+   ![screenshot of permissions and data tab of extension settings with Access local files on your computer enabled](./access-local-files.png)
+
+2) Open the page via the extension’s rendering page (since v2):
 
    The best way to do this is to go to `ext+view-markdown:file:///path/to/file.md`. (Note that you can do this also for online pages.)
    Firefox then requires us to have you confirm file access, through a file picker or drag-and-drop.
@@ -152,7 +160,7 @@ Firefox may not know how to handle markdown files by default (see #2), and if op
 
    Alternately, you can open the file prompt without providing the path, by clicking the “*Open local markdown file*” button in your toolbar or overflow menu or navigating to `ext+view-markdown:` in your address bar. Markdown Viewer will now never be aware of the actual path to the file.
 
-2) Edit Firefox’s private mime types.
+3) Edit Firefox’s private mime types.
 
    These mime types are stored in a file indicated by `helpers.private_mime_types_file`, by default it is `~/.mime.types`.
    Create this file if it does not exist, otherwise edit it, and add the following line:
@@ -175,7 +183,7 @@ Firefox may not know how to handle markdown files by default (see #2), and if op
 
    ---
 
-3) On Linux only, a workaround is to define the MIME type of markdown file extensions as `text/plain`.
+4) On Linux only, a workaround is to define the MIME type of markdown file extensions as `text/plain`.
 
    Add the following XML to `~/.local/share/mime/packages/text-markdown.xml`:
    ```XML
