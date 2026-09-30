@@ -137,9 +137,15 @@ Before that you’ll need to build katex from source (see [above](#to-build-the-
   * Click "Load Temporary Add-on"
   * Navigate to the project root folder and open the `manifest.json` file.
 
+## Support for local files on All Platforms
+
+Ensure you have given markdown-viewer the permissions to open local files. On the extension's settings page:
+1. open the "Permissions and data" tab
+2. toggle on the optional setting "Access local files on your computer"
+
 ## Support for local files on Linux and macOS
 
-Firefox may not know how to handle markdown files by default (see #2), and if opening them it may suggest to download them instead, so that you may be unable to either automatically render them or access the address bar (“page action”) button. Until Firefox [implements mime-type handling for extensions](https://bugzilla.mozilla.org/show_bug.cgi?id=1457500), there are a number of possible workarounds for this. Here are the 3 options that work the best:
+Firefox may not know how to handle markdown files by default even after the permissions granted above (see #2), and if opening them it may suggest to download them instead, so that you may be unable to either automatically render them or access the address bar (“page action”) button. Until Firefox [implements mime-type handling for extensions](https://bugzilla.mozilla.org/show_bug.cgi?id=1457500), there are a number of possible workarounds for this. Here are the 3 options that work the best:
 
 1) Open the page via the extension’s rendering page (since v2):
 
